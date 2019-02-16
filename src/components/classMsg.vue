@@ -15,15 +15,33 @@
             <div class="class_body">
 
               <!--获取人数-->
-              <div class="line" v-for="(value,index2) in classMsg[index1].students" >
+              <div class="line" v-for="(value,index2) in classMsg[index1].students">
                 <div class="person-box">
-                  <div class="person" @click.stop="showMenu(index1,index2)" title="查看详情" :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}</div>
+                  <!--<div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"-->
+                  <div class="person"  title="查看详情"
+                       :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
+                  </div>
                   <div class="dropdown-content" v-show="true">
-                    <span @click="isSign(index1, index2)" style="border: none;">更改状态</span>
-                    <!--<span @click="isSign(index1, index2)">数据管理</span>-->
-                    <span v-if="!classMsg[index1].students[index2].isSign">设为迟到</span>
-                    <span v-if="!classMsg[index1].students[index2].isSign">设为旷课</span>
-                    <span v-if="classMsg[index1].students[index2].isSign" @click="getWorks('test1')">查看图片</span>
+                    <div @click="isSign(index1, index2)" style="border: none;">
+                      <span class="img img-Change"></span>
+                      <span class="text">更改状态</span>
+                    </div>
+                    <div v-if="!classMsg[index1].students[index2].isSign" @click="Lshow(index1, index2)">
+                      <span class="img img-Late" v-show="Class_lists[index1].students[index2].Late"></span>
+                      <span class="text">设为迟到</span>
+                    </div>
+                    <div v-if="!classMsg[index1].students[index2].isSign" @click="Tshow(index1, index2)">
+                      <span class="img img-Truancy" v-show="Class_lists[index1].students[index2].Truancy"></span>
+                      <span class="text">设为旷课</span>
+                    </div>
+                    <div v-if="classMsg[index1].students[index2].isSign" @click="getWorks('test1')">
+                      <span class="img img-Pic"></span>
+                      <span class="text">查看照片</span>
+                    </div>
+                    <div :class="{noLog:!isLogin, Log: true}" @click="toData">
+                    <span class="img img-Data"></span>
+                    <span class="text">数据管理</span>
+                  </div>
                   </div>
                 </div>
 
@@ -48,10 +66,10 @@
           <span class="pic-title">学生头像</span>
           <img :src="imgURL"/>
           <!--<div class="pic-bottom">-->
-            <!--<div class="pic-bottom-wrap">-->
-              <!--<input type="checkbox" class="checkbox" @click="checkbox">-->
-              <!--<span>我知道了</span>-->
-            <!--</div>-->
+          <!--<div class="pic-bottom-wrap">-->
+          <!--<input type="checkbox" class="checkbox" @click="checkbox">-->
+          <!--<span>我知道了</span>-->
+          <!--</div>-->
           <!--</div>-->
 
         </div>
@@ -64,7 +82,7 @@
 
 <script>
   import {mapState} from 'vuex'
-  import { works } from "../axios/api";
+  import {works} from "../axios/api";
 
   export default {
     name: "classMsg",
@@ -81,30 +99,34 @@
         isLoading: false,
 
         // 班级信息
-        classMsg:[],
+        classMsg: [],
 
         // 图片弹窗
         showPic: false,
 
         // 图片网址
-        imgURL: ''
+        imgURL: '',
+
+
       }
     },
 
     computed: {
       ...mapState([
         'Class_lists',
+        'isLogin',
+        'To_Data',
       ])
     },
 
-    created(){
+    created() {
 
       // 创建之前先看看仓库里有啥
       console.log('创建之前先看看仓库里有啥', this.Class_lists);
 
       //如果仓库为空则将本地的班级信息赋值给仓库—-------->if的表达式有疑问，为什么不能直接为空？明明他是一个数组，输出类型却为对象
-      if(this.Class_lists.length === 0){
-        console.log(typeof(this.Class_lists));
+      if (this.Class_lists.length === 0) {
+        console.log(typeof (this.Class_lists));
         console.log('本地存储有什么：', JSON.parse(localStorage.getItem('class_lists')));
         console.log('将本地存储的班级信息赋值到仓库：');
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
@@ -116,11 +138,6 @@
       console.log('classMsg已经被赋值为：', this.classMsg);
     },
 
-
-    // updated: function () {
-    //   // console.log("消失")
-    //   this.globalClick(this.dele);
-    // },
 
     methods: {
       getWorks(username) {
@@ -134,16 +151,9 @@
         this.showPic = true;
       },
 
-      // dele(){
-      //   for (var i = 0; i < this.classMsg.length; i++){
-      //     for(var j = 0; j<this.classMsg[i].students.length;j++){
-      //       this.classMsg[i].students[j].ifshowMenu = false;
-      //     }
-      //   }
-      // },
 
       // 更改签到状态
-      isSign(index1, index2){
+      isSign(index1, index2) {
         // 先输出看看你是个啥
         console.log(this.classMsg[index1].students[index2].isSign);
 
@@ -154,11 +164,11 @@
         }, 1000);
 
         // 取反
-        this.classMsg[index1].students[index2].isSign = ! this.classMsg[index1].students[index2].isSign;
+        this.classMsg[index1].students[index2].isSign = !this.classMsg[index1].students[index2].isSign;
 
         // 未签到人数改变
         // console.log(this.classMsg[index1].student[index2].isSign);
-        if(this.classMsg[index1].students[index2].isSign === true ){
+        if (this.classMsg[index1].students[index2].isSign === true) {
           this.classMsg[index1].noSign -= 1;
         } else {
           this.classMsg[index1].noSign += 1;
@@ -197,19 +207,6 @@
         }
       },
 
-      // // 显示菜单
-      // showMenu(index1,index2){
-      //   // console.log("12321312",this.classMsg[index1].students[index2].ifshowMenu);
-      //   for (var i = 0; i < this.classMsg.length; i++){
-      //     for(var j = 0; j<this.classMsg[i].students.length;j++){
-      //       this.classMsg[i].students[j].ifshowMenu = false;
-      //     }
-      //   }
-      //   console.log("ifshowMenu:",this.classMsg[index1].students[index2].ifshowMenu)
-      //   this.classMsg[index1].students[index2].ifshowMenu = !this.classMsg[index1].students[index2].ifshowMenu;
-      //   console.log("ifshowMenu:",this.classMsg[index1].students[index2].ifshowMenu)
-      // },
-
       // 关闭弹窗
       alertDel() {
         // 警告弹窗
@@ -217,28 +214,50 @@
       },
 
       // 去“数据管理”
-      // toData() {
-      //   // if (this.Logon_status === true) {
-      //     if(this.Class_lists.length === 0) {
-      //
-      //       this.warning = '请填全信息后考勤';
-      //       this.isLoading = true;
-      //       setTimeout(() => {
-      //         this.isLoading = false;
-      //       }, 1000);
-      //
-      //       this.$router.push({name: 'home'})
-      //     } else {
-      //       this.$router.push({name: 'data'});
-      //     }
-        // } else {
-        //   this.ifAlert = true;
-        // }
-    //   },
-    },
+      toData() {
+        if (this.isLogin === true) {
+          this.$router.push({name: 'data'});
+        } else {
 
+          console.log("classMsg————To_Data：", this.To_Data);
 
+          this.$store.commit('SET_ATTENTION', {
+            ifAlert: true,
+            at_warning: '该功能需要登陆后才可使用，请先登录。',
+            noLogin: true,
+            To_Data: true,
+          });
 
+          console.log("classMsg————To_Data：", this.To_Data);
+        }
+      },
+
+      Lshow(index1, index2){
+        console.log("迟到了");
+        if(this.Class_lists[index1].students[index2].Late === true){
+          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了迟到'});
+          setTimeout(() => {
+            this.$store.commit('SET_LOADING', false);
+          }, 1000);
+        } else {
+          this.Class_lists[index1].students[index2].Late = true;
+          this.Class_lists[index1].students[index2].Truancy = false;
+        }
+      },
+      Tshow(index1, index2){
+        console.log("旷课了");
+        if(this.Class_lists[index1].students[index2].Late === false){
+          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了旷课'});
+          setTimeout(() => {
+            this.$store.commit('SET_LOADING', false);
+          }, 1000);
+        } else {
+          this.Class_lists[index1].students[index2].Late = false;
+          this.Class_lists[index1].students[index2].Truancy = true;
+        }
+      }
+
+    }
 
 
   }
@@ -310,7 +329,7 @@
     vertical-align: middle;
     cursor: pointer;
   }
-  
+
   .person-box:hover .dropdown-content {
     display: block;
   }
@@ -322,10 +341,10 @@
     cursor: pointer;
   }
 
-  .dropdown-content span {
-    margin-left: -20px;
+  .dropdown-content div {
+    position: relative;
     display: block;
-    width: 120px;
+    width: 110px;
     height: 40px;
     line-height: 40px;
     text-align: center;
@@ -335,13 +354,57 @@
     cursor: pointer;
   }
 
-  .dropdown-content span:hover {
+  .dropdown-content div:hover {
     background-color: #edeef0;
   }
 
-  button:focus {
-    outline: none;
+  .dropdown-content div span {
+    display: inline-block;
+    vertical-align: top;
   }
+
+  .dropdown-content div .img {
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    left: 10px;
+    top: 12px;
+  }
+
+  .dropdown-content div .text {
+    margin-left: 20px;
+  }
+
+  .dropdown-content div .img-Change {
+     background-image: url(../png/change.png);
+     -webkit-background-size: 100%;
+     background-size: 100%;
+   }
+
+  .dropdown-content div .img-Data {
+    background-image: url(../png/data.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Late {
+    background-image: url(../png/check.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Truancy {
+    background-image: url(../png/check.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Pic {
+    background-image: url(../png/head.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
 
   .line .notSign {
     background-color: #d82828;
@@ -358,7 +421,7 @@
     line-height: 100px;
     text-align: center;
     width: 160px;
-    background-color: rgba(66,66,66,.9);
+    background-color: rgba(66, 66, 66, .9);
     border-radius: 3%;
     color: #FFF;
     top: 240px;
@@ -401,6 +464,7 @@
     animation: alert .3s;
     width: 100%;
   }
+
   .pic-del {
     cursor: pointer;
     width: 40px;
@@ -455,6 +519,7 @@
     outline: none;
 
   }
+
   .pic-bottom-wrap span {
     padding: 0;
     margin: 0;
@@ -462,8 +527,13 @@
     vertical-align: top;
     outline: none;
   }
+
   /*====================    pic-end    ================*/
 
+
+  .noLog {
+    color: #8d8a8a;
+  }
 
   .warning-enter-active {
     transition: all 0.3s ease;

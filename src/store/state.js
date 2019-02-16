@@ -13,9 +13,19 @@ export default {
   ifAlert: false,
   noLogin: false,
   newSign: false,
+  EndSign: false,
+
+  // 结束考勤
+  ShowBlock: false,
+
+  // 想去data
+  To_Data: false,
 
   // 警告语
   warning: '',
+
+  // attendance的警告语
+  at_warning: '',
 
   // 账号密码
   account: '',

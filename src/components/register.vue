@@ -8,7 +8,7 @@
           <div class="reg-alert-logo">欢迎注册</div>
           <div class="reg-alert-tip">
             <div class="alert-tip-line1"></div>
-            <p>迅捷智能考勤系统</p>
+            <p>快签到智能考勤</p>
             <div class="alert-tip-line2"></div>
           </div>
           <form class="reg-alert-form">
@@ -21,7 +21,7 @@
 
             <input type="text" placeholder="验证码" v-model="code" class="form-input-code" maxlength="6" title="6位纯数字">
             <button class="form-input-button" @click="getCode">获取验证码</button>
-            <button class="alert-form-signIn" @click="Reg">注册</button>
+            <button class="alert-form-signIn" @click.prevent="Reg">注册</button>
           </form>
           <div class="reg-alert-bottom">
             <div class="reg-alert-bottom-wrap">
@@ -74,8 +74,8 @@
 
       // 注册
       Reg() {
-        // 昵称
-        var regName = new RegExp("^([a-z]|[A-Z]|[0-9]|_){6,}$");
+        // // 昵称
+        // var regName = new RegExp("^([a-z]|[A-Z]|[0-9]|_){6,}$");
         // 密码
         var pwd = new RegExp("^([a-z]|[A-Z]|[0-9]|.){8,}$")
         // 手机号码
@@ -84,7 +84,7 @@
         var reCode = new RegExp("^\\d{6}$");
 
         // 判断是否为空
-        if (this.name === '' || this.reg_pwd === '' || this.phone === '' || this.code === '') {
+        if (this.reg_pwd === '' || this.phone === '' || this.code === '') {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '请将信息输入完整'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
@@ -92,8 +92,6 @@
         } else {
           // 服务条款
           if (this.checkMsg) {
-            // 账号判断
-            if (regName.test(this.name)) {
               // 密码判断
               if (pwd.test(this.reg_pwd)) {
                 // 判断手机号码
@@ -131,14 +129,6 @@
                 }, 1000);
                 this.reg_pwd = '';
               }
-            } else {
-              // 账号不合理
-              this.$store.commit('SET_LOADING', {isLoading: true, warning: '昵称输入不合法！'});
-              setTimeout(() => {
-                this.$store.commit('SET_LOADING', false);
-              }, 1000);
-              this.name = '';
-            }
           } else {
             this.$store.commit('SET_LOADING', {isLoading: true, warning: '请同意服务条款！'});
             setTimeout(() => {

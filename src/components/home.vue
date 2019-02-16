@@ -114,7 +114,7 @@
 
           // 给对象中的数组赋值
           for (var j = 0; j < obj.total; j++) {
-            obj.students.push({id: j+1, isSign: false, ifshowMenu: false});
+            obj.students.push({id: j+1, isSign: false, Late: true, Truancy: false});
           }
 
           // 将对象push进入数组

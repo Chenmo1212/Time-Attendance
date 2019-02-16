@@ -37,25 +37,28 @@
             </div>
             <div class="alert-detail-content">
               <div class="detail-content-header">
-                <span>序号</span>
                 <span>学号</span>
-                <span>总缺勤次数</span>
-                <span>总考勤次数</span>
+                <span>迟到</span>
+                <span>旷课</span>
+                <span>迟到次数</span>
+                <span>旷课次数</span>
+                <span>缺勤次数&nbsp;/&nbsp;总次数</span>
+
               </div>
               <div class="detail-content-body">
                 <div class="content" v-for="(value, index) in students">
-                  <span>{{ index + 1 }}</span>
                   <span style="font-weight: bold;">{{ value.id }}</span>
+                  <span><img src="../png/check.png" alt="" v-show="value.Late"></span>
+                  <span><img src="../png/check.png" alt="" v-show="value.Truancy"></span>
                   <span>{{ text }}</span>
                   <span>{{ text }}</span>
+                  <span>{{ text }}&nbsp;/&nbsp;{{ text }}</span>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </transition>
-
     </div>
 
 
@@ -105,14 +108,10 @@
           this.count = 1;
           this.param = index;
           for(var i = 0; i < this.classMsg[index].students.length; i++){
-
-            // console.log(this.classMsg[index].students[i].isSign);
             if(this.classMsg[index].students[i].isSign === false){
-              // console.log(this.classMsg[index].students[i]);
               this.students.push(this.classMsg[index].students[i]);
             }
           }
-          // console.log(this.students);
           this.ifShow = ! this.ifShow;
 
         } else {
@@ -168,10 +167,15 @@
     background: none;
     outline: none;
     color: #2b2cff;
+    cursor: pointer;
   }
 
   .table_body .item button:active {
     color: #ff3e23;
+  }
+
+  .table_body .item button:hover {
+    text-decoration: underline;
   }
 
   /*详情弹框-begin*/
@@ -193,11 +197,11 @@
 
   .alert-detail-wrap {
     position: absolute;
-    max-width: 600px;
-    height: 450px;
+    max-width: 800px;
+    height: 600px;
     left: 50%;
     top: 10%;
-    margin-left: -300px;
+    margin-left: -400px;
     background: #fff;
     border-radius: 2px;
     -webkit-animation: alert .3s;
@@ -210,7 +214,7 @@
     margin-left: 15px;
     line-height: 30px;
   }
-  /*   ×按钮    */
+
   .alert-detail-del {
     cursor: pointer;
     width: 40px;
@@ -250,7 +254,7 @@
 
   .alert-detail-content  span {
     display: inline-block;
-    width: 24%;
+    width: 16%;
     text-align: center;
   }
 
@@ -265,8 +269,14 @@
   .alert-detail-content .detail-content-body .content {
     line-height: 45px;
     height: 45px;
+    /*line-height: 45px;*/
     border-bottom: #99C8EC solid 1px ;
     font-size: 15px;
+  }
+  .detail-content-body .content img {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
   }
 
   .detail-content-body::-webkit-scrollbar {
@@ -291,4 +301,69 @@
   .detail-leave-to {
     opacity: 0;
   }
+
+  /*webkit内核*/
+  .scroll_content::-webkit-scrollbar {
+    width:0px;
+    height:0px;
+  }
+  .scroll_content::-webkit-scrollbar-button    {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-webkit-scrollbar-track     {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-webkit-scrollbar-track-piece {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-webkit-scrollbar-thumb{
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-webkit-scrollbar-corner {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-webkit-scrollbar-resizer  {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-webkit-scrollbar {
+    width:10px;
+    height:10px;
+  }
+  /*o内核*/
+  .scroll_content .-o-scrollbar{
+    -moz-appearance: none !important;
+    background: rgba(0,255,0,0) !important;
+  }
+  .scroll_content::-o-scrollbar-button    {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-o-scrollbar-track     {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-o-scrollbar-track-piece {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-o-scrollbar-thumb{
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-o-scrollbar-corner {
+    background-color:rgba(0,0,0,0);
+  }
+  .scroll_content::-o-scrollbar-resizer  {
+    background-color:rgba(0,0,0,0);
+  }
+  /*IE10,IE11,IE12*/
+  .scroll_content{
+    -ms-scroll-chaining: chained;
+    -ms-overflow-style: none;
+    -ms-content-zooming: zoom;
+    -ms-scroll-rails: none;
+    -ms-content-zoom-limit-min: 100%;
+    -ms-content-zoom-limit-max: 500%;
+    -ms-scroll-snap-type: proximity;
+    -ms-scroll-snap-points-x: snapList(100%, 200%, 300%, 400%, 500%);
+    -ms-overflow-style: none;
+    overflow: auto;
+  }
+
 </style>

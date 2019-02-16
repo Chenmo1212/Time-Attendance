@@ -29,20 +29,33 @@ export default {
   // 更改提醒登录状态
   SET_ATTENTION(state, obj) {
     state.ifAlert = obj.ifAlert;
-    state.warning = obj.warning;
-    state.noLogin = obj.noLogin;
-    state.newSign = obj.newSign;
+    state.at_warning = obj.at_warning;
+    state.noLogin = obj.noLogin;  // 提醒登录
+    state.newSign = obj.newSign;  // 新建签到
+    state.To_Data = obj.To_Data;  // 是在想去data的路上触发登录框
+    state.EndSign = obj.EndSign;  // 结束考勤
+
+    console.log("mutation————To_Data：", state.To_Data);
   },
 
-  // 显示注册
+  // 显示登录
   SHOW_LOGIN(state, boolean) {
     state.ifShow_login_alert = boolean;
   },
 
-  // 显示登录
+  // 显示注册
   SHOW_REGISTER(state, boolean) {
     state.ifShow_reg_alert = boolean;
     console.log('ifShow_reg_alert:', state.ifShow_reg_alert);
   },
 
+  // 遮挡二维码
+  SHOW_BLOCK(state, boolean) {
+    state.ShowBlock = boolean;
+  },
+
+  // 前往数据管理
+  // TO_DATA(state, boolean){
+  //   state.To_Data = obj.To_Data;  // 是在想去data的路上触发登录框
+  // }
 }
