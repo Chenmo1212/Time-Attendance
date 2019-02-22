@@ -5,9 +5,36 @@
       <div style="height: 6.48vh;"></div>
 
       <!--信息主体-->
-      <div class="main">
-        <div class="box">
+      <div class="main" ref="main">
 
+        <!-- 右键菜单栏(鼠标移出菜单自动消失) -->
+        <div class="dropdown-content" v-show="isMenu" v-bind:class="classMenu"
+             v-bind:style="{ top: yMenu + 'px' , left: xMenu + 'px' }"
+             @mouseleave="mouseout">
+          <div @click="isSign(classIndex, studentId)" style="border: none;">
+            <span class="img img-Change"></span>
+            <span class="text">更改状态</span>
+          </div>
+          <div v-if="judgeIsSign" @click="Lshow(classIndex, studentId)">
+            <span class="img img-Late" v-if="judgeLate"></span>
+            <span class="text">设为迟到</span>
+          </div>
+          <div v-if="judgeIsSign" @click="Tshow(classIndex, studentId)">
+            <span class="img img-Truancy" v-if="judgeTruancy"></span>
+            <span class="text">设为旷课</span>
+          </div>
+          <div v-if="!judgeIsSign" @click="getWorks('test1')">
+            <span class="img img-Pic"></span>
+            <span class="text">查看照片</span>
+          </div>
+          <div :class="{noLog:!isLogin, Log: true}" @click="toData">
+            <span class="img img-Data"></span>
+            <span class="text">数据管理</span>
+          </div>
+        </div>
+
+
+        <div class="box">
           <!--获取班级个数-->
           <div v-for="(value, index1) in classMsg">
             <!--班号-->
@@ -16,39 +43,19 @@
 
               <!--获取人数-->
               <div class="line" v-for="(value,index2) in classMsg[index1].students">
-                <div class="person-box">
+                <div class="person-box" >
+                  <!--单击-->
                   <!--<div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"-->
-                  <div class="person"  title="查看详情"
+                  <!--悬浮-->
+                  <!--<div class="person" title="查看详情" @mouseover.prevent="menu" @mouseover="setIndex(index1,index2)"-->
+                  <!--右键点击-->
+                  <div class="person" title="查看详情" @contextmenu.prevent="menu" @contextmenu="setIndex(index1,index2)"
                        :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
                   </div>
-                  <div class="dropdown-content" v-show="true">
-                    <div @click="isSign(index1, index2)" style="border: none;">
-                      <span class="img img-Change"></span>
-                      <span class="text">更改状态</span>
-                    </div>
-                    <div v-if="!classMsg[index1].students[index2].isSign" @click="Lshow(index1, index2)">
-                      <span class="img img-Late" v-show="Class_lists[index1].students[index2].Late"></span>
-                      <span class="text">设为迟到</span>
-                    </div>
-                    <div v-if="!classMsg[index1].students[index2].isSign" @click="Tshow(index1, index2)">
-                      <span class="img img-Truancy" v-show="Class_lists[index1].students[index2].Truancy"></span>
-                      <span class="text">设为旷课</span>
-                    </div>
-                    <div v-if="classMsg[index1].students[index2].isSign" @click="getWorks('test1')">
-                      <span class="img img-Pic"></span>
-                      <span class="text">查看照片</span>
-                    </div>
-                    <div :class="{noLog:!isLogin, Log: true}" @click="toData">
-                    <span class="img img-Data"></span>
-                    <span class="text">数据管理</span>
-                  </div>
-                  </div>
                 </div>
-
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -107,7 +114,26 @@
         // 图片网址
         imgURL: '',
 
+        //点击的班级号
+        classIndex: '',
 
+        //点击的学号
+        studentId: '',
+
+        //菜单栏的判断
+        judgeIsSign: true,
+        judgeLate: true,
+        judgeTruancy: true,
+
+        //是否显示菜单栏
+        isMenu: false,
+
+        //菜单栏的位置
+        xMenu: '',
+        yMenu: '',
+
+        //菜单栏向上还是向下
+        classMenu: '',
       }
     },
 
@@ -140,6 +166,43 @@
 
 
     methods: {
+
+      setIndex(index1, index2) {
+        this.classIndex = index1;
+        this.studentId = index2;
+        this.judgeIsSign = !this.classMsg[index1].students[index2].isSign;
+        this.judgeLate = this.Class_lists[index1].students[index2].Late;
+        this.judgeTruancy = this.Class_lists[index1].students[index2].Truancy;
+        this.setMenu();
+      },
+      menu(e) {
+        console.log('鼠标右键单击元素开启右键菜单');
+        //详细讲解 https://blog.csdn.net/u010885548/article/details/82260576
+        this.xMenu = e.clientX; //x坐标，相对于浏览器的坐标
+        this.yMenu = e.clientY;  //同上
+        // let clientHeight =`${document.documentElement.clientHeight}`
+      },
+      setMenu() {
+        let height = 200;
+        if (!this.judgeIsSign) height -= 40;
+        if (this.$refs.main.offsetHeight + this.$refs.main.getBoundingClientRect().top - this.yMenu <= height) {
+          this.yMenu = this.yMenu - height + 30;
+          this.classMenu = "dropdown-content-negative";  // 向下排列
+        } else {
+          this.classMenu = "dropdown-content-positive";   // 向上排列
+        }
+        this.isMenu = true;
+        // console.log("height:", height)                              // 计算后的到的菜单的高度
+        // console.log("main:", this.$refs.main.offsetHeight)          // main的高度
+        // console.log("yMenu:", this.yMenu)                          // 鼠标点击处距离顶部的距离
+        // console.log(this.$refs.main.getBoundingClientRect().top)   // main距离顶部的距离
+      },
+      //鼠标移出事件
+      mouseout() {
+        this.isMenu = false;
+      },
+
+
       getWorks(username) {
         works(username).then(res => {
           console.log(res.data);
@@ -232,21 +295,23 @@
         }
       },
 
-      Lshow(index1, index2){
+      Lshow(index1, index2) {
         console.log("迟到了");
-        if(this.Class_lists[index1].students[index2].Late === true){
+        if (this.Class_lists[index1].students[index2].Late === true) {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了迟到'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
           }, 1000);
         } else {
           this.Class_lists[index1].students[index2].Late = true;
+          this.judgeLate = true;
           this.Class_lists[index1].students[index2].Truancy = false;
+          this.judgeTruancy = false;
         }
       },
-      Tshow(index1, index2){
+      Tshow(index1, index2) {
         console.log("旷课了");
-        if(this.Class_lists[index1].students[index2].Late === false){
+        if (this.Class_lists[index1].students[index2].Late === false) {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了旷课'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
@@ -254,6 +319,8 @@
         } else {
           this.Class_lists[index1].students[index2].Late = false;
           this.Class_lists[index1].students[index2].Truancy = true;
+          this.judgeLate = false;
+          this.judgeTruancy = true;
         }
       }
 
@@ -269,14 +336,14 @@
     margin: 0;
   }
 
-  /*白色部分*/
-  .white {
-    width: 53.38vw;
-    margin-top: 5.555vh;
-    margin-left: 4.166vw;
-    background-color: #fff;
-    height: 85.185vh;
-  }
+  /*!*白色部分*!*/
+  /*.white {*/
+    /*width: 53.38vw;*/
+    /*margin-top: 5.555vh;*/
+    /*margin-left: 4.166vw;*/
+    /*background-color: #fff;*/
+    /*height: 85.185vh;*/
+  /*}*/
 
   /*白色主体，固定宽高，超出显示滚动条*/
   .white .main {
@@ -330,16 +397,21 @@
     cursor: pointer;
   }
 
-  .person-box:hover .dropdown-content {
-    display: block;
-  }
-
   .dropdown-content {
-    display: none;
     position: absolute;
+    display: flex;
     font-size: 14px;
     cursor: pointer;
   }
+
+  .dropdown-content-positive {
+    flex-direction: column;
+  }
+
+  .dropdown-content-negative {
+    flex-direction: column-reverse;
+  }
+
 
   .dropdown-content div {
     position: relative;
@@ -349,7 +421,7 @@
     line-height: 40px;
     text-align: center;
     background-color: #fff;
-    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2); */
     border-top: #e7e7eb solid 1px;
     cursor: pointer;
   }
@@ -376,10 +448,10 @@
   }
 
   .dropdown-content div .img-Change {
-     background-image: url(../png/change.png);
-     -webkit-background-size: 100%;
-     background-size: 100%;
-   }
+    background-image: url(../png/change.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
 
   .dropdown-content div .img-Data {
     background-image: url(../png/data.png);

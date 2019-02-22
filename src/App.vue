@@ -31,6 +31,8 @@
 </script>
 
 <style>
+  @import "./css/normalize.css";
+  @import "./css/base.css";
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   /*-webkit-font-smoothing: antialiased;*/

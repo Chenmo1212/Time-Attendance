@@ -1,11 +1,11 @@
 <template>
-  <div id="header">
+  <div id="navVue">
     <!--导航菜单-->
 
     <div class="nav">
-      <div class="w">
+      <div class="w clearFix">
         <!--导航菜单 left begin-->
-        <ul class="fl">
+        <ul class="fl clearFix">
           <li id="logo" @click="toHome">快签到LOGO</li>
           <li :class="{ currentPage : this.$route.name === 'home' , home: true}" @click="toHome(true)">
             <i class="img-home"></i>
@@ -113,7 +113,7 @@
   import {mapState} from 'vuex'
 
   export default {
-    name: "header",
+    name: "navVue",
     data() {
       return {
         // 当前界面——导航菜单栏选中样式
@@ -136,6 +136,7 @@
         'newSign',
         'EndSign',
         'to_data',
+        'ShowBlock',
       ])
     },
     methods: {
@@ -144,13 +145,23 @@
         console.log(bool);
         if (bool) {
           if (this.$route.name === 'attendance') {
-            this.$store.commit('SET_ATTENTION', {
-              ifAlert: true,  // 提示窗口
-              at_warning: '当前正在考勤，确定要结束当前考勤重新开始签到？', // 提示语
-              noLogin: false, // 未登录时的按钮
-              newSign: true,  // 新建签到时的按钮
-            });
-            this.$store.commit('SHOW_BLOCK', false);
+            if (this.ShowBlock === false) {
+              this.$store.commit('SET_ATTENTION', {
+                ifAlert: true,  // 提示窗口
+                at_warning: '当前正在考勤，确定要结束当前考勤重新开始签到？', // 提示语
+                noLogin: false, // 未登录时的按钮
+                newSign: true,  // 新建签到时的按钮
+              });
+              this.$store.commit('SHOW_BLOCK', false);
+            } else {
+              this.$store.commit('SET_ATTENTION', {
+                ifAlert: true,  // 提示窗口
+                at_warning: '此操作将清除本次数据，确定要重新开始签到？', // 提示语
+                noLogin: false, // 未登录时的按钮
+                newSign: true,  // 新建签到时的按钮
+              });
+              // this.$router.push({name: 'home'});
+            }
           } else {
             this.$router.push({name: 'home'});
           }
@@ -298,48 +309,22 @@
 </script>
 
 <style scoped>
-  @import "../css/normalize.css";
+  @import "../css/base.css";
 
-  * {
-    padding: 0;
-    margin: 0;
-  }
-
-  .w {
-    width: 1200px;
-    margin: auto;
-  }
-
-  .fl {
-    float: left;
-  }
-
-  .fr {
-    float: right;
-  }
-
-  ul {
-    padding: 0;
-    margin: 0;
-  }
-
-  li {
-    list-style: none;
-  }
-
-  a {
-    text-decoration: none;
-    color: #000;
-  }
 
   .nav {
     height: 60px;
     line-height: 60px;
     background-color: #fff;
     border-top: #1aad19 solid 2px;
-    box-shadow: 0 1px 4px 0 rgba(238, 238, 238, 0.5);
+    box-shadow: 0 2px 4px 0 rgba(238, 238, 238, 0.5);
     font-size: 16px;
   }
+
+  .fl {
+    float: left;
+  }
+
 
   .nav .fl li {
     position: relative;
@@ -348,6 +333,10 @@
     height: 60px;
     overflow: hidden;
     cursor: pointer;
+  }
+
+  .fr {
+    float: right;
   }
 
   .nav .fr li {

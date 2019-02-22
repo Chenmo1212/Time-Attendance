@@ -1,26 +1,27 @@
 <template>
-  <div id="data_manage">
+  <div id="data_mg">
+
+    <div class="list">
+      <ul class="list-hd clearFix">
+        <li><h4>序号</h4></li>
+        <li><h4>课堂号</h4></li>
+        <li><h4>学生总人数</h4></li>
+        <li><h4>未签到人数</h4></li>
+        <li><h4>备注</h4></li>
+      </ul>
+      <ul class="list-bd" v-for="(value, index) in classMsg">
+        <li>{{ index + 1 }}</li>
+        <li>{{ value.class_id }}</li>
+        <li>{{ value.total }}</li>
+        <li class="noSign-num">{{ value.noSign }}</li>
+        <li>
+          <a @click="showDetail(index)">详情</a>
+        </li>
+      </ul>
+    </div>
+
+
     <div class="classroom">
-
-      <div class="table">
-        <div class="table_header" style="font-weight: bold;">
-          <span>序号</span>
-          <span>课堂号</span>
-          <span>学生总人数</span>
-          <span>未签到人数</span>
-          <span>备注</span>
-        </div>
-        <div class="table_body">
-          <div class="item" v-for="(value, index) in classMsg">
-            <span>{{ index + 1 }}</span>
-            <span>{{ value.class_id }}</span>
-            <span>{{ value.total }}</span>
-            <span style="color: red">{{ value.noSign }}</span>
-            <span><button @click="showDetail(index)">详情</button></span>
-          </div>
-        </div>
-      </div>
-
 
       <!--详情弹框-->
       <transition name="detail">
@@ -66,10 +67,10 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import {mapState} from 'vuex'
 
   export default {
-    name: 'data_manage',
+    name: 'data_mg',
     data() {
       return {
         param: 0,
@@ -92,9 +93,9 @@
       ])
     },
 
-    created(){
+    created() {
       // 跟classMsg一毛一样，就不再解释了
-      if(this.Class_lists.length === 0){
+      if (this.Class_lists.length === 0) {
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
       }
       this.classMsg = this.Class_lists;
@@ -102,79 +103,80 @@
 
 
     methods: {
-      showDetail(index){
+      showDetail(index) {
         if (this.count === 0) {
           console.log(this.count);
           this.count = 1;
           this.param = index;
-          for(var i = 0; i < this.classMsg[index].students.length; i++){
-            if(this.classMsg[index].students[i].isSign === false){
+          for (var i = 0; i < this.classMsg[index].students.length; i++) {
+            if (this.classMsg[index].students[i].isSign === false) {
               this.students.push(this.classMsg[index].students[i]);
             }
           }
-          this.ifShow = ! this.ifShow;
+          this.ifShow = !this.ifShow;
 
         } else {
           console.log(this.count);
-          this.ifShow = ! this.ifShow;
+          this.ifShow = !this.ifShow;
         }
 
       },
-      close(){
-        this.ifShow = ! this.ifShow;
+      close() {
+        this.ifShow = !this.ifShow;
       }
     },
   }
 </script>
 
 <style scoped>
-  .classroom{
-    height: 100%;
-    width: 100%;
-    padding: 30px 20px;
-    /*overflow-y: scroll;*/
-    box-sizing: border-box;
+  @import "../css/base.css";
+
+  .list {
+    width: 1400px;
+    margin: 0 auto;
   }
 
-  .classroom .table .table_header {
-    /*padding: 10px;*/
-    height: 40px;
+  .list-hd {
     width: 100%;
-    line-height: 40px;
-    border: #e7e7eb solid 1px;
-    background-color: #e7e7eb;
-  }
-
-  .table  span {
-    display: inline-block;
-    width: 19%;
+    margin-top: 40px;
+    height: 50px;
+    line-height: 50px;
+    background-color: #E7E7EB;
     text-align: center;
+  }
+
+  .list-hd li {
+    width: 20%;
+    float: left;
+    font-size: 16px;
+  }
+
+  .list-hd li h4 {
     font-size: 14px;
-    /*outline: none;*/
   }
 
-  .table .table_body {}
-
-  .table_body .item {
-    display: block;
-    border-bottom: #e7e7eb solid 1px;
-    height: 40px;
-    line-height: 40px;
+  .list-bd {
+    text-align: center;
   }
 
-  .table_body .item button {
-    border: none;
-    background: none;
-    outline: none;
+  .list-bd li {
+    width: 20%;
+    float: left;
+    height: 50px;
+    line-height: 50px;
+    border-bottom: 2px solid #e7e7eb;
+    font-size: 14px;
+  }
+
+  .list-bd .noSign-num {
+    color: #f00;
+  }
+
+  .list-bd li a {
     color: #2b2cff;
-    cursor: pointer;
   }
 
-  .table_body .item button:active {
-    color: #ff3e23;
-  }
-
-  .table_body .item button:hover {
+  .list-bd li a:hover {
     text-decoration: underline;
   }
 
@@ -185,8 +187,8 @@
     left: 0;
     height: 100%;
     width: 100%;
-    z-index: 100;
   }
+
   .alert-detail-bg {
     width: 100%;
     height: 100%;
@@ -252,7 +254,7 @@
     font-size: 14px;
   }
 
-  .alert-detail-content  span {
+  .alert-detail-content span {
     display: inline-block;
     width: 16%;
     text-align: center;
@@ -266,13 +268,15 @@
     right: 0;
     overflow-y: scroll;
   }
+
   .alert-detail-content .detail-content-body .content {
     line-height: 45px;
     height: 45px;
     /*line-height: 45px;*/
-    border-bottom: #99C8EC solid 1px ;
+    border-bottom: #99C8EC solid 1px;
     font-size: 15px;
   }
+
   .detail-content-body .content img {
     display: inline-block;
     height: 16px;
@@ -282,6 +286,7 @@
   .detail-content-body::-webkit-scrollbar {
     display: none;
   }
+
   /*详情弹框-end*/
 
   .detail-enter-active {
@@ -304,56 +309,71 @@
 
   /*webkit内核*/
   .scroll_content::-webkit-scrollbar {
-    width:0px;
-    height:0px;
+    width: 0px;
+    height: 0px;
   }
-  .scroll_content::-webkit-scrollbar-button    {
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-webkit-scrollbar-button {
+    background-color: rgba(0, 0, 0, 0);
   }
-  .scroll_content::-webkit-scrollbar-track     {
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0);
   }
+
   .scroll_content::-webkit-scrollbar-track-piece {
-    background-color:rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
   }
-  .scroll_content::-webkit-scrollbar-thumb{
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0);
   }
+
   .scroll_content::-webkit-scrollbar-corner {
-    background-color:rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
   }
-  .scroll_content::-webkit-scrollbar-resizer  {
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-webkit-scrollbar-resizer {
+    background-color: rgba(0, 0, 0, 0);
   }
+
   .scroll_content::-webkit-scrollbar {
-    width:10px;
-    height:10px;
+    width: 10px;
+    height: 10px;
   }
+
   /*o内核*/
-  .scroll_content .-o-scrollbar{
+  .scroll_content .-o-scrollbar {
     -moz-appearance: none !important;
-    background: rgba(0,255,0,0) !important;
+    background: rgba(0, 255, 0, 0) !important;
   }
-  .scroll_content::-o-scrollbar-button    {
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-o-scrollbar-button {
+    background-color: rgba(0, 0, 0, 0);
   }
-  .scroll_content::-o-scrollbar-track     {
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-o-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0);
   }
+
   .scroll_content::-o-scrollbar-track-piece {
-    background-color:rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
   }
-  .scroll_content::-o-scrollbar-thumb{
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-o-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0);
   }
+
   .scroll_content::-o-scrollbar-corner {
-    background-color:rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
   }
-  .scroll_content::-o-scrollbar-resizer  {
-    background-color:rgba(0,0,0,0);
+
+  .scroll_content::-o-scrollbar-resizer {
+    background-color: rgba(0, 0, 0, 0);
   }
+
   /*IE10,IE11,IE12*/
-  .scroll_content{
+  .scroll_content {
     -ms-scroll-chaining: chained;
     -ms-overflow-style: none;
     -ms-content-zooming: zoom;
