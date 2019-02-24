@@ -6,7 +6,9 @@
       <div class="w clearFix">
         <!--导航菜单 left begin-->
         <ul class="fl clearFix">
-          <li id="logo" @click="toHome">快签到LOGO</li>
+          <li id="logo" @click="toHome">
+            <img src="../png/LOGO2.png" alt="">
+            <span>快签到考勤</span>
           <li :class="{ currentPage : this.$route.name === 'home' , home: true}" @click="toHome(true)">
             <i class="img-home"></i>
             <a href="#">新建签到</a>
@@ -230,6 +232,7 @@
         // setTimeout(() => {
         //   this.$store.commit('SET_LOADING', false);
         // }, 1000);
+        // this.$router.push({name: 'introduction'});
         this.showIntro = true;
       },
 
@@ -249,10 +252,12 @@
         }, 1000);
 
         this.$router.push({name: 'home'});
+        // 清除缓存
         window.onbeforeunload = function (e) {
           var storage = window.localStorage;
           storage.clear();
         };
+        // 自动刷新
         window.location.reload();
       },
 
@@ -393,9 +398,26 @@
   /*LOGO样式*/
   .fl #logo {
     margin-left: 0;
-    font-weight: bold;
+    width: 150px;
+    font-size: 18px;
+    /*font-weight: ;*/
   }
 
+  .fl #logo img {
+    width: 50px;
+    height: 50px;
+    margin-top: 5px ;
+  }
+  .fl #logo a {
+    margin-left: 60px;
+    color: red;
+  }
+  #logo span {
+    line-height: 60px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
   /*===============================新建签到=========================*/
   /*子菜单当前页面————新建签到*/
   .fl .currentPage .img-home {
@@ -481,6 +503,7 @@
 
   .fr a {
     display: block;
+    z-index: 999;
   }
 
   .spacer {
@@ -521,6 +544,7 @@
 
   .dd-m {
     display: none;
+    z-index: 9999;
     position: absolute;
     margin-top: -10px;
     left: -20px;

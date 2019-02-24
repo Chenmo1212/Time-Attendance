@@ -44,7 +44,7 @@
 
           <!-- 右键菜单栏(鼠标移出菜单自动消失) -->
           <div class="dropdown-content" v-show="isMenu" v-bind:class="classMenu"
-               v-bind:style="{ top: yMenu - 50 + 'px' , left: xMenu - 50 + 'px' }"
+               v-bind:style="{ top: yMenu -50 + 'px' , left: xMenu -50+ 'px' }"
                @mouseleave="mouseout">
             <div @click="isSign(classIndex, studentId)" style="border: none;">
               <span class="img img-Change"></span>
@@ -73,7 +73,7 @@
             <!--获取班级个数-->
             <div v-for="(value, index1) in classMsg">
               <!--班号-->
-              <div class="class_head">{{classMsg[index1].class_id}}</div>
+              <div class="class_head">{{classMsg[index1].class_id}}班</div>
               <div class="class_body">
 
                 <!--获取人数-->
@@ -441,6 +441,9 @@
           this.judgeTruancy = true;
         }
       },
+    },
+    updated: function () {
+      this.globalClick(this.mouseout);
     }
   }
 </script>
@@ -635,7 +638,7 @@
     margin-top: 38px;
     float: right;
     width: 850px;
-    height: 700px;
+    height: 650px;
     background-color: #fff;
     overflow: hidden;
   }
@@ -647,12 +650,12 @@
     margin: 50px auto;
     /*background-color: #F6F8F9;*/
     overflow-y: auto;
-    border: #e7e7eb solid 2px;
+
   }
 
   /*跟随班级长度弹性边框*/
   .main .box {
-
+    border: #e7e7eb solid 2px;
   }
 
   /*班级班号*/
@@ -660,8 +663,9 @@
     background-color: #e7e7eb;
     height: 25px;
     line-height: 25px;
+    font-weight: 700;
     padding-left: 18px;
-    margin-bottom: 0.926vh;
+    margin-bottom: 5px;
   }
 
   /*!*班级人数所在盒子*!*/

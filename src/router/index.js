@@ -8,6 +8,7 @@ import notfound from '@/components/notfound'
 import data_manager from '@/components/data_manager'
 import login from '@/components/login'
 import register from '@/components/register'
+import introduction from '@/components/introduction'
 
 // 安装路由插件
 Vue.use(Router);
@@ -54,6 +55,13 @@ export default new Router({
       path: '/data',
       name: 'data',
       component: data_manager,
+    },
+
+    // 使用说明界面
+    {
+      path: '/introduction',
+      name: 'introduction',
+      component: introduction,
     },
 
     // 404页面

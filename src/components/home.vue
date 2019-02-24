@@ -5,8 +5,8 @@
       <h4>Tip:默认一次仅支持一个班级进行考勤，多个班级考勤时请点击“+”增加考勤班级</h4>
       <button class="sign-bt" @click="toAttendance">开始签到</button>
       <div class="change">
-        <button class="add" @click="addList"><img src="../png/add.png" alt=""></button>
-        <button class="reduce" @click="reduceList(list)"><img src="../png/reduce.png" alt=""></button>
+        <button class="add" @click="addList" title="添加班级"><img src="../png/add.png" alt=""></button>
+        <button class="reduce" @click="reduceList(list)" title="减少班级"><img src="../png/reduce.png" alt=""></button>
       </div>
       <div class="msg">
         <ul>

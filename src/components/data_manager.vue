@@ -79,7 +79,7 @@
         ifShow: false,
         // 开关变量
         count: 0,
-        text: '-',
+        text: '—',
 
         classMsg: [],
         students: [],
