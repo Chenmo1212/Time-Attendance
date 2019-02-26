@@ -1,13 +1,13 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: 'https://1.cust.edu.cn/shufa/',
+  baseURL: 'https://1.cust.edu.cn/quickauth/',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
   timeout: 10 * 1000
-})
+});
 
 //
 // //设置拦截器

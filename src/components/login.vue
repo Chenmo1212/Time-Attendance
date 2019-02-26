@@ -33,11 +33,14 @@
 
 <script>
   import {mapState} from 'vuex';
+  import {login} from "../axios/api";
 
   export default {
     name: "login",
     data() {
       return {
+        // 是否弹出登录窗口
+        // ifShow_login_alert: true,
 
         // 登录时的输入框
         login_acc: '',
@@ -72,6 +75,7 @@
         this.$store.commit('SHOW_LOGIN', false);
         this.$store.commit('SET_ATTENTION', false);
         console.log('ifShow_login_alert:', this.ifShow_login_alert);
+        // this.ifShow_login_alert = false;
       },
 
       // 登录界面
@@ -86,32 +90,47 @@
           this.login_acc = '';
           this.login_pwd = '';
         } else {
+          //去登陆
+          login(this.login_acc, this.login_pwd).then(result => {
+            console.log(result);
+            // console.log(result.data.body.authkey);
+            if (result.data.ok) {
+              console.log('登陆成功');
+              localStorage.setItem('result.data.body.key', result.data.body.key);
+              this.store.$state.isLogin = true;
+              console.log(this.store.state.isLogin);
+              alert('登陆成功');
+              //返回首页
+              this.$router.push({name: 'home'})
+            } else {
+              console.log('登陆失败')
+              alert('登陆失败')
+            }
+            //向全局抛出key
+          }).catch(error => {
+            console.log(error.result)
+          });
 
-          // 登录成功提醒
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '登录成功'});
+          // this.$store.commit('SET_LOADING', {isLoading:true, warning:'账号密码不得为空'});
+          // this.$store.commit('SET_LOADING', {isLoading:true, warning:'登录成功'});
+          // this.$store.commit('SET_LOADING', {isLoading: true, warning: '账号密码不得为空'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
           }, 1000);
-
-          // 更改登录状态
           this.$store.commit('SET_LOGIN', true);
-          console.log("isLogin：", this.isLogin);
-          console.log("ifShow_reg_alert：", this.ifShow_reg_alert);
-          console.log("login————To_Data：", this.To_Data);
+          console.log("isLogin", this.isLogin);
+          this.$store.commit('SET_ATTENTION', false);
 
-          if (this.Class_lists.length === 0) {          // 如果在home点击，即无数据，则返回home
+          if (this.Class_lists.length === 0) {
             this.$router.push({name: 'home'});
-          } else if (this.To_Data) {                      // 如果是想去data的时候提醒登录，则去data
+          } else {
             this.$router.push({name: 'data'});
-          } else {                                      // 如果在attendance登录，则返回attendance
-            this.$router.push({name: 'attendance'});
           }
           this.$store.commit('SHOW_LOGIN', false);
           this.$store.commit('SET_ATTENTION', false);
-
-          this.$store.commit('SET_ATTENTION', false);
         }
       },
+
 
       // 找回密码
       lost_login_pwd() {

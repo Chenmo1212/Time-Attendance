@@ -119,6 +119,26 @@
 </template>
 
 <script>
+<<<<<<< HEAD
+  // 引入子组件
+  import qr_code from './qr_code';
+  import classMsg from './classMsg';
+export default {
+    name: "Attendance",
+    data() {
+      return {
+        
+      }
+    },
+    methods: {
+
+    },
+
+    // 声明子组件
+    components: {
+      qr_code,
+      classMsg,
+=======
   import {mapState} from 'vuex';
   import {works} from "../axios/api";
 
@@ -498,11 +518,44 @@
     },
     updated: function () {
       this.globalClick(this.mouseout);
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     }
   }
 </script>
 
 <style scoped>
+<<<<<<< HEAD
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    /*background: #f6f8f9;*/
+  }
+  .box {
+    height: 90.74vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+  }
+  .left {
+    width: 38.2%;
+    /*background-color: #aaa;*/
+  }
+  .right {
+    width: 61.8%;
+    /*background-color: #ddd;*/
+  }
+
+  /*.left, .right{*/
+    /*height: 95vw;*/
+    /*display: inline-block;*/
+    /*vertical-align: top;*/
+  /*}*/
+  /*.left {*/
+    /*background-color: #aaa;*/
+    /*width: 49vw;*/
+  /*}*/
+=======
   .mw {
     margin: 2px auto;
     width: 1400px;
@@ -896,4 +949,5 @@
   /*====================    pic-end    ================*/
 
 
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 </style>

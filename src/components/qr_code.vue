@@ -42,19 +42,57 @@
       </div>
     </div>
 
-  </div>
+<<<<<<< HEAD
+    <!--提示弹窗-->
+    <transition name="warning">
+      <div class="onLoad" v-if="isLoading === true"><span>{{ warning }}</span></div>
+<<<<<<< HEAD
+<script type="text/javascript">
+  import {mapState} from 'vuex';
+  import authenticator from 'otplib/authenticator';
+  import crypto from 'crypto';
 
-</template>
-
+=======
 <script>
   import {mapState} from 'vuex';
   import {get_code} from '../axios/api';
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
   export default {
     name: "qr_code",
     data() {
       return {
         count: '',
+<<<<<<< HEAD
+        showBlock: false,
+        seed: '',
+      }
+    },
+    computed: {
+      ...mapState([
+        'isLoading',
+        'warning',
+      ])
+    },
+    created() {
+      //请求接口
+      // this.set_time();
+      //计时器
+      this.forClock()
+
+    },
+    mounted() {
+      //循环二维码
+      this.loopCode()
+    },
+    methods: {
+      //结束考勤
+      endSign() {
+        if (this.showBlock === false) {
+          this.showBlock = true;
+        } else {
+          this.$store.commit('SET_LOADING', {isLoading: true, warning: '考勤已结束'});
+=======
       }
     },
     computed:{
@@ -300,12 +338,58 @@
           });
         } else {
           this.$store.commit('SET_LOADING', { isLoading: true, warning: '考勤已结束'});
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
           }, 1000);
         }
 
       },
+<<<<<<< HEAD
+      //返回页面
+      return_home() {
+        this.$router.push({name: 'home'})
+      },
+
+      //循环调用otp组件并请求相应二维码
+      loopCode() {
+        const result = localStorage.getItem('seed');
+        console.log('qrCode', result);
+        authenticator.options = {
+          crypto: crypto,
+          step: 7,
+          window: 1
+        };
+        const secret = result;
+        let qrcode = new QRCode('qrcode', {
+          width: 328,
+          height: 328,
+          colorDark: "#000",
+          colorLight: "#fff",
+          correctLevel: QRCode.CorrectLevel.H
+
+        });
+        setInterval(function () {
+          //获取id
+          const id = localStorage.getItem('res.data.body.id');
+          const token = authenticator.generate(secret); // 556443
+          console.log('token', token);
+          const url = `https://192.168.1.145:8081?val=${token}&id=${id}`;
+          qrcode.makeCode(url);
+        }, 100);
+      },
+
+
+      //循环计时器60次
+      forClock() {
+        for (let i = 1; i < 600; i++) {
+          this.clock()
+        }
+      },
+      //数字计时器
+      clock() {
+        const TIME_COUNT = 7;
+=======
       // return_home() {
       //   this.$router.push({name: 'home'})
       // },
@@ -320,6 +404,7 @@
       //数字计时器
       clock() {
         const TIME_COUNT = 10;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         if (!this.timer) {
           this.count = TIME_COUNT;
           this.show = false;
@@ -336,6 +421,40 @@
             }
           }, 1000)
         }
+<<<<<<< HEAD
+      }
+
+
+
+      // //定时器//获取二维码
+      // set_time() {
+      //   //首次获取二维码
+      //   get_code().then(result => {
+      //     //  push二维码
+      //   }).catch(error => {
+      //     console.log(error.response)
+      //   });
+      //   //最大请求60次
+      //   let stry = '012345678901234567890123456789012345678901234567890123456789';
+      //   for (let j = 0; j < stry.length; j++) {
+      //
+      //     (function () {
+      //       let t = j + 1;
+      //       let tyy = stry[j];
+      //       setTimeout(function () {
+      //         console.log(tyy + 'code');
+      //         // 第二次及以后的二维码
+      //         get_code().then(result => {
+      //           //  push二维码
+      //         }).catch(error => {
+      //           console.log(error.response)
+      //         })
+      //       }, 10 * 1000 * t)
+      //     })()
+      //   }
+      // }
+      ,
+=======
       },
 
 
@@ -368,12 +487,16 @@
           })()
         }
       },
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     },
   }
 </script>
 
 <style scoped>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   * {
     padding: 0;
     margin: 0;
@@ -386,6 +509,10 @@
     width: 110%;
     /*background-color: #aaa;*/
   }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .return {
     width: 40px;
     height: 40px;
@@ -432,6 +559,10 @@
     margin-top: 5vh;
     font-size: 18px
   }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .box_body {
     position: relative;
     margin-top: 5vh;
@@ -440,10 +571,19 @@
 
   .box_body .code {
     display: inline-block;
+<<<<<<< HEAD
+    margin-bottom: 0;
+    /*border: #e7e9ef 3px solid;*/
+  }
+
+  #qrcode {
+    display: inline-block;
+=======
     width: 20vw;
     height: 40vh;
     margin-bottom: 0;
     border: #e7e9ef 3px solid;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   }
 
   .progress_bar {
@@ -473,10 +613,17 @@
     left: 0;
     width: 300px;
     box-shadow: 0 0 10px 1px rgba(75, 173, 67, 0.4);
+<<<<<<< HEAD
+    animation: content 7s infinite;
+    -moz-animation: content 7s infinite; /* Firefox */
+    -webkit-animation: content 7s infinite; /* Safari and Chrome */
+    -o-animation: content 7s infinite; /* Opera */
+=======
     animation: content 10s infinite;
     -moz-animation: content 10s infinite; /* Firefox */
     -webkit-animation: content 10s infinite; /* Safari and Chrome */
     -o-animation: content 10s infinite; /* Opera */
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   }
 
   /* Firefox */
@@ -523,17 +670,28 @@
     -webkit-animation-name: popIn;
     animation-name: popIn;
   }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .block .block_header p {
     font-size: 20px;
     margin-top: 10vh;
     margin-left: 60px;
   }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .block_body {
     margin-top: 20vh;
     margin-left: 60px;
   }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   @-webkit-keyframes popIn {
     0% {
       -webkit-transform: scale3d(0, 0, 0);
@@ -572,6 +730,59 @@
     }
   }
 
+<<<<<<< HEAD
+  /*@-webkit-keyframes fadeIn {*/
+  /*0% {*/
+  /*opacity: 0; !*初始状态 透明度为0*!*/
+  /*}*/
+  /*50% {*/
+  /*opacity: 0; !*中间状态 透明度为0*!*/
+  /*}*/
+  /*100% {*/
+  /*opacity: 1; !*结尾状态 透明度为1*!*/
+  /*}*/
+  /*}*/
+
+  /*.block {*/
+  /*display: inline-block;*/
+  /*width: 18.75vw;*/
+  /*height: 37.696vh;*/
+  /*margin-bottom: 0;*/
+  /*border: #e7e9ef 3px solid;*/
+  /*-webkit-animation-name: fadeIn; !*动画名称*!*/
+  /*-webkit-animation-duration: 10s; !*动画持续时间*!*/
+  /*-webkit-animation-iteration-count: 1; !*动画次数*!*/
+  /*-webkit-animation-delay: 0s; !*延迟时间*!*/
+  /*}*/
+
+  /*@-webkit-keyframes fadeInOut {*/
+  /*0% {*/
+  /*opacity:0;*/
+  /*}*/
+  /*25% {*/
+  /*opacity:1;*/
+  /*}*/
+  /*50% {*/
+  /*opacity: 1;*/
+  /*}*/
+  /*75% {*/
+  /*opacity:1;*/
+  /*}*/
+  /*}*/
+  /*.code {*/
+  /*display: inline-block;*/
+  /*width: 18.75vw;*/
+  /*height: 37.696vh;*/
+  /*margin-bottom: 0;*/
+  /*border: #e7e9ef 3px solid;*/
+  /*position:absolute;*/
+  /*-webkit-animation-name: fadeInOut;*/
+  /*-webkit-animation-timing-function: ease-in-out;*/
+  /*-webkit-animation-iteration-count: infinite;*/
+  /*-webkit-animation-duration: 12s; !*动画持续时间*!*/
+  /*-webkit-animation-direction: alternate;*/
+  /*}*/
+=======
   canvas {
     position: absolute;
     top: 0;
@@ -579,4 +790,5 @@
     z-index: 9999;
   }
 
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 </style>

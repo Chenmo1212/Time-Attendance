@@ -166,16 +166,17 @@
 
 <script>
   import {mapState} from 'vuex'
+  // import {} from "../axios/api";
+
 
   export default {
-    name: "navVue",
+    name: "header",
     data() {
       return {
         // 当前界面——导航菜单栏选中样式
         currentPage: false,
 
         showIntro: false,
-
       }
     },
     computed: {
@@ -308,6 +309,8 @@
       toIntro() {
         // this.$store.commit('SET_LOADING', {isLoading: true, warning: '程序猿很懒还没写'});
         // setTimeout(() => {
+        //   this.$store.commit('SET_LOADING', false);
+        // }, 1000);
         //   console.log("123");
         // }, 1000);
         // this.$router.push({name: 'introduction'});

@@ -37,6 +37,7 @@
 
 <script>
   import {mapState} from 'vuex';
+  import  { regTo } from "../axios/api";
 
   export default {
     name: "register",
@@ -72,10 +73,10 @@
         // this.ifShow_reg_alert = false;
       },
 
-      // 注册
+      // 注册  正则貌似都有问题 把注册直接连到接口了
       Reg() {
-        // // 昵称
-        // var regName = new RegExp("^([a-z]|[A-Z]|[0-9]|_){6,}$");
+        // 昵称
+        var regName = new RegExp("^([a-z]|[A-Z]|[0-9]|_){6,}$");
         // 密码
         var pwd = new RegExp("^([a-z]|[A-Z]|[0-9]|.){8,}$")
         // 手机号码
@@ -84,7 +85,7 @@
         var reCode = new RegExp("^\\d{6}$");
 
         // 判断是否为空
-        if (this.reg_pwd === '' || this.phone === '' || this.code === '') {
+        if (this.name === '' || this.reg_pwd === '' || this.phone === '' || this.code === '') {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '请将信息输入完整'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
@@ -92,45 +93,63 @@
         } else {
           // 服务条款
           if (this.checkMsg) {
-            // 密码判断
-            if (pwd.test(this.reg_pwd)) {
-              // 判断手机号码
-              if (reg_phone.test(this.phone)) {
-                // 判断验证码
-                if (reCode.test(this.code)) {
-                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '注册成功,请登录'});
-                  setTimeout(() => {
-                    this.$store.commit('SET_LOADING', false);
-                  }, 1000);
-                  this.ifShow_reg_alert = false;
-                  this.$store.commit('SET_ACCOUNT', {account: this.phone, password: this.reg_pwd});
-                  this.$router.push({name: 'login'});
+            // 账号判断
+            // if (regName.test(this.name)) {
+              // 密码判断
+              if (pwd.test(this.reg_pwd)) {
+                // 判断手机号码
+                if (reg_phone.test(this.phone)) {
+                  // 判断验证码
+                  if (reCode.test(this.code)) {
+
+
+                    console.log('到达接口');
+                    this.getRegTo(this.phone,this.login_pwd);
+                    console.log('注册');
+
+
+                    this.$store.commit('SET_LOADING', {isLoading: true, warning: '注册成功,请登录'});
+                    setTimeout(() => {
+                      this.$store.commit('SET_LOADING', false);
+                    }, 1000);
+                    this.ifShow_reg_alert = false;
+                    this.$store.commit('SET_ACCOUNT', {account: this.phone, password: this.reg_pwd});
+                    this.$router.push({name: 'login'});
+                  } else {
+                    // 验证码不合理
+                    this.$store.commit('SET_LOADING', {isLoading: true, warning: '验证码输入不合法！'});
+                    setTimeout(() => {
+                      this.$store.commit('SET_LOADING', false);
+                    }, 1000);
+                    this.code = '';
+                  }
                 } else {
-                  // 验证码不合理
-                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '验证码输入不合法！'});
+                  // 手机号码不合理
+                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '手机输入不合法！'});
                   setTimeout(() => {
                     this.$store.commit('SET_LOADING', false);
                   }, 1000);
-                  this.code = '';
+                  this.phone = '';
                 }
               } else {
-                // 手机号码不合理
-                this.$store.commit('SET_LOADING', {isLoading: true, warning: '手机输入不合法！'});
+                // 密码不合理
+                this.$store.commit('SET_LOADING', {isLoading: true, warning: '密码输入不合法！'});
                 setTimeout(() => {
                   this.$store.commit('SET_LOADING', false);
                 }, 1000);
-                this.phone = '';
+                this.reg_pwd = '';
               }
-            } else {
-              // 密码不合理
-              this.$store.commit('SET_LOADING', {isLoading: true, warning: '密码输入不合法！'});
+            // } else {
+            //   // 账号不合理
+            //   this.$store.commit('SET_LOADING', {isLoading: true, warning: '昵称输入不合法！'});
               setTimeout(() => {
                 this.$store.commit('SET_LOADING', false);
               }, 1000);
-              this.reg_pwd = '';
+              this.name = '';
             }
-          } else {
+           else {
             this.$store.commit('SET_LOADING', {isLoading: true, warning: '请同意服务条款！'});
+
             setTimeout(() => {
               this.$store.commit('SET_LOADING', false);
             }, 1000);
@@ -138,6 +157,19 @@
         }
 
 
+      },
+      //注册接口  bug
+      getRegTo(phone,login_pwd){
+        regTo(phone,login_pwd).then(result => {
+          console.log(result)
+          // if(result.status==200){
+          //   console.log('注册成功')
+          // }else(
+          //   console.log('注册失败')
+          // )
+        }).catch(error => {
+          console.log(error)
+        })
       },
 
       // 获取验证码

@@ -27,63 +27,52 @@
 </template>
 
 <script>
+
+  import {postList} from '../axios/api'
   import {mapState} from 'vuex'
 
   export default {
     name: 'app',
     data() {
       return {
-        lists: [
-          {
-            class_id: '',
-            input1: '1',
-            input2: '',
-            student: [],
-          },
-        ],
+        lists: [],
 
-        class_lists: []
+        class_lists: [],
+        post_list: []
       }
     },
-    computed: {
-      ...mapState([
-        'ShowBlock',
-      ])
+    mounted() {
+      this.addList();
     },
     methods: {
-
       // 本地存储
       saveList() {
         localStorage.setItem("lists", JSON.stringify(this.lists));
       },
 
+      restoreList() {
+        return localStorage.getItem('lists');
+      },
+
       // 增加班级
       addList() {
         this.lists.push({input1: '1', input2: '', total: ''});
-        localStorage.setItem("lists", JSON.stringify(this.lists));
-        // saveList();
+        this.saveList();
       },
+
 
       // 减少班级
       reduceList(list) {
-        if (this.lists.length === 1) {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '不能再减少了'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-        } else {
+        if (this.lists.length === 1)
+          alert("只有一个了，不能再减少了");
+        else {
           this.lists.splice(this.lists.length - 1, 1);
-          localStorage.setItem("lists", JSON.stringify(this.lists));
-          // saveList();
+          this.saveList();
         }
       },
 
-
       // 跳转开始签到界面
       toAttendance() {
-
-        this.$store.commit('SHOW_BLOCK', false);
-
         // 班级的个数
         console.log('班级的个数:', this.lists.length);
         for (var i = 0; i < this.lists.length; i++) {
@@ -93,19 +82,18 @@
             setTimeout(() => {
               this.$store.commit('SET_LOADING', false);
             }, 1000);
-
             return 0;
           }
 
-
           // 新建一个对象，用来push进入数组
-          var obj = {students: []};
+          const obj = {students: []};
+          const list = lists[i];
 
           // 班级学号赋值
-          obj.class_id = this.lists[i].class_id;
+          obj.class_id = this.class_id;
 
           // 班级人数总数
-          obj.total = this.lists[i].input2 - this.lists[i].input1 + 1;
+          obj.total = list.input2 - list.input1 + 1;
 
           // 班级未签到人数
           obj.noSign = obj.total;
@@ -128,6 +116,48 @@
         localStorage.setItem("class_lists", JSON.stringify(this.class_lists));
 
         // 本地存储
+        this.saveList()
+        console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
+
+        //post信息
+        this.getList()
+
+        // 跳转路由
+        this.$router.push({name: 'attendance'});
+      },
+
+      //整理班级信息post
+      getList() {
+
+        let a = {}
+        //遍历
+        for (let i = 0; i < this.class_lists.length; i++) {
+          let gid = this.class_lists[i].class_id;
+          a[gid] = {from: 1, to: this.class_lists[i].students.length, exclude: []}
+        }
+
+        //a为给后端的数组
+        console.log('给后端的array（）');
+        console.log(a);
+        this.postListTo(a)
+
+      },
+
+      getAuthKey() {
+        return localStorage.getItem('result.data.body.key');
+      },
+
+      //postArray接口
+      async postListTo(a) {
+        const result = this.getAuthKey();
+        console.log('key', result);
+        const res = await postList(a);
+        console.log('home新建', res);
+        console.log('seed', res.data.body.seed);
+        localStorage.setItem('seed', res.data.body.seed);
+        localStorage.setItem('res.data.body.id', res.data.body.id);
+      }
+
         localStorage.setItem("lists", JSON.stringify(this.lists));
         console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
 
