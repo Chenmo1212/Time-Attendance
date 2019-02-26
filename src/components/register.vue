@@ -4,16 +4,16 @@
       <div class="reg-alert" v-show="ifShow_reg_alert">
         <div class="reg-alert-bg"></div>
         <div class="reg-alert-wrap">
-          <span class="reg-alert-del" title="关闭" @click="alertDel"></span>
+          <i class="reg-alert-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
           <div class="reg-alert-logo">欢迎注册</div>
           <div class="reg-alert-tip">
             <div class="alert-tip-line1"></div>
-            <p>迅捷智能考勤系统</p>
+            <p>快签到智能考勤</p>
             <div class="alert-tip-line2"></div>
           </div>
           <form class="reg-alert-form">
-            <input type="text" v-model="name" placeholder="昵称" class="reg-form-input" title="用户名长度至少6位,且由字母、数字、下划线组成"
-                   @keyup.enter="Reg">
+            <!--<input type="text" v-model="name" placeholder="昵称" class="reg-form-input" title="用户名长度至少6位,且由字母、数字、下划线组成"-->
+            <!--@keyup.enter="Reg">-->
             <input type="text" title="该手机号可用于找回密码" v-model="phone" placeholder="手机号码（账号）" class="reg-form-input"
                    maxlength="11" @keyup.enter="Reg">
             <input type="password" v-model="reg_pwd" placeholder="密码" class="reg-form-input" maxlength="16"
@@ -21,7 +21,7 @@
 
             <input type="text" placeholder="验证码" v-model="code" class="form-input-code" maxlength="6" title="6位纯数字">
             <button class="form-input-button" @click="getCode">获取验证码</button>
-            <button class="alert-form-signIn" @click="Reg" >注册</button>
+            <button class="alert-form-signIn" @click.prevent="Reg">注册</button>
           </form>
           <div class="reg-alert-bottom">
             <div class="reg-alert-bottom-wrap">
@@ -244,14 +244,10 @@
 
   .reg-alert-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 101;
+    float: right;
+    padding: 4px;
+    font-size: 30px;
+    color: #8d8a8a;
   }
 
   .reg-alert-logo {
@@ -349,6 +345,10 @@
     margin-top: 20px;
   }
 
+  .form-input-button:hover, .alert-form-signIn:hover {
+    background-color: #2F9833;
+  }
+
   .alert-form-signIn {
     width: 272px;
     height: 36px;
@@ -381,15 +381,11 @@
 
   .reg-alert-bottom-wrap .checkbox {
     padding: 0;
-    /*margin: 0;*/
-    /*height: 20px;*/
-    /*width: 20px;*/
-    margin-top: 3px;
+    margin-top: 1px;
     background-color: #aaa;
     cursor: pointer;
     vertical-align: top;
     outline: none;
-
   }
 
   .reg-alert-bottom-wrap span {

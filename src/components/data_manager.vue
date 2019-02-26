@@ -1,26 +1,27 @@
 <template>
-  <div id="data_manage">
+  <div id="data_mg">
+
+    <div class="list">
+      <ul class="list-hd clearFix">
+        <li><h4>序号</h4></li>
+        <li><h4>课堂号</h4></li>
+        <li><h4>学生总人数</h4></li>
+        <li><h4>未签到人数</h4></li>
+        <li><h4>备注</h4></li>
+      </ul>
+      <ul class="list-bd" v-for="(value, index) in classMsg">
+        <li>{{ index + 1 }}</li>
+        <li>{{ value.class_id }}</li>
+        <li>{{ value.total }}</li>
+        <li class="noSign-num">{{ value.noSign }}</li>
+        <li>
+          <a @click="showDetail(index)">详情</a>
+        </li>
+      </ul>
+    </div>
+
+
     <div class="classroom">
-
-      <div class="table">
-        <div class="table_header" style="font-weight: bold;">
-          <span>序号</span>
-          <span>课堂号</span>
-          <span>学生总人数</span>
-          <span>未签到人数</span>
-          <span>备注</span>
-        </div>
-        <div class="table_body">
-          <div class="item" v-for="(value, index) in classMsg">
-            <span>{{ index + 1 }}</span>
-            <span>{{ value.class_id }}</span>
-            <span>{{ value.total }}</span>
-            <span style="color: red">{{ value.noSign }}</span>
-            <span><button @click="showDetail(index)">详情</button></span>
-          </div>
-        </div>
-      </div>
-
 
       <!--详情弹框-->
       <transition name="detail">
@@ -37,6 +38,7 @@
             </div>
             <div class="alert-detail-content">
               <div class="detail-content-header">
+<<<<<<< HEAD
                 <span>序号</span>
                 <span>学号</span>
                 <span>总缺勤次数</span>
@@ -48,14 +50,37 @@
                   <span style="font-weight: bold;">{{ value.id }}</span>
                   <span>{{ text }}</span>
                   <span>{{ text }}</span>
+=======
+                <span>学号</span>
+                <span>迟到</span>
+                <span>旷课</span>
+                <span>迟到次数</span>
+                <span>旷课次数</span>
+                <span>缺勤次数&nbsp;/&nbsp;总次数</span>
+
+              </div>
+              <div class="detail-content-body">
+                <div class="content" v-for="(value, index) in students">
+                  <span style="font-weight: bold;">{{ value.id }}</span>
+                  <span><img src="../png/check.png" alt="" v-show="value.Late"></span>
+                  <span><img src="../png/check.png" alt="" v-show="value.Truancy"></span>
+                  <span>{{ text }}</span>
+                  <span>{{ text }}</span>
+                  <span>{{ text }}&nbsp;/&nbsp;{{ text }}</span>
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
                 </div>
               </div>
             </div>
           </div>
+<<<<<<< HEAD
 
         </div>
       </transition>
 
+=======
+        </div>
+      </transition>
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     </div>
 
 
@@ -63,11 +88,18 @@
 </template>
 
 <script>
+<<<<<<< HEAD
   import { mapState } from 'vuex'
   import {getchickin} from "../axios/api";
 
   export default {
     name: 'data_manage',
+=======
+  import {mapState} from 'vuex'
+
+  export default {
+    name: 'data_mg',
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     data() {
       return {
         param: 0,
@@ -76,7 +108,11 @@
         ifShow: false,
         // 开关变量
         count: 0,
+<<<<<<< HEAD
         text: '-',
+=======
+        text: '—',
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
         classMsg: [],
         students: [],
@@ -90,6 +126,7 @@
       ])
     },
 
+<<<<<<< HEAD
     created(){
       // 跟classMsg一毛一样，就不再解释了
       if(this.Class_lists.length === 0){
@@ -98,15 +135,28 @@
       this.classMsg = this.Class_lists;
       //获取历史考勤状态信息
       this.getChickinTo()
+=======
+    created() {
+      // 跟classMsg一毛一样，就不再解释了
+      if (this.Class_lists.length === 0) {
+        this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
+      }
+      this.classMsg = this.Class_lists;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     },
 
 
     methods: {
+<<<<<<< HEAD
       showDetail(index){
+=======
+      showDetail(index) {
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         if (this.count === 0) {
           console.log(this.count);
           this.count = 1;
           this.param = index;
+<<<<<<< HEAD
           for(var i = 0; i < this.classMsg[index].students.length; i++){
 
             // console.log(this.classMsg[index].students[i].isSign);
@@ -138,12 +188,30 @@
 
       close(){
         this.ifShow = ! this.ifShow;
+=======
+          for (var i = 0; i < this.classMsg[index].students.length; i++) {
+            if (this.classMsg[index].students[i].isSign === false) {
+              this.students.push(this.classMsg[index].students[i]);
+            }
+          }
+          this.ifShow = !this.ifShow;
+
+        } else {
+          console.log(this.count);
+          this.ifShow = !this.ifShow;
+        }
+
+      },
+      close() {
+        this.ifShow = !this.ifShow;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       }
     },
   }
 </script>
 
 <style scoped>
+<<<<<<< HEAD
   .classroom{
     height: 100%;
     width: 100%;
@@ -187,6 +255,57 @@
 
   .table_body .item button:active {
     color: #ff3e23;
+=======
+  @import "../css/base.css";
+
+  .list {
+    width: 1400px;
+    margin: 0 auto;
+  }
+
+  .list-hd {
+    width: 100%;
+    margin-top: 40px;
+    height: 50px;
+    line-height: 50px;
+    background-color: #E7E7EB;
+    text-align: center;
+  }
+
+  .list-hd li {
+    width: 20%;
+    float: left;
+    font-size: 16px;
+  }
+
+  .list-hd li h4 {
+    font-size: 14px;
+  }
+
+  .list-bd {
+    text-align: center;
+  }
+
+  .list-bd li {
+    width: 20%;
+    float: left;
+    height: 50px;
+    line-height: 50px;
+    border-bottom: 2px solid #e7e7eb;
+    font-size: 14px;
+  }
+
+  .list-bd .noSign-num {
+    color: #f00;
+  }
+
+  .list-bd li a {
+    color: #2b2cff;
+  }
+
+  .list-bd li a:hover {
+    text-decoration: underline;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   }
 
   /*详情弹框-begin*/
@@ -196,8 +315,13 @@
     left: 0;
     height: 100%;
     width: 100%;
+<<<<<<< HEAD
     z-index: 100;
   }
+=======
+  }
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .alert-detail-bg {
     width: 100%;
     height: 100%;
@@ -208,11 +332,19 @@
 
   .alert-detail-wrap {
     position: absolute;
+<<<<<<< HEAD
     max-width: 600px;
     height: 450px;
     left: 50%;
     top: 10%;
     margin-left: -300px;
+=======
+    max-width: 800px;
+    height: 600px;
+    left: 50%;
+    top: 10%;
+    margin-left: -400px;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     background: #fff;
     border-radius: 2px;
     -webkit-animation: alert .3s;
@@ -225,7 +357,11 @@
     margin-left: 15px;
     line-height: 30px;
   }
+<<<<<<< HEAD
   /*   ×按钮    */
+=======
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .alert-detail-del {
     cursor: pointer;
     width: 40px;
@@ -263,9 +399,15 @@
     font-size: 14px;
   }
 
+<<<<<<< HEAD
   .alert-detail-content  span {
     display: inline-block;
     width: 24%;
+=======
+  .alert-detail-content span {
+    display: inline-block;
+    width: 16%;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     text-align: center;
   }
 
@@ -277,6 +419,7 @@
     right: 0;
     overflow-y: scroll;
   }
+<<<<<<< HEAD
   .alert-detail-content .detail-content-body .content {
     line-height: 45px;
     height: 45px;
@@ -287,6 +430,27 @@
   .detail-content-body::-webkit-scrollbar {
     display: none;
   }
+=======
+
+  .alert-detail-content .detail-content-body .content {
+    line-height: 45px;
+    height: 45px;
+    /*line-height: 45px;*/
+    border-bottom: #99C8EC solid 1px;
+    font-size: 15px;
+  }
+
+  .detail-content-body .content img {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+  }
+
+  .detail-content-body::-webkit-scrollbar {
+    display: none;
+  }
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   /*详情弹框-end*/
 
   .detail-enter-active {
@@ -306,4 +470,87 @@
   .detail-leave-to {
     opacity: 0;
   }
+<<<<<<< HEAD
+=======
+
+  /*webkit内核*/
+  .scroll_content::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  .scroll_content::-webkit-scrollbar-button {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-webkit-scrollbar-track-piece {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-webkit-scrollbar-corner {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-webkit-scrollbar-resizer {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  /*o内核*/
+  .scroll_content .-o-scrollbar {
+    -moz-appearance: none !important;
+    background: rgba(0, 255, 0, 0) !important;
+  }
+
+  .scroll_content::-o-scrollbar-button {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-o-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-o-scrollbar-track-piece {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-o-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-o-scrollbar-corner {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .scroll_content::-o-scrollbar-resizer {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  /*IE10,IE11,IE12*/
+  .scroll_content {
+    -ms-scroll-chaining: chained;
+    -ms-overflow-style: none;
+    -ms-content-zooming: zoom;
+    -ms-scroll-rails: none;
+    -ms-content-zoom-limit-min: 100%;
+    -ms-content-zoom-limit-max: 500%;
+    -ms-scroll-snap-type: proximity;
+    -ms-scroll-snap-points-x: snapList(100%, 200%, 300%, 400%, 500%);
+    -ms-overflow-style: none;
+    overflow: auto;
+  }
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 </style>

@@ -1,0 +1,124 @@
+/*去掉一大堆的预设begin*/
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.w {
+  width: 1300px;
+  margin: auto;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+
+ul, li {
+  padding: 0;
+  margin: 0;
+  list-style: none
+}
+
+ol, li {
+  padding: 0;
+  margin: 0;
+  list-style: none
+}
+
+h1, h2, h3, h4, h5, h6, p, li, label, td, th {
+  cursor: text;
+}
+
+a:link, a:visited, a:hover, a:active {
+  cursor: pointer;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+  color: #333;
+}
+
+div, p, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, form, input, select, textarea, table, td {
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+
+area {
+  outline: none;
+}
+
+img {
+  border: 0;
+  outline: none;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+a {
+  font-family: "微软雅黑", Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/*a:hover {*/
+/*text-decoration: none;*/
+/*}*/
+
+.clearFix:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+.clearFix {
+  zoom: 1;
+}
+
+button {
+  border: none;
+  background: none;
+  outline: none;
+  cursor: pointer;
+}
+
+button:focus {
+  outline: none;
+}
+
+input {
+  border: none;
+  outline: none;
+}
+@font-face {
+  font-family: 'iconfont';
+  src: url('../fonts/iconfont.eot');
+  src: url('../fonts/iconfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/iconfont.woff2') format('woff2'),
+  url('../fonts/iconfont.woff') format('woff'),
+  url('../fonts/iconfont.ttf') format('truetype'),
+  url('../fonts/iconfont.svg#iconfont') format('svg');
+}
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/*去掉一大堆预设end*/

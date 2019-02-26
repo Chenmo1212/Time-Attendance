@@ -1,45 +1,57 @@
 <template>
-  <div id="header">
+  <div id="navVue">
     <!--导航菜单-->
+
     <div class="nav">
-
-      <div id="logo" @click="toHome">
-        <span>智能考勤系统</span>
-      </div>
-      <div :class="{ currentPage: this.$route.name === 'home' , home: true}" @click="toHome(true)">
-        <div class="img"></div>
-        <span>新建签到</span>
-      </div>
-      <div :class="{ currentPage: this.$route.name === 'attendance' , attendance: true}" @click="toAttendance">
-        <div class="img"></div>
-        <span>考勤界面</span>
-      </div>
-      <div :class="isLogin ? {currentPage: this.$route.name === 'data', data: true} : 'noLogin'" @click="toData">
-        <div class="img"></div>
-        <span>数据管理</span>
-      </div>
-
-      <!--管理员-->
-      <div class="manager">
-        <div class="dropdown">
-          <span class="img"></span>
-          <span class="text">设置</span>
-        </div>
-        <div class="dropdown-content">
-          <span @click="toIntro" style="border: none;">使用说明</span>
-          <!--<span v-if="isLogin" @click="toMang">账号详情</span>-->
-          <span @click="del" class="del" title="删除本地数据">清除缓存</span>
-          <span v-if="isLogin" @click="toLogout">退出登录</span>
-        </div>
-      </div>
-
-      <!--登录-->
-      <div class="login" v-if="!isLogin">
-        <button class="login_button" @click="toLogin()">登录</button>
-      </div>
-      <!--注销-->
-      <div class="logout" v-if="isLogin">
-        <button class="logout-button" @click="toLogout">注销</button>
+      <div class="w clearFix">
+        <!--导航菜单 left begin-->
+        <ul class="fl clearFix">
+          <li id="logo" @click="toHome">
+            <img src="../png/LOGO2.png" alt="">
+            <span>快签到考勤</span>
+          </li>
+          <li :class="{ currentPage : this.$route.name === 'home'}" @click="toHome(true)">
+            <i class="iconfont img img-home">&#xe639;</i>
+            新建签到
+          </li>
+          <li :class="{ currentPage: this.$route.name === 'attendance'}" @click="toAttendance">
+            <i class="iconfont img img-attendance">&#xe605;</i>
+            考勤界面
+          </li>
+          <li :class="isLogin ? {currentPage: this.$route.name === 'data', img_data: true} : 'noLogin'" @click="toData">
+            <i class="iconfont img img-data">&#xe61b;</i>
+            数据管理
+          </li>
+        </ul>
+        <!--导航菜单 left end-->
+        <!--导航菜单 right begin -->
+        <ul class="fr">
+          <li class="dd"><!--dropdown-->
+            <div class="set">
+              <i class="iconfont img">&#xe604;</i>
+              设置
+              <i class="dd-icon"></i>
+            </div>
+            <div class="dd-m"><!--dropdown-menu-->
+              <div class="dd-m1" @click="toIntro">
+                <i class="iconfont img">&#xe66a;</i>
+                使用说明
+              </div>
+              <div class="dd-m2" @click="del">
+                <i class="iconfont img">&#xe600;</i>
+                清除缓存
+              </div>
+            </div>
+          </li>
+          <li class="spacer"></li>
+          <li class="log login" v-if="!isLogin">
+            <a href="#" @click="toLogin()">登录</a>
+          </li>
+          <li class="log logout" v-if="isLogin">
+            <a href="#" @click="toLogout">注销</a>
+          </li>
+        </ul>
+        <!--导航菜单 right begin-->
       </div>
 
     </div><!--nav-->
@@ -49,18 +61,33 @@
       <div class="alert" v-show="ifAlert">
         <div class="alert-bg"></div>
         <div class="alert-wrap">
-          <span class="alert-del" title="关闭" @click="alertDel"></span>
-          <span class="alert-title">警告</span>
-          <div class="alert-tip">{{ warning }}</div>
+          <i class="alert-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
+          <span class="alert-title">提示</span>
+          <div class="alert-tip">{{ at_warning }}</div>
+
+          <!--提醒登录-->
           <div class="alert-button" v-show="noLogin">
+            <button class="alert-toLogin" @click="toData_Login">去登录</button>
             <button class="alert-cancel" @click="alertDel">取消</button>
-            <button class="alert-toLogin" @click="toLogin">去登录</button>
-          </div>
-          <div class="alert-button" v-show="newSign">
-            <button class="alert-cancel" @click="alertDel">取消</button>
-            <button class="alert-toLogin" @click="toHome(false)">确定</button>
           </div>
 
+          <!--新建签到-->
+          <div class="alert-button" v-show="newSign">
+            <button class="alert-toLogin" @click="toHome(false)">确定</button>
+            <button class="alert-cancel" @click="alertDel">取消</button>
+          </div>
+
+          <!--结束考勤-->
+          <div class="alert-button" v-show="EndSign">
+            <button class="alert-toLogin" @click="showBlock(true)">确定</button>
+            <button class="alert-cancel" @click="alertDel">取消</button>
+          </div>
+
+          <!--F11-->
+          <div class="alert-button" v-show="full_screen">
+            <button class="alert-toLogin" @click="fullScreen">确定</button>
+            <button class="alert-cancel" @click="alertDel">取消</button>
+          </div>
         </div>
       </div>
     </transition>
@@ -74,20 +101,62 @@
       <div class="intro" v-show="showIntro">
         <div class="intro-bg"></div>
         <div class="intro-wrap">
-          <span class="intro-del" title="关闭" @click="alertDel"></span>
+          <i class="intro-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
           <span class="intro-title">使用说明</span>
-          <!--<div class="alert-tip">-->
-          <!--&lt;!&ndash;该功能需要登陆后才可使用 <br> 请先登录&ndash;&gt;-->
-          <!--该功能需要登陆后才可使用，请先登录。-->
-          <!--</div>-->
-          <!--<button class="alert-toLogin" @click="toLogin">去登录</button>-->
-          <div class="intro-bottom">
-            <div class="intro-bottom-wrap">
-              <input type="checkbox" class="checkbox" @click="checkbox">
-              <span>我知道了</span>
-            </div>
-          </div>
+          <div class="content">
+            <p>
+              快签到智能考勤是一款专注于课堂考勤的产品，旨在实现高效考勤，拒绝学生替考勤、替课等行为，帮助老师实现考勤数据管理，提高老师的工作效率。<br>
+              为了更好地帮助新手使用该产品，小编特意写了一份新手指南向新手们介绍本产品是使用方法。
+            </p>
+            <br>
+            <p class="text1">如果仅为临时使用，不保存考勤数据，无需注册登录；<br>
+              如果需要进行考勤数据管理，请先注册登录。<br>
+              注：数据管理可以记录每一位学生的考勤情况。<br>
 
+              未登录状态考勤
+            </p>
+            <br>
+            <p>
+              请按照文字提示填写考勤班级与考勤学生的学号，如果多个班级进行考勤，请点击加号添加考勤班级，之后点击“开始签到”跳转到“考勤界面”开始考勤。
+            </p><br>
+            <img src="../png/intro/1.png" alt="">
+            <br>
+            <br>
+            <p>右击右侧的按钮，可以更改学生的考勤状态。红色代表未到学生，绿色代表已到学生。<br>
+              （注：如果右击后菜单出现错位，请将尺寸设置到正确比例，缩放等不正当操作将会做成错位）<br>
+              <br>
+              点击“结束考勤”按钮，可结束当前考勤。
+            </p><br>
+            <img src="../png/intro/2.png" alt="">
+            <br><br>
+            <p class="text1">
+              登录状态考勤 <br>
+              方式一：先登录再考勤 <br>
+            </p>
+            <p>未注册用户需注册后再使用，点击“登录”，在弹出的窗口中点击“点击注册”</p><br>
+            <img src="../png/intro/3.png" alt="">
+            <img src="../png/intro/4.png" alt="">
+            <br><br>
+            <p>点击“登录”按钮进行登录，登录后可以保存考勤数据</p><br>
+            <img src="../png/intro/5.png" alt="">
+            <br><br>
+            <p>考勤操作同未登录状态的操作相同。 <br>
+              <br>
+              点击“数据考勤”可以查看考勤结果，点击“详情”可以查看缺勤同学的具体情况，为老师算平时分数提供准确依据。
+            </p><br>
+            <img src="../png/intro/6.png" alt="">
+            <img src="../png/intro/7.png" alt="">
+            <br>
+            <br>
+            <p class="text1">方式二：先考勤再登录</p> <br>
+            <p>考勤操作同未登录状态时的操作相同，未登录时“数据管理”呈灰色状态。若需要保留考勤数据，请先点击“登录”。</p><br>
+            <img src="../png/intro/8.png" alt="">
+            <br><br>
+            <p>登录后“数据管理”成黑色状态，点击后跳转至该页面，单击“详情”即可查看缺勤学生的详细信息。</p>
+            <br>
+            <img src="../png/intro/9.png" alt="">
+            <img src="../png/intro/10.png" alt="">
+          </div>
         </div>
       </div>
     </transition>
@@ -116,24 +185,64 @@
         'isLoading',
         'isLogin',
         'warning',
+        'at_warning',
         'ifAlert',
         'ifShow_login_alert',
         'ifShow_reg_alert',
         'noLogin',
         'newSign',
+        'EndSign',
+        'full_screen',
+        'to_data',
+        'ShowBlock',
+        'full',
       ])
     },
     methods: {
+
+      fullScreen() {
+        this.alertDel();
+        this.$store.commit('SET_FULL', true);
+        var el = document.getElementById('app');
+        var rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullScreen,
+          wscript;
+
+        if (typeof rfs != "undefined" && rfs) {
+          rfs.call(el);
+          return;
+        }
+
+        if (typeof window.ActiveXObject != "undefined") {
+          wscript = new ActiveXObject("WScript.Shell");
+          if (wscript) {
+            wscript.SendKeys("{F11}");
+          }
+        }
+
+      },
+
       // 去“新建签到”
       toHome(bool) {
+        console.log(bool);
         if (bool) {
           if (this.$route.name === 'attendance') {
-            this.$store.commit('SET_ATTENTION', {
-              ifAlert: true,
-              warning: '当前正在考勤，确定要结束当前考勤重新开始签到？',
-              noLogin: false,
-              newSign: true
-            });
+            if (this.ShowBlock === false) {
+              this.$store.commit('SET_ATTENTION', {
+                ifAlert: true,  // 提示窗口
+                at_warning: '当前正在考勤，确定要结束当前考勤重新开始签到？', // 提示语
+                noLogin: false, // 未登录时的按钮
+                newSign: true,  // 新建签到时的按钮
+              });
+              this.$store.commit('SHOW_BLOCK', false);
+            } else {
+              this.$store.commit('SET_ATTENTION', {
+                ifAlert: true,  // 提示窗口
+                at_warning: '此操作将清除本次数据，确定要重新开始签到？', // 提示语
+                noLogin: false, // 未登录时的按钮
+                newSign: true,  // 新建签到时的按钮
+              });
+              // this.$router.push({name: 'home'});
+            }
           } else {
             this.$router.push({name: 'home'});
           }
@@ -164,24 +273,34 @@
 
       // 去“数据管理”
       toData() {
+        console.log("当前登录状态为：", this.isLogin);
         if (this.isLogin === true) {
+          console.log("已经登录");
+          console.log("仓库中是否有数据：");
           if (this.Class_lists.length === 0) {
 
+            console.log("仓库中没有数据");
+            console.log("弹出警告框");
             this.$store.commit('SET_LOADING', {isLoading: true, warning: '请填全信息开始签到'});
             setTimeout(() => {
               this.$store.commit('SET_LOADING', false);
             }, 1000);
-
+            console.log("返回主页");
             this.$router.push({name: 'home'})
           } else {
+            console.log("仓库中有数据");
+            console.log("前往数据管理");
             this.$router.push({name: 'data'});
           }
         } else {
+          console.log("尚未登录");
+          console.log("弹出提示框，提醒登录");
           this.$store.commit('SET_ATTENTION', {
             ifAlert: true,
-            warning: '该功能需要登陆后才可使用，请先登录。',
+            at_warning: '该功能需要登陆后才可使用，请先登录。',
             noLogin: true,
-            newSign: false
+            newSign: false,
+            to_data: true,
           });
         }
       },
@@ -192,6 +311,9 @@
         // setTimeout(() => {
         //   this.$store.commit('SET_LOADING', false);
         // }, 1000);
+        //   console.log("123");
+        // }, 1000);
+        // this.$router.push({name: 'introduction'});
         this.showIntro = true;
       },
 
@@ -211,10 +333,12 @@
         }, 1000);
 
         this.$router.push({name: 'home'});
+        // 清除缓存
         window.onbeforeunload = function (e) {
           var storage = window.localStorage;
           storage.clear();
         };
+        // 自动刷新
         window.location.reload();
       },
 
@@ -227,13 +351,18 @@
 
       // 去登录
       toLogin() {
-        console.log("去登录");
-        // this.$store.commit('SET_ATTENTION', false);
+        this.$store.commit('SET_ATTENTION', false);
         this.$store.commit('SHOW_LOGIN', true);
-        // this.$store.commit('SHOW_REGISTER', true);
-        // console.log('ifShow_reg_alert:', this.ifShow_reg_alert);
-        console.log('ifShow_login_alert:', this.ifShow_login_alert);
-        // this.$router.push({name:'login'});
+        console.log('弹出登录窗口', this.ifShow_login_alert);
+      },
+
+      // 去登录
+      toData_Login() {
+        console.log("点击“去登录”");
+        this.$store.commit('SET_ATTENTION', {ifAlert: false, To_Data: true});
+        // this.$store.commit('TO_DATA', true);
+        this.$store.commit('SHOW_LOGIN', true);
+        console.log('弹出登录窗口', this.ifShow_login_alert);
       },
 
       // 去注册
@@ -257,157 +386,199 @@
         this.$store.commit('SET_LOGIN', false);
       },
 
+      showBlock() {
+        this.$store.commit('SHOW_BLOCK', true);
+        this.$store.commit('SET_ATTENTION', false);
+      }
     }
   }
 </script>
 
 <style scoped>
-  /*====================    nav-begin     ================*/
+  @import "../css/base.css";
+
   .nav {
-    height: 7vh;
-    width: 100vw;
+    height: 60px;
+    line-height: 60px;
     background-color: #fff;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     border-top: #1aad19 solid 2px;
-    box-shadow: 0 1px 4px 0 rgba(238, 238, 238, 0.5);
-  }
-
-  .nav #logo,
-  .nav .home,
-  .nav .attendance,
-  .nav .data {
-    height: 6.5vh;
-    /*background-color: #aaa;*/
-    line-height: 6.5vh;
-    text-align: center;
-    /*min-width: 100px;*/
-    /*max-width: 120px;*/
-    width: 6.25vw;
-    margin-left: 50px;
-    /*font-weight: bold;*/
-    /*font-size: 14px;*/
-    cursor: pointer;
-  }
-
-  .nav #logo {
-    margin-left: 6.771vw;
-    margin-right: 2.604vw;
-    font-weight: bold;
-  }
-
-  .nav button {
-    /*width: 100px;*/
-    border: none;
-    background: none;
+    box-shadow: 0 2px 4px 0 rgba(238, 238, 238, 0.5);
     font-size: 16px;
   }
 
-  .nav .home:hover,
-  .nav .attendance:hover,
-  .nav .data:hover,
-  .nav .currentPage {
-    border-bottom: #1aad19 solid 2px;
-    color: #1aad19;
-    background-color: #edeef0;
+  .fl {
+    float: left;
   }
 
-
-  /*manager-begin*/
-  .nav .manager {
-    position: absolute;
-    right: 4vw;
-    height: 48px;
-    width: 6.25vw;
-    text-align: center;
-    /*font-size: 14px;*/
+  .nav li {
+    position: relative;
+    float: left;
+    cursor: pointer;
   }
 
-  .manager:hover .dropdown-content {
-    display: block;
+  .nav .fl li {
+    margin-left: 80px;
+    height: 60px;
   }
 
+  .fr {
+    float: right;
+  }
 
-  .manager .dropdown span {
+  i {
     display: inline-block;
     vertical-align: top;
   }
 
-  .manager .dropdown .img {
-    margin-top: 11px;
-    height: 26px;
-    width: 26px;
-    background-image: url(../png/set.svg);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .manager .dropdown .text {
-    margin-top: 9px;
-    height: 30px;
-    line-height: 30px;
-    margin-left: 5px;
-    padding-right: 15px;
-    border-right: #e7e7eb solid 1px;
-  }
-
-  .manager .dropdown-content {
-    position: relative;
-    display: none;
-    font-size: 14px;
-  }
-
-  .manager .dropdown-content span {
-    display: block;
-    width: 120px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    background-color: #fff;
-    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
-    border-top: 1px solid #e7e7eb;
-  }
-
-  .manager .dropdown-content span:hover {
+  /*子菜单当前页面样式*/
+  .currentPage {
+    border-bottom: #1aad19 solid 2px;
     background-color: #edeef0;
-  }
-
-  .login,
-  .logout {
-    position: absolute;
-    right: 10px;
-    max-width: 50px;
-    max-height: 60px;
-    vertical-align: top;
-    /*background-color: #aaa;*/
-  }
-
-  .login:active .login_button,
-  .logout:active .logout-button {
+    padding: 0 10px;
     color: #1aad19;
   }
 
-  .login_button,
-  .logout-button {
-    height: 48px;
-    width: 3vw;
-    outline: none;
+  .fl li:nth-child(2):hover {
+    color: #1aad19;
   }
 
-  .logout-button:focus {
-    outline: none;
+  .fl li:nth-child(3):hover {
+    color: #1aad19;
   }
 
-  .noLogin {
-    color: #8d8a8a;
-    height: 6.5vh;
-    line-height: 6.5vh;
+  /*LOGO样式*/
+  .fl #logo {
+    margin-left: 0;
+    width: 150px;
+    font-size: 18px;
+    /*font-weight: ;*/
+  }
+
+  .fl #logo img {
+    width: 50px;
+    height: 50px;
+    margin-top: 5px;
+  }
+
+  .fl #logo a {
+    margin-left: 60px;
+    color: red;
+  }
+
+  #logo span {
+    line-height: 60px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  /*===============================数据管理=========================*/
+
+  .img_data:hover {
+    color: #1aad19;
+  }
+
+  /* 导航菜单 left end */
+
+
+  /* 导航菜单 right begin */
+
+
+  .fr a {
+    display: block;
+    z-index: 999;
+  }
+
+  .spacer {
+    width: 1px;
+    height: 30px;
+    background-color: #ccc;
+    margin: 15px 15px 0;
+  }
+
+  /*动画开始*/
+  .dd:hover .dd-m div {
+    opacity: 1;
+    transform: none;
+  }
+
+  .dd-m div:nth-child(1) {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -webkit-transition-delay: 250ms;
+  }
+
+  .dd-m div:nth-child(2) {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -webkit-transition-delay: 200ms;
+  }
+
+  .dd:hover .dd-m div:nth-child(1) {
+    -webkit-transition-delay: 0s;
+  }
+
+  .dd:hover .dd-m div:nth-child(2) {
+    -webkit-transition-delay: 50ms;
+  }
+
+  .dd-m {
+    display: block;
+    z-index: 999;
+    position: absolute;
+    margin-top: -10px;
+    left: -20px;
+    width: 120px;
+    -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -webkit-perspective: 400px;
+    max-height: 0;
+  }
+
+  .dd-m div {
+    position: relative;
+    height: 40px;
+    line-height: 40px;
+    background-color: #fff;
     text-align: center;
-    width: 100px;
-    margin-left: 50px;
-    cursor: pointer;
+    opacity: 0;
+    transform: rotateY(90deg);
+    transition: opacity .4s, transform .5s;
   }
+
+  /*动画结束*/
+
+  .dd-m div:hover {
+    background-color: #edeef0;
+  }
+
+  .img-set {
+    background: url(../png/set.svg);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+    left: 0;
+  }
+
+  .img-set {
+    background: url(../png/set.svg);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+    left: 0;
+  }
+
+  .dd-m {
+    font-size: 14px;
+  }
+
+  .dd-m1 i {
+    font-size: 20px;
+  }
+
+
+  .fr log a:active {
+    color: #1aad19;
+  }
+
+  /* 导航菜单 right end */
+
 
   /*====================    nav-end     ================*/
 
@@ -425,14 +596,10 @@
 
   .alert-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 9999;
+    float: right;
+    padding: 4px;
+    font-size: 30px;
+    color: #8d8a8a;
   }
 
   .alert button {
@@ -496,20 +663,32 @@
   }
 
   .alert-button button {
+    border: 1px solid #e7e7eb;
     height: 30px;
-    width: 100px;
+    width: 90px;
     margin-left: 20px;
     margin-right: 20px;
     border-radius: 5px;
-    background-color: #a7a7a7;
-    color: white;
+    background-color: #fff;
+    color: #9b9b9e;
     outline: none;
     cursor: pointer;
   }
 
-  .alert-button .alert-toLogin {
-    background-color: #1aad19;
+  .alert-button .alert-cancel:hover {
+    background-color: #e7e7eb;
   }
+
+  .alert-button .alert-toLogin {
+    background-color: #44b549;
+    color: #fff;
+  }
+
+  .alert-button .alert-toLogin:hover {
+    background-color: #2f9833;
+    color: #fff;
+  }
+
 
   /*====================    alert-end     ================*/
 
@@ -550,14 +729,8 @@
 
   .intro-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 9999;
+    float: right;
+    font-size: 30px;
   }
 
   .intro-title {
@@ -565,42 +738,26 @@
     /*width: 60px;*/
     height: 40px;
     display: block;
-    margin: 50px auto;
+    margin: 50px auto 20px;
     z-index: 101;
     font-size: 26px;
     text-align: center;
   }
 
-  .intro-bottom {
-    display: block;
-    text-align: center;
-    width: 100%;
-    margin-top: 10px;
-    padding-bottom: 30px;
-    font-size: 12px;
-    position: absolute;
-    bottom: 30px;
+  .content {
+    font-size: 16px;
+    margin: 0 100px;
+    height: 500px;
+    overflow: hidden;
+    overflow-y: auto;
   }
 
-  .intro-bottom-wrap {
-    width: 272px;
-    display: inline-block;
-    position: absolute;
-    left: 50%;
-    margin-left: -150px;
+  .content img {
+    width: 1000px;
   }
 
-  .intro-bottom-wrap .checkbox {
-    padding: 0;
-    /*margin: 0;*/
-    /*height: 20px;*/
-    /*width: 20px;*/
-    margin-top: 3px;
-    background-color: #aaa;
-    cursor: pointer;
-    vertical-align: top;
-    outline: none;
-
+  .content .text1 {
+    font-weight: 700;
   }
 
   .intro-bottom-wrap span {

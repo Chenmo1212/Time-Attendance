@@ -16,6 +16,7 @@
 
               <!--获取人数-->
               <div class="line" v-for="(value,index2) in classMsg[index1].students">
+<<<<<<< HEAD
                 <div class="person-box">
                   <div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"
                        :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
@@ -33,6 +34,21 @@
             </div>
           </div>
 
+=======
+                <div class="person-box" >
+                  <!--单击-->
+                  <!--<div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"-->
+                  <!--悬浮-->
+                  <!--<div class="person" title="查看详情" @mouseover.prevent="menu" @mouseover="setIndex(index1,index2)"-->
+                  <!--右键点击-->
+                  <div class="person" title="查看详情" @contextmenu.prevent="menu" @contextmenu="setIndex(index1,index2)"
+                       :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         </div>
       </div>
     </div>
@@ -66,7 +82,11 @@
 
 <script>
   import {mapState} from 'vuex'
+<<<<<<< HEAD
   import {getchick, anonymous, getnonchick} from "../axios/api";
+=======
+  import {works} from "../axios/api";
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
   export default {
     name: "classMsg",
@@ -89,13 +109,43 @@
         showPic: false,
 
         // 图片网址
+<<<<<<< HEAD
         imgURL: ''
+=======
+        imgURL: '',
+
+        //点击的班级号
+        classIndex: '',
+
+        //点击的学号
+        studentId: '',
+
+        //菜单栏的判断
+        judgeIsSign: true,
+        judgeLate: true,
+        judgeTruancy: true,
+
+        //是否显示菜单栏
+        isMenu: false,
+
+        //菜单栏的位置
+        xMenu: '',
+        yMenu: '',
+
+        //菜单栏向上还是向下
+        classMenu: '',
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       }
     },
 
     computed: {
       ...mapState([
         'Class_lists',
+<<<<<<< HEAD
+=======
+        'isLogin',
+        'To_Data',
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       ])
     },
 
@@ -106,7 +156,11 @@
 
       //如果仓库为空则将本地的班级信息赋值给仓库—-------->if的表达式有疑问，为什么不能直接为空？明明他是一个数组，输出类型却为对象
       if (this.Class_lists.length === 0) {
+<<<<<<< HEAD
         console.log(typeof(this.Class_lists));
+=======
+        console.log(typeof (this.Class_lists));
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         console.log('本地存储有什么：', JSON.parse(localStorage.getItem('class_lists')));
         console.log('将本地存储的班级信息赋值到仓库：');
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
@@ -117,6 +171,7 @@
       this.classMsg = this.Class_lists;
       console.log('classMsg已经被赋值为：', this.classMsg);
     },
+<<<<<<< HEAD
     mounted() {
       //判断登陆状态
       if (this.$store.state.isLogin) {
@@ -150,10 +205,68 @@
       //     }
       //   }
       // },
+=======
+
+
+    methods: {
+
+      setIndex(index1, index2) {
+        this.classIndex = index1;
+        this.studentId = index2;
+        this.judgeIsSign = !this.classMsg[index1].students[index2].isSign;
+        this.judgeLate = this.Class_lists[index1].students[index2].Late;
+        this.judgeTruancy = this.Class_lists[index1].students[index2].Truancy;
+        this.setMenu();
+      },
+      menu(e) {
+        console.log('鼠标右键单击元素开启右键菜单');
+        //详细讲解 https://blog.csdn.net/u010885548/article/details/82260576
+        this.xMenu = e.clientX; //x坐标，相对于浏览器的坐标
+        this.yMenu = e.clientY;  //同上
+        // let clientHeight =`${document.documentElement.clientHeight}`
+      },
+      setMenu() {
+        let height = 200;
+        if (!this.judgeIsSign) height -= 40;
+        if (this.$refs.main.offsetHeight + this.$refs.main.getBoundingClientRect().top - this.yMenu <= height) {
+          this.yMenu = this.yMenu - height + 30;
+          this.classMenu = "dropdown-content-negative";  // 向下排列
+        } else {
+          this.classMenu = "dropdown-content-positive";   // 向上排列
+        }
+        this.isMenu = true;
+        // console.log("height:", height)                              // 计算后的到的菜单的高度
+        // console.log("main:", this.$refs.main.offsetHeight)          // main的高度
+        // console.log("yMenu:", this.yMenu)                          // 鼠标点击处距离顶部的距离
+        // console.log(this.$refs.main.getBoundingClientRect().top)   // main距离顶部的距离
+      },
+      //鼠标移出事件
+      mouseout() {
+        this.isMenu = false;
+      },
+
+
+      getWorks(username) {
+        works(username).then(res => {
+          console.log(res.data);
+          this.imgURL = 'https://1.cust.edu.cn/shufa/' + res.data.data[0].pieces[0].image.url
+        }).catch(error => {
+          console.log(error.response)
+        })
+
+        this.showPic = true;
+      },
+
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       // 更改签到状态
       isSign(index1, index2) {
         // 先输出看看你是个啥
         console.log(this.classMsg[index1].students[index2].isSign);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         this.warning = '更改成功';
         this.isLoading = true;
         setTimeout(() => {
@@ -177,6 +290,7 @@
       },
 
 
+<<<<<<< HEAD
       //获取学生 （未登录）
       chickNunStu() {
         const id = localStorage.getItem('res.data.body.id');
@@ -265,6 +379,90 @@
       // }
       //   },
     },
+=======
+      // 定时器//获取学生五秒请求一次
+      set_time() {
+
+        //最大请求120次
+        let stry = '012345678901234567890' +
+          '123456789012345678901234567890' +
+          '123456789012345678901234567890' +
+          '123456789012345678901234567890123456789';
+        for (let j = 0; j < stry.length; j++) {
+
+          (function () {
+            let t = j + 1;
+            let tyy = stry[j];
+            setTimeout(function () {
+              console.log(tyy + "stu");
+              get_stu().then(result => {
+
+                //这里将接受的数据遍历后逐个将index1/2 传入下一条函数
+                this.classMsg[index1].student[index2].push({isSign: true})
+              }).catch(error => {
+                console.log(error.response)
+              })
+            }, 5 * 1000 * t)
+          })()
+        }
+      },
+
+      // 关闭弹窗
+      alertDel() {
+        // 警告弹窗
+        this.showPic = false;
+      },
+
+      // 去“数据管理”
+      toData() {
+        if (this.isLogin === true) {
+          this.$router.push({name: 'data'});
+        } else {
+
+          console.log("classMsg————To_Data：", this.To_Data);
+
+          this.$store.commit('SET_ATTENTION', {
+            ifAlert: true,
+            at_warning: '该功能需要登陆后才可使用，请先登录。',
+            noLogin: true,
+            To_Data: true,
+          });
+
+          console.log("classMsg————To_Data：", this.To_Data);
+        }
+      },
+
+      Lshow(index1, index2) {
+        console.log("迟到了");
+        if (this.Class_lists[index1].students[index2].Late === true) {
+          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了迟到'});
+          setTimeout(() => {
+            this.$store.commit('SET_LOADING', false);
+          }, 1000);
+        } else {
+          this.Class_lists[index1].students[index2].Late = true;
+          this.judgeLate = true;
+          this.Class_lists[index1].students[index2].Truancy = false;
+          this.judgeTruancy = false;
+        }
+      },
+      Tshow(index1, index2) {
+        console.log("旷课了");
+        if (this.Class_lists[index1].students[index2].Late === false) {
+          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了旷课'});
+          setTimeout(() => {
+            this.$store.commit('SET_LOADING', false);
+          }, 1000);
+        } else {
+          this.Class_lists[index1].students[index2].Late = false;
+          this.Class_lists[index1].students[index2].Truancy = true;
+          this.judgeLate = false;
+          this.judgeTruancy = true;
+        }
+      }
+
+    }
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
 
   }
@@ -276,6 +474,7 @@
     margin: 0;
   }
 
+<<<<<<< HEAD
   /*白色部分*/
   .white {
     width: 53.38vw;
@@ -284,6 +483,16 @@
     background-color: #fff;
     height: 85.185vh;
   }
+=======
+  /*!*白色部分*!*/
+  /*.white {*/
+    /*width: 53.38vw;*/
+    /*margin-top: 5.555vh;*/
+    /*margin-left: 4.166vw;*/
+    /*background-color: #fff;*/
+    /*height: 85.185vh;*/
+  /*}*/
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
   /*白色主体，固定宽高，超出显示滚动条*/
   .white .main {
@@ -337,6 +546,7 @@
     cursor: pointer;
   }
 
+<<<<<<< HEAD
   .person-box:hover .dropdown-content {
     display: block;
   }
@@ -344,23 +554,49 @@
   .dropdown-content {
     display: none;
     position: absolute;
+=======
+  .dropdown-content {
+    position: absolute;
+    display: flex;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     font-size: 14px;
     cursor: pointer;
   }
 
+<<<<<<< HEAD
   .dropdown-content span {
     margin-left: -20px;
     display: block;
     width: 120px;
+=======
+  .dropdown-content-positive {
+    flex-direction: column;
+  }
+
+  .dropdown-content-negative {
+    flex-direction: column-reverse;
+  }
+
+
+  .dropdown-content div {
+    position: relative;
+    display: block;
+    width: 110px;
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     height: 40px;
     line-height: 40px;
     text-align: center;
     background-color: #fff;
+<<<<<<< HEAD
     box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
+=======
+    /* box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2); */
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     border-top: #e7e7eb solid 1px;
     cursor: pointer;
   }
 
+<<<<<<< HEAD
   .dropdown-content span:hover {
     background-color: #edeef0;
   }
@@ -369,6 +605,60 @@
     outline: none;
   }
 
+=======
+  .dropdown-content div:hover {
+    background-color: #edeef0;
+  }
+
+  .dropdown-content div span {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .dropdown-content div .img {
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    left: 10px;
+    top: 12px;
+  }
+
+  .dropdown-content div .text {
+    margin-left: 20px;
+  }
+
+  .dropdown-content div .img-Change {
+    background-image: url(../png/change.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Data {
+    background-image: url(../png/data.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Late {
+    background-image: url(../png/check.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Truancy {
+    background-image: url(../png/check.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+  .dropdown-content div .img-Pic {
+    background-image: url(../png/head.png);
+    -webkit-background-size: 100%;
+    background-size: 100%;
+  }
+
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .line .notSign {
     background-color: #d82828;
   }
@@ -377,6 +667,10 @@
     background-color: #12cbb3;
   }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .onLoad {
     position: absolute;
     height: 100px;
@@ -392,6 +686,10 @@
     z-index: 101;
   }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   /*====================    pic-begin    ================*/
   .picture {
     /*display: none;*/
@@ -491,6 +789,14 @@
 
   /*====================    pic-end    ================*/
 
+<<<<<<< HEAD
+=======
+
+  .noLog {
+    color: #8d8a8a;
+  }
+
+>>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .warning-enter-active {
     transition: all 0.3s ease;
   }
