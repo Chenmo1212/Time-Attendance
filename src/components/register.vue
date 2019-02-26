@@ -4,7 +4,7 @@
       <div class="reg-alert" v-show="ifShow_reg_alert">
         <div class="reg-alert-bg"></div>
         <div class="reg-alert-wrap">
-          <span class="reg-alert-del" title="关闭" @click="alertDel"></span>
+          <i class="reg-alert-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
           <div class="reg-alert-logo">欢迎注册</div>
           <div class="reg-alert-tip">
             <div class="alert-tip-line1"></div>
@@ -13,7 +13,7 @@
           </div>
           <form class="reg-alert-form">
             <!--<input type="text" v-model="name" placeholder="昵称" class="reg-form-input" title="用户名长度至少6位,且由字母、数字、下划线组成"-->
-                   <!--@keyup.enter="Reg">-->
+            <!--@keyup.enter="Reg">-->
             <input type="text" title="该手机号可用于找回密码" v-model="phone" placeholder="手机号码（账号）" class="reg-form-input"
                    maxlength="11" @keyup.enter="Reg">
             <input type="password" v-model="reg_pwd" placeholder="密码" class="reg-form-input" maxlength="16"
@@ -92,43 +92,43 @@
         } else {
           // 服务条款
           if (this.checkMsg) {
-              // 密码判断
-              if (pwd.test(this.reg_pwd)) {
-                // 判断手机号码
-                if (reg_phone.test(this.phone)) {
-                  // 判断验证码
-                  if (reCode.test(this.code)) {
-                    this.$store.commit('SET_LOADING', {isLoading: true, warning: '注册成功,请登录'});
-                    setTimeout(() => {
-                      this.$store.commit('SET_LOADING', false);
-                    }, 1000);
-                    this.ifShow_reg_alert = false;
-                    this.$store.commit('SET_ACCOUNT', {account: this.phone, password: this.reg_pwd});
-                    this.$router.push({name: 'login'});
-                  } else {
-                    // 验证码不合理
-                    this.$store.commit('SET_LOADING', {isLoading: true, warning: '验证码输入不合法！'});
-                    setTimeout(() => {
-                      this.$store.commit('SET_LOADING', false);
-                    }, 1000);
-                    this.code = '';
-                  }
-                } else {
-                  // 手机号码不合理
-                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '手机输入不合法！'});
+            // 密码判断
+            if (pwd.test(this.reg_pwd)) {
+              // 判断手机号码
+              if (reg_phone.test(this.phone)) {
+                // 判断验证码
+                if (reCode.test(this.code)) {
+                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '注册成功,请登录'});
                   setTimeout(() => {
                     this.$store.commit('SET_LOADING', false);
                   }, 1000);
-                  this.phone = '';
+                  this.ifShow_reg_alert = false;
+                  this.$store.commit('SET_ACCOUNT', {account: this.phone, password: this.reg_pwd});
+                  this.$router.push({name: 'login'});
+                } else {
+                  // 验证码不合理
+                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '验证码输入不合法！'});
+                  setTimeout(() => {
+                    this.$store.commit('SET_LOADING', false);
+                  }, 1000);
+                  this.code = '';
                 }
               } else {
-                // 密码不合理
-                this.$store.commit('SET_LOADING', {isLoading: true, warning: '密码输入不合法！'});
+                // 手机号码不合理
+                this.$store.commit('SET_LOADING', {isLoading: true, warning: '手机输入不合法！'});
                 setTimeout(() => {
                   this.$store.commit('SET_LOADING', false);
                 }, 1000);
-                this.reg_pwd = '';
+                this.phone = '';
               }
+            } else {
+              // 密码不合理
+              this.$store.commit('SET_LOADING', {isLoading: true, warning: '密码输入不合法！'});
+              setTimeout(() => {
+                this.$store.commit('SET_LOADING', false);
+              }, 1000);
+              this.reg_pwd = '';
+            }
           } else {
             this.$store.commit('SET_LOADING', {isLoading: true, warning: '请同意服务条款！'});
             setTimeout(() => {
@@ -212,14 +212,10 @@
 
   .reg-alert-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 101;
+    float: right;
+    padding: 4px;
+    font-size: 30px;
+    color: #8d8a8a;
   }
 
   .reg-alert-logo {
@@ -317,6 +313,10 @@
     margin-top: 20px;
   }
 
+  .form-input-button:hover, .alert-form-signIn:hover {
+    background-color: #2F9833;
+  }
+
   .alert-form-signIn {
     width: 272px;
     height: 36px;
@@ -349,15 +349,11 @@
 
   .reg-alert-bottom-wrap .checkbox {
     padding: 0;
-    /*margin: 0;*/
-    /*height: 20px;*/
-    /*width: 20px;*/
-    margin-top: 3px;
+    margin-top: 1px;
     background-color: #aaa;
     cursor: pointer;
     vertical-align: top;
     outline: none;
-
   }
 
   .reg-alert-bottom-wrap span {

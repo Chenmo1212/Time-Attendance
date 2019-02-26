@@ -4,7 +4,7 @@
       <!-- 左边 begin -->
       <div class="left">
         <div class="endSign">
-          <a @click="endSign" title="结束签到"><img src="../png/endSign.svg" alt=""></a>
+          <i class="iconfont" @click="endSign" title="结束签到">&#xe7d1;</i>
         </div>
         <div class="box">
           <div class="hd">
@@ -13,13 +13,14 @@
           </div>
           <div class="bd">
             <img src="../png/cust.png" alt="">
-            <!-- 进度条 begin -->
-            <div class="progress_bar">
-              <div class="progress_box">
-                <span class="progress_content"></span>
+            <div class="table">
+              <div class="progress-bar">
+                <div id='loader'>
+                  <div class='clip' id="loaded">
+                  </div>
+                </div>
               </div>
             </div>
-            <!--进度条 end-->
           </div>
           <!--结束考勤 begin-->
           <div class="popIn block" v-show="ShowBlock">
@@ -44,32 +45,32 @@
 
           <!-- 右键菜单栏(鼠标移出菜单自动消失) -->
           <div class="dropdown-content" v-show="isMenu" v-bind:class="classMenu"
-               v-bind:style="{ top: yMenu -50 + 'px' , left: xMenu -50+ 'px' }"
+               v-bind:style="{ top: yMenu+ 'px' , left: xMenu+ 'px' }"
                @mouseleave="mouseout">
             <div @click="isSign(classIndex, studentId)" style="border: none;">
-              <span class="img img-Change"></span>
+              <i class="iconfont">&#xe67a;</i>
               <span class="text">更改状态</span>
             </div>
             <div v-if="judgeIsSign" @click="Lshow(classIndex, studentId)">
-              <span class="img img-Late" v-if="judgeLate"></span>
+              <i class="iconfont" v-if="judgeLate">&#xe6f2;</i>
               <span class="text">设为迟到</span>
             </div>
             <div v-if="judgeIsSign" @click="Tshow(classIndex, studentId)">
-              <span class="img img-Truancy" v-if="judgeTruancy"></span>
+              <i class="iconfont" v-if="judgeTruancy">&#xe6f2;</i>
               <span class="text">设为旷课</span>
             </div>
             <div v-if="!judgeIsSign" @click="getWorks('test1')">
-              <span class="img img-Pic"></span>
+              <i class="iconfont">&#xe633;</i>
               <span class="text">查看照片</span>
             </div>
-            <div :class="{noLog:!isLogin, Log: true}" @click="toData">
-              <span class="img img-Data"></span>
+            <div :class="{noLog:!isLogin}" @click="toData">
+              <i class="iconfont">&#xe61b;</i>
               <span class="text">数据管理</span>
             </div>
           </div>
 
 
-          <div class="box">
+          <div class="box" >
             <!--获取班级个数-->
             <div v-for="(value, index1) in classMsg">
               <!--班号-->
@@ -78,13 +79,13 @@
 
                 <!--获取人数-->
                 <div class="line" v-for="(value,index2) in classMsg[index1].students">
-                  <div class="person-box" >
+                  <div class="person-box">
                     <!--单击-->
                     <!--<div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"-->
-                    <!--悬浮-->
-                    <!--<div class="person" title="查看详情" @mouseover.prevent="menu" @mouseover="setIndex(index1,index2)"-->
                     <!--右键点击-->
-                    <div class="person" title="查看详情" @contextmenu.prevent="menu" @contextmenu="setIndex(index1,index2)"
+                    <!--<div class="person" title="查看详情" @contextmenu.prevent="menu" @contextmenu="setIndex(index1,index2)"-->
+                    <!--悬浮-->
+                    <div class="person" title="查看详情" @mouseover.prevent="menu" @mouseover="setIndex(index1,index2)"
                          :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
                     </div>
                   </div>
@@ -100,37 +101,27 @@
 
     <!--提示弹窗-->
     <!--<transition name="warning">-->
-      <!--<div class="onLoad" v-if="isLoading"><span>{{ warning }}</span></div>-->
+    <!--<div class="onLoad" v-if="isLoading"><span>{{ warning }}</span></div>-->
     <!--</transition>-->
 
     <transition name="picture">
       <div class="picture" v-show="showPic">
         <div class="pic-bg"></div>
         <div class="pic-wrap">
-          <span class="pic-del" title="关闭" @click="alertDel"></span>
+          <!--<span class="pic-del" title="关闭" @click="alertDel"></span>-->
+          <i class="pic-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
           <span class="pic-title">学生头像</span>
           <img :src="imgURL"/>
-          <!--<div class="pic-bottom">-->
-          <!--<div class="pic-bottom-wrap">-->
-          <!--<input type="checkbox" class="checkbox" @click="checkbox">-->
-          <!--<span>我知道了</span>-->
-          <!--</div>-->
-          <!--</div>-->
-
         </div>
       </div>
     </transition>
-
-    <!--<div class="box">-->
-    <!--&lt;!&ndash;<qr_code class="left"></qr_code>&ndash;&gt;-->
-    <!--&lt;!&ndash;<classMsg class="right"></classMsg>&ndash;&gt;-->
-    <!--</div>-->
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex';
-  import {get_code} from '../axios/api';
+  import {works} from "../axios/api";
+
   // 引入子组件
   import qr_code from './qr_code';
   import classMsg from './classMsg';
@@ -170,6 +161,14 @@
 
         //菜单栏向上还是向下
         classMenu: '',
+
+        loader_width: 300,    // 进度条盒子宽度
+        loader_height: 8,    // 进度条盒子高度
+        loaded_width: 0,      // 进度条内容宽度——初始宽度
+        loaded_height: 8,    // 进度条内容高度
+        loader_speed: 10000,  // 进度条速度(ms)
+
+        time: '',
       }
     },
     computed: {
@@ -181,9 +180,13 @@
         'Class_lists',
         'isLogin',
         'To_Data',
+        'full_screen',
+        'full',
       ])
     },
     created() {
+
+      console.log("full", this.full);
 
       // 创建之前先看看仓库里有啥
       console.log('创建之前先看看仓库里有啥', this.Class_lists);
@@ -207,13 +210,40 @@
 
       //计时器
       this.forClock();
+
+      // 进度条
+      this.processbar();
+    },
+    mounted() {
+      if(!this.full){
+        this.$store.commit('SET_ATTENTION', {
+          ifAlert: true,
+          at_warning: '为方便您拥有更好的考勤体验，请您按下键盘F11键',
+          full_screen: true,
+        });
+      }
+
+
+      // 获取元素
+      var loader = document.getElementById("loader"); // 获取进度条盒子
+      var loaded = document.getElementById("loaded"); // 获取进度条内容
+      // 设置宽高
+      loader.style.width = this.loader_width + 'px';  // 设置盒子宽度
+      loader.style.height = this.loader_height + 'px'; // 设置盒子高度
+      loaded.style.width = this.loaded_width + 'px';  // 设置内容宽度
+      loaded.style.height = this.loaded_height + 'px'; // 设置内容高度
+      console.log("盒子当前设置宽度为:", loader.style.width);
+    },
+    destroyed(){
+      clearTimeout(this.time);
     },
     methods: {
+
       endSign() {
         if (this.ShowBlock === false) {
           this.$store.commit('SET_ATTENTION', {
             ifAlert: true,  // 提示窗口
-            at_warning: '当前正在考勤，确定要结束当前考勤重新开始签到？', // 提示语
+            at_warning: '当前正在考勤，确定要结束当前考勤？', // 提示语
             EndSign: true
           });
         } else {
@@ -237,12 +267,12 @@
         const TIME_COUNT = 10;
         if (!this.timer) {
           this.count = TIME_COUNT;
-          this.show = false;
+          // this.show = false;
           this.timer = setInterval(() => {
             if (this.count > 1 && this.count <= TIME_COUNT) {
               this.count--;
             } else {
-              this.show = true;
+              // this.show = true;
               clearInterval(this.timer);
               this.timer = null;
               //重置计时器
@@ -252,7 +282,6 @@
           }, 1000)
         }
       },
-
 
       //定时器//获取二维码
       set_time() {
@@ -284,6 +313,23 @@
         }
       },
 
+      processbar() {
+        var count = (this.loader_width * 20) / this.loader_speed; // 进度条单次增加宽度（px）
+        var total = 0; // 进度条累加总宽度
+        var width = this.loader_width;
+        this.time = setInterval(function () { // 定义计时器
+          total += count;
+          loaded.style.width = total + 'px';
+          var d_width = loaded.style.width;
+          if (parseInt(d_width) >= width) {
+            var myDate = new Date(); // 显示当前日期时间
+            console.log("当前时间：",myDate.toLocaleString());
+            console.log("进度条满了，重置！");
+            total = 0;
+            loaded.style.width = total + 'px';
+          }
+        }, 20);
+      },
 
       setIndex(index1, index2) {
         this.classIndex = index1;
@@ -307,14 +353,13 @@
           this.yMenu = this.yMenu - height + 30;
           // this.classMenu = "dropdown-content-negative";  // 向下排列
           this.classMenu = "dropdown-content-positive";  // 向下排列
-        }
-        else {
+        } else {
           this.classMenu = "dropdown-content-positive";   // 向上排列
         }
         this.isMenu = true;
         console.log("height:", height)                              // 计算后的到的菜单的高度
         console.log("main:", this.$refs.main.offsetHeight)          // main的高度
-        console.log("yMenu:", this.yMenu)                          // 鼠标点击处距离顶部的距离
+        console.log("yMenu:", this.yMenu)                           // 鼠标点击处距离顶部的距离
         console.log(this.$refs.main.getBoundingClientRect().top)   // main距离顶部的距离
       },
       //鼠标移出事件
@@ -329,8 +374,9 @@
         }).catch(error => {
           console.log(error.response)
         });
-
+        console.log('showPic:', this.showPic);
         this.showPic = true;
+        console.log('showPic:', this.showPic);
       },
 
 
@@ -415,6 +461,10 @@
 
       Lshow(index1, index2) {
         console.log("迟到了");
+        this.$store.commit('SET_LOADING', {isLoading: true, warning: '更改为迟到'});
+        setTimeout(() => {
+          this.$store.commit('SET_LOADING', false);
+        }, 800);
         if (this.Class_lists[index1].students[index2].Late === true) {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了迟到'});
           setTimeout(() => {
@@ -429,6 +479,10 @@
       },
       Tshow(index1, index2) {
         console.log("旷课了");
+        this.$store.commit('SET_LOADING', {isLoading: true, warning: '更改为旷课'});
+        setTimeout(() => {
+          this.$store.commit('SET_LOADING', false);
+        }, 800);
         if (this.Class_lists[index1].students[index2].Late === false) {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了旷课'});
           setTimeout(() => {
@@ -462,9 +516,8 @@
   }
 
   .left {
-
     width: 535px;
-    height: 500px;
+    height: 650px;
     /*background-color: #ddd;*/
     float: left;
   }
@@ -473,13 +526,12 @@
     height: 100px;
   }
 
-  .endSign img {
+  .endSign i {
     float: right;
     padding: 10px;
-    height: 35px;
-    width: 35px;
-    -webkit-background-size: 100%;
-    background-size: 100%;
+    font-size: 30px;
+    color: #8d8a8a;
+    cursor: pointer;
   }
 
   .hd {
@@ -506,9 +558,36 @@
     border: #e7e9ef 3px solid;
   }
 
-  .progress_bar {
-    margin-top: 3vh;
-    position: relative;
+  .table {
+    margin-top: 20px;
+  }
+
+  #loader {
+    border-radius: 30px;
+    background-color: #f9f7f7;
+    border: 1px solid #f1f0f0;
+    padding: 0px 2px;
+    display: inline-block;
+    border-left: 1px solid #e7e9ef;
+    border-top: 2px solid #e7e9ef;
+    border-right: 1px solid #e7e9ef;
+    border-bottom: 2px solid #e7e9ef;
+  }
+
+  .clip {
+    /* Safari 5.1 - 6.0 */
+    background: -webkit-linear-gradient(left, #f9f586, #96fbc4);
+    /* Opera 11.1 - 12.0 */
+    background: -o-linear-gradient(left, #f9f586, #96fbc4);
+    /* Firefox 3.6 - 15 */
+    background: -moz-linear-gradient(left, #f9f586, #96fbc4);
+    /* 标准的语法 */
+    background: linear-gradient(to right, #f9f586, #96fbc4);
+    width: 10px;
+    margin: 1px 0px;
+    box-shadow: 0px 0px 2px #0dd2ea;
+    height: 8px;
+    border-radius: 20px;
   }
 
   .progress_bar .progress_box {
@@ -572,7 +651,7 @@
   .popIn {
     position: absolute;
     top: 50px;
-    left: 0;
+    left: -50px;
     height: 100%;
     width: 535px;
     text-align: center;
@@ -638,7 +717,7 @@
     margin-top: 38px;
     float: right;
     width: 850px;
-    height: 650px;
+    height: 600px;
     background-color: #fff;
     overflow: hidden;
   }
@@ -647,7 +726,7 @@
   .right .main {
     height: 550px;
     width: 700px;
-    margin: 50px auto;
+    margin: 25px auto;
     /*background-color: #F6F8F9;*/
     overflow-y: auto;
 
@@ -735,55 +814,86 @@
     vertical-align: top;
   }
 
-  .dropdown-content div .img {
-    height: 16px;
-    width: 16px;
+  .dropdown-content i {
     position: absolute;
-    left: 10px;
-    top: 12px;
+    font-size: 14px;
+    padding-right: 4px;
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .dropdown-content div .text {
     margin-left: 20px;
   }
 
-  .dropdown-content div .img-Change {
-    background-image: url(../png/change.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .dropdown-content div .img-Data {
-    background-image: url(../png/data.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .dropdown-content div .img-Late {
-    background-image: url(../png/check.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .dropdown-content div .img-Truancy {
-    background-image: url(../png/check.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .dropdown-content div .img-Pic {
-    background-image: url(../png/head.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-
-  .line .notSign {
-    background-color: #d82828;
+  .dropdown-content .noLog {
+    color: #8d8a8a;
+    cursor: not-allowed; /*鼠标禁止样式*/
   }
 
   .line .isSign {
     background-color: #12cbb3;
   }
+
+  .line .notSign {
+    background-color: #d82828;
+  }
+
+
+  /*====================    pic-begin    ================*/
+  .picture {
+    /*display: none;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 99;
+  }
+
+  .pic-bg {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    filter: alpha(opacity=50);
+    opacity: .5;
+  }
+
+  .pic-wrap {
+    position: absolute;
+    padding: 0.5em;
+    max-width: 50%;
+    height: 90%;
+    left: 50%;
+    top: 5%;
+    margin-left: -25%;
+    background: #fff;
+    border-radius: 2px;
+    -webkit-animation: alert .3s;
+    animation: alert .3s;
+    width: 100%;
+  }
+
+  .pic-del {
+    cursor: pointer;
+    float: right;
+    padding: 4px;
+    font-size: 30px;
+    color: #8d8a8a;
+  }
+
+  .pic-title {
+    cursor: pointer;
+    /*width: 60px;*/
+    height: 40px;
+    display: block;
+    margin: 50px auto;
+    z-index: 101;
+    font-size: 26px;
+    text-align: center;
+  }
+
+  /*====================    pic-end    ================*/
+
 
 </style>

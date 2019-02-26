@@ -9,17 +9,18 @@
           <li id="logo" @click="toHome">
             <img src="../png/LOGO2.png" alt="">
             <span>快签到考勤</span>
-          <li :class="{ currentPage : this.$route.name === 'home' , home: true}" @click="toHome(true)">
-            <i class="img-home"></i>
-            <a href="#">新建签到</a>
           </li>
-          <li :class="{ currentPage: this.$route.name === 'attendance' , attendance: true}" @click="toAttendance">
-            <i class="img-attendance"></i>
-            <a href="#">考勤界面</a>
+          <li :class="{ currentPage : this.$route.name === 'home'}" @click="toHome(true)">
+            <i class="iconfont img img-home">&#xe639;</i>
+            新建签到
           </li>
-          <li :class="isLogin ? {currentPage: this.$route.name === 'data', data: true} : 'noLogin'" @click="toData">
-            <i class="img-data"></i>
-            <a href="#">数据管理</a>
+          <li :class="{ currentPage: this.$route.name === 'attendance'}" @click="toAttendance">
+            <i class="iconfont img img-attendance">&#xe605;</i>
+            考勤界面
+          </li>
+          <li :class="isLogin ? {currentPage: this.$route.name === 'data', img_data: true} : 'noLogin'" @click="toData">
+            <i class="iconfont img img-data">&#xe61b;</i>
+            数据管理
           </li>
         </ul>
         <!--导航菜单 left end-->
@@ -27,18 +28,18 @@
         <ul class="fr">
           <li class="dd"><!--dropdown-->
             <div class="set">
-              <i class="img-set"></i>
-              <a href="#">设置</a>
+              <i class="iconfont img">&#xe604;</i>
+              设置
               <i class="dd-icon"></i>
             </div>
             <div class="dd-m"><!--dropdown-menu-->
               <div class="dd-m1" @click="toIntro">
-                <i class="img-intro"></i>
-                <a href="#">使用说明</a>
+                <i class="iconfont img">&#xe66a;</i>
+                使用说明
               </div>
               <div class="dd-m2" @click="del">
-                <i class="img-delData"></i>
-                <a href="#">清除缓存</a>
+                <i class="iconfont img">&#xe600;</i>
+                清除缓存
               </div>
             </div>
           </li>
@@ -60,7 +61,7 @@
       <div class="alert" v-show="ifAlert">
         <div class="alert-bg"></div>
         <div class="alert-wrap">
-          <span class="alert-del" title="关闭" @click="alertDel"></span>
+          <i class="alert-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
           <span class="alert-title">提示</span>
           <div class="alert-tip">{{ at_warning }}</div>
 
@@ -81,6 +82,12 @@
             <button class="alert-toLogin" @click="showBlock(true)">确定</button>
             <button class="alert-cancel" @click="alertDel">取消</button>
           </div>
+
+          <!--F11-->
+          <div class="alert-button" v-show="full_screen">
+            <button class="alert-toLogin" @click="fullScreen">确定</button>
+            <button class="alert-cancel" @click="alertDel">取消</button>
+          </div>
         </div>
       </div>
     </transition>
@@ -94,16 +101,62 @@
       <div class="intro" v-show="showIntro">
         <div class="intro-bg"></div>
         <div class="intro-wrap">
-          <span class="intro-del" title="关闭" @click="alertDel"></span>
+          <i class="intro-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
           <span class="intro-title">使用说明</span>
+          <div class="content">
+            <p>
+              快签到智能考勤是一款专注于课堂考勤的产品，旨在实现高效考勤，拒绝学生替考勤、替课等行为，帮助老师实现考勤数据管理，提高老师的工作效率。<br>
+              为了更好地帮助新手使用该产品，小编特意写了一份新手指南向新手们介绍本产品是使用方法。
+            </p>
+            <br>
+            <p class="text1">如果仅为临时使用，不保存考勤数据，无需注册登录；<br>
+              如果需要进行考勤数据管理，请先注册登录。<br>
+              注：数据管理可以记录每一位学生的考勤情况。<br>
 
-          <div class="intro-bottom">
-            <div class="intro-bottom-wrap">
-              <input type="checkbox" class="checkbox" @click="checkbox">
-              <span>我知道了</span>
-            </div>
+              未登录状态考勤
+            </p>
+            <br>
+            <p>
+              请按照文字提示填写考勤班级与考勤学生的学号，如果多个班级进行考勤，请点击加号添加考勤班级，之后点击“开始签到”跳转到“考勤界面”开始考勤。
+            </p><br>
+            <img src="../png/intro/1.png" alt="">
+            <br>
+            <br>
+            <p>右击右侧的按钮，可以更改学生的考勤状态。红色代表未到学生，绿色代表已到学生。<br>
+              （注：如果右击后菜单出现错位，请将尺寸设置到正确比例，缩放等不正当操作将会做成错位）<br>
+              <br>
+              点击“结束考勤”按钮，可结束当前考勤。
+            </p><br>
+            <img src="../png/intro/2.png" alt="">
+            <br><br>
+            <p class="text1">
+              登录状态考勤 <br>
+              方式一：先登录再考勤 <br>
+            </p>
+            <p>未注册用户需注册后再使用，点击“登录”，在弹出的窗口中点击“点击注册”</p><br>
+            <img src="../png/intro/3.png" alt="">
+            <img src="../png/intro/4.png" alt="">
+            <br><br>
+            <p>点击“登录”按钮进行登录，登录后可以保存考勤数据</p><br>
+            <img src="../png/intro/5.png" alt="">
+            <br><br>
+            <p>考勤操作同未登录状态的操作相同。 <br>
+              <br>
+              点击“数据考勤”可以查看考勤结果，点击“详情”可以查看缺勤同学的具体情况，为老师算平时分数提供准确依据。
+            </p><br>
+            <img src="../png/intro/6.png" alt="">
+            <img src="../png/intro/7.png" alt="">
+            <br>
+            <br>
+            <p class="text1">方式二：先考勤再登录</p> <br>
+            <p>考勤操作同未登录状态时的操作相同，未登录时“数据管理”呈灰色状态。若需要保留考勤数据，请先点击“登录”。</p><br>
+            <img src="../png/intro/8.png" alt="">
+            <br><br>
+            <p>登录后“数据管理”成黑色状态，点击后跳转至该页面，单击“详情”即可查看缺勤学生的详细信息。</p>
+            <br>
+            <img src="../png/intro/9.png" alt="">
+            <img src="../png/intro/10.png" alt="">
           </div>
-
         </div>
       </div>
     </transition>
@@ -122,6 +175,7 @@
         currentPage: false,
 
         showIntro: false,
+
       }
     },
     computed: {
@@ -137,11 +191,35 @@
         'noLogin',
         'newSign',
         'EndSign',
+        'full_screen',
         'to_data',
         'ShowBlock',
+        'full',
       ])
     },
     methods: {
+
+      fullScreen() {
+        this.alertDel();
+        this.$store.commit('SET_FULL', true);
+        var el = document.getElementById('app');
+        var rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullScreen,
+          wscript;
+
+        if (typeof rfs != "undefined" && rfs) {
+          rfs.call(el);
+          return;
+        }
+
+        if (typeof window.ActiveXObject != "undefined") {
+          wscript = new ActiveXObject("WScript.Shell");
+          if (wscript) {
+            wscript.SendKeys("{F11}");
+          }
+        }
+
+      },
+
       // 去“新建签到”
       toHome(bool) {
         console.log(bool);
@@ -230,7 +308,7 @@
       toIntro() {
         // this.$store.commit('SET_LOADING', {isLoading: true, warning: '程序猿很懒还没写'});
         // setTimeout(() => {
-        //   this.$store.commit('SET_LOADING', false);
+        //   console.log("123");
         // }, 1000);
         // this.$router.push({name: 'introduction'});
         this.showIntro = true;
@@ -316,7 +394,6 @@
 <style scoped>
   @import "../css/base.css";
 
-
   .nav {
     height: 60px;
     line-height: 60px;
@@ -330,68 +407,39 @@
     float: left;
   }
 
-
-  .nav .fl li {
+  .nav li {
     position: relative;
     float: left;
+    cursor: pointer;
+  }
+
+  .nav .fl li {
     margin-left: 80px;
     height: 60px;
-    overflow: hidden;
-    cursor: pointer;
   }
 
   .fr {
     float: right;
   }
 
-  .nav .fr li {
-    position: relative;
-    float: left;
-    cursor: pointer;
-  }
-
   i {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    margin-top: -8px;
     display: inline-block;
-  }
-
-  .fl li a {
-    display: block;
-    margin-left: 20px;
-    /*cursor: pointer;*/
-  }
-
-  /* 导航菜单 left begin */
-  .img-home {
-    background: url(../png/home.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .img-attendance {
-    background: url(../png/attendance.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  .img-data {
-    background: url(../png/data.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
+    vertical-align: top;
   }
 
   /*子菜单当前页面样式*/
-  .fl .currentPage {
+  .currentPage {
     border-bottom: #1aad19 solid 2px;
     background-color: #edeef0;
     padding: 0 10px;
+    color: #1aad19;
   }
 
-  .fl .currentPage a {
+  .fl li:nth-child(2):hover {
+    color: #1aad19;
+  }
+
+  .fl li:nth-child(3):hover {
     color: #1aad19;
   }
 
@@ -406,100 +454,32 @@
   .fl #logo img {
     width: 50px;
     height: 50px;
-    margin-top: 5px ;
+    margin-top: 5px;
   }
+
   .fl #logo a {
     margin-left: 60px;
     color: red;
   }
+
   #logo span {
     line-height: 60px;
     position: absolute;
     top: 0;
     right: 0;
   }
-  /*===============================新建签到=========================*/
-  /*子菜单当前页面————新建签到*/
-  .fl .currentPage .img-home {
-    background-image: url(../png/home_check.png);
-  }
-
-  /*子菜单————新建签到*/
-  .fl div .img-home {
-    background-image: url(../png/home.png);
-  }
-
-  /*子菜单————新建签到鼠标悬浮*/
-  .home:hover .img-home {
-    background-image: url(../png/home_check.png);
-  }
-
-  .home:hover a {
-    color: #1aad19;
-  }
-
-  /*===============================考勤界面=========================*/
-
-  /*子菜单当前页面————考勤界面*/
-  .fl .currentPage .img-attendance {
-    background-image: url(../png/attendance_check.png);
-  }
-
-  /*子菜单————考勤界面*/
-  .fl div .img-attendance {
-    background-image: url(../png/attendance.png);
-  }
-
-  /*子菜单————考勤界面鼠标悬浮*/
-  .attendance:hover .img-attendance {
-    background-image: url(../png/attendance_check.png);
-  }
-
-  .attendance:hover a {
-    color: #1aad19;
-  }
 
   /*===============================数据管理=========================*/
-  /*导航菜单————数据管理未登录时样式*/
-  .fl .noLogin a {
-    color: #9C8A8A;
-  }
 
-  .fl .noLogin .img-data {
-    background-image: url(../png/data-nologin.png);
-  }
-
-  /*子菜单当前页面————数据管理*/
-  .fl .currentPage .img-data {
-    background-image: url(../png/data_check.png);
-  }
-
-  /*子菜单————数据管理鼠标悬浮*/
-  .data:hover .img-data {
-    background-image: url(../png/data_check.png);
-  }
-
-  .data:hover a {
+  .img_data:hover {
     color: #1aad19;
-  }
-
-  /*子菜单————数据管理*/
-  .nav div .img-data {
-    background-image: url(../png/data.png);
   }
 
   /* 导航菜单 left end */
 
 
   /* 导航菜单 right begin */
-  .fr i {
-    position: absolute;
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    margin-top: -8px;
-  }
+
 
   .fr a {
     display: block;
@@ -513,45 +493,41 @@
     margin: 15px 15px 0;
   }
 
-  .set {
-    padding: 0 20px;
+  /*动画开始*/
+  .dd:hover .dd-m div {
+    opacity: 1;
+    transform: none;
   }
 
-  .img-intro {
-    background: url(../png/introduction.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-    left: 0;
+  .dd-m div:nth-child(1) {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -webkit-transition-delay: 250ms;
   }
 
-  .img-delData {
-    background: url(../png/delData.png);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-    left: 0;
+  .dd-m div:nth-child(2) {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -webkit-transition-delay: 200ms;
   }
 
-  .dd-icon {
-    background: url(../png/dropdown-icon.svg);
-    -webkit-background-size: 100%;
-    background-size: 100%;
-    right: 0;
+  .dd:hover .dd-m div:nth-child(1) {
+    -webkit-transition-delay: 0s;
   }
 
-  .dd:hover .dd-m {
-    display: block;
+  .dd:hover .dd-m div:nth-child(2) {
+    -webkit-transition-delay: 50ms;
   }
 
   .dd-m {
-    display: none;
-    z-index: 9999;
+    display: block;
+    z-index: 999;
     position: absolute;
     margin-top: -10px;
     left: -20px;
     width: 120px;
     -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    -webkit-perspective: 400px;
+    max-height: 0;
   }
 
   .dd-m div {
@@ -560,8 +536,12 @@
     line-height: 40px;
     background-color: #fff;
     text-align: center;
-    border-top: 1px solid #e7e7eb;
+    opacity: 0;
+    transform: rotateY(90deg);
+    transition: opacity .4s, transform .5s;
   }
+
+  /*动画结束*/
 
   .dd-m div:hover {
     background-color: #edeef0;
@@ -581,15 +561,14 @@
     left: 0;
   }
 
-  .dd-m i {
-    position: absolute;
-    margin-left: 10px;
-  }
-
-  .dd-m a {
-    margin-left: 10px;
+  .dd-m {
     font-size: 14px;
   }
+
+  .dd-m1 i {
+    font-size: 20px;
+  }
+
 
   .fr log a:active {
     color: #1aad19;
@@ -614,14 +593,10 @@
 
   .alert-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 9999;
+    float: right;
+    padding: 4px;
+    font-size: 30px;
+    color: #8d8a8a;
   }
 
   .alert button {
@@ -751,14 +726,8 @@
 
   .intro-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 9999;
+    float: right;
+    font-size: 30px;
   }
 
   .intro-title {
@@ -766,42 +735,26 @@
     /*width: 60px;*/
     height: 40px;
     display: block;
-    margin: 50px auto;
+    margin: 50px auto 20px;
     z-index: 101;
     font-size: 26px;
     text-align: center;
   }
 
-  .intro-bottom {
-    display: block;
-    text-align: center;
-    width: 100%;
-    margin-top: 10px;
-    padding-bottom: 30px;
-    font-size: 12px;
-    position: absolute;
-    bottom: 30px;
+  .content {
+    font-size: 16px;
+    margin: 0 100px;
+    height: 500px;
+    overflow: hidden;
+    overflow-y: auto;
   }
 
-  .intro-bottom-wrap {
-    width: 272px;
-    display: inline-block;
-    position: absolute;
-    left: 50%;
-    margin-left: -150px;
+  .content img {
+    width: 1000px;
   }
 
-  .intro-bottom-wrap .checkbox {
-    padding: 0;
-    /*margin: 0;*/
-    /*height: 20px;*/
-    /*width: 20px;*/
-    margin-top: 3px;
-    background-color: #aaa;
-    cursor: pointer;
-    vertical-align: top;
-    outline: none;
-
+  .content .text1 {
+    font-weight: 700;
   }
 
   .intro-bottom-wrap span {

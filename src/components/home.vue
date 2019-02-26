@@ -5,8 +5,10 @@
       <h4>Tip:默认一次仅支持一个班级进行考勤，多个班级考勤时请点击“+”增加考勤班级</h4>
       <button class="sign-bt" @click="toAttendance">开始签到</button>
       <div class="change">
-        <button class="add" @click="addList" title="添加班级"><img src="../png/add.png" alt=""></button>
-        <button class="reduce" @click="reduceList(list)" title="减少班级"><img src="../png/reduce.png" alt=""></button>
+        <i class="iconfont" @click="addList" title="添加班级">&#xe66b;</i>
+        <i class="iconfont" @click="reduceList(list)" title="减少班级">&#xe603;</i>
+        <!--<button class="add" @click="addList" title="添加班级"><img src="../png/add.png" alt=""></button>-->
+        <!--<button class="reduce" @click="reduceList(list)" title="减少班级"><img src="../png/reduce.png" alt=""></button>-->
       </div>
       <div class="msg">
         <ul>
@@ -181,14 +183,15 @@
     margin-bottom: 10px;
   }
 
-  .sign-box .change img {
-    width: 20px;
-    height: 20px;
+  .sign-box .change i {
+    font-size: 20px;
+    color: #8d8a8a;
     margin: 0 5px;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24), 0 1px 6px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0.24), 0 1px 6px rgba(0, 0, 0, 0.45);
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
     border-radius: 50%;
+    cursor: pointer;
   }
 
   .sign-box .msg input {

@@ -35,6 +35,7 @@ export default {
     state.To_Data = obj.To_Data;  // 是在想去data的路上触发登录框
     state.EndSign = obj.EndSign;  // 结束考勤
 
+
     console.log("mutation————To_Data：", state.To_Data);
   },
 
@@ -53,6 +54,7 @@ export default {
   SHOW_BLOCK(state, boolean) {
     state.ShowBlock = boolean;
   },
+
 
   // 前往数据管理
   // TO_DATA(state, boolean){

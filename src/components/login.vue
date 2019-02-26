@@ -3,7 +3,8 @@
     <div class="login-alert">
       <div class="login-alert-bg"></div>
       <div class="login-alert-wrap">
-        <span class="login-alert-del" title="关闭" @click="alertDel"></span>
+        <!--<span class="login-alert-del" title="关闭" @click="alertDel"></span>-->
+        <i class="login-alert-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
         <div class="login-alert-logo">快签到智能考勤</div>
         <div class="login-alert-tip">
           <div class="login-tip-line1"></div>
@@ -173,14 +174,10 @@
 
   .login-alert-del {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: url(../png/tiny-delete.png) no-repeat center center;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 101;
+    float: right;
+    padding: 4px;
+    font-size: 30px;
+    color: #8d8a8a;
   }
 
   .login-alert-logo {
@@ -256,7 +253,9 @@
     border-radius: 5px;
     margin-top: 15px;
   }
-
+  .alert-form-signIn:hover {
+    background-color: #2F9833;
+  }
   .login-alert-bottom {
     display: block;
     text-align: center;

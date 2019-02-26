@@ -1,37 +1,35 @@
 <template>
   <div id="introduction">
-      <div class="window">
-        <ul class="container" :style="containerStyle">
-          <li>
-            <img :style="{width:imgWidth+'px'}" :src="sliders[sliders.length - 1].img" alt="">
-          </li>
-          <li v-for="(item, index) in sliders" :key="index">
-            <img :style="{width:imgWidth+'px'}" :src="item.img" alt="">
-          </li>
-          <li>
-            <img :style="{width:imgWidth+'px'}" :src="sliders[0].img" alt="">
-          </li>
-        </ul>
-        <!--<img src="../png/1.png" alt="">-->
-        <ul class="direction">
-          <li class="left" @click="move(1300, 1, speed)">
-            <!--<img src="../png/check.png" alt="">-->
-          </li>
-          <li class="right" @click="move(1300, -1, speed)">
-            <!--<img src="../png/change.png" alt="">-->
-          </li>
-        </ul>
+    <div class="window">
+      <ul class="container" :style="containerStyle">
+        <li>
+          <img :style="{width:imgWidth+'px'}" :src="sliders[sliders.length - 1].img" alt="">
+        </li>
+        <li v-for="(item, index) in sliders" :key="index">
+          <img :style="{width:imgWidth+'px'}" :src="item.img" alt="">
+        </li>
+        <li>
+          <img :style="{width:imgWidth+'px'}" :src="sliders[0].img" alt="">
+        </li>
+      </ul>
+      <div class="win-bottom">
+        <div class="direction">
+          <div class="begin" v-if="showBegin">
+            <button class="toIntro dt-bt" @click="move(1200, -1, speed, 'begin')">开始引导</button>
+            <br>
+            <button class="end-Intro" @click="EndIntro">跳过直接使用</button>
+          </div>
+          <div class="middle" v-if="showMiddle">
+            <div class="left dt-bt" @click="move(1200, 1, speed, 'middle')">上一步</div>
+            <div class="right dt-bt" @click="move(1200, -1, speed, 'middle')">下一步</div>
+          </div>
+          <div class="end" v-if="showEnd">
+            <div class="left dt-bt" @click="jump(1)">再看一遍</div>
+            <div class="right dt-bt" @click="EndIntro">开始体验</div>
+          </div>
+        </div>
       </div>
 
-    <div class="direction">
-      <div class="begin">
-        <button>开始引导</button>
-        <span @click="cancel">跳过直接使用</span>
-      </div>
-      <div class="left">
-
-      </div>
-      <div class="right"></div>
     </div>
   </div>
 </template>
@@ -43,8 +41,9 @@
   import pic4 from '../png/04.jpg';
   import pic5 from '../png/05.jpg';
   import pic6 from '../png/06.jpg';
+
   export default {
-    name: "introduction",
+    name: 'introduction',
     props: {
       initialSpeed: {
         type: Number,
@@ -72,11 +71,14 @@
             img: pic6,
           }
         ],
-        imgWidth: 1300,
+        imgWidth: 1200,
         currentIndex: 1,
-        distance: -1300,
+        distance: -1200,
         transitionEnd: true,
-        speed: this.initialSpeed
+        speed: this.initialSpeed,
+        showBegin: true,
+        showMiddle: false,
+        showEnd: false,
       }
     },
     computed: {
@@ -90,29 +92,44 @@
       }
     },
     mounted() {
-      console.log('mounted:currentIndex',this.currentIndex);
-      // this.init()
+      console.log('mounted:currentIndex', this.currentIndex);
+      this.init()
     },
     methods: {
-      // init() {
-      //   this.play();
-      //   window.onblur = function () {
-      //     this.stop()
-      //   }.bind(this);
-      //   window.onfocus = function () {
-      //     this.play()
-      //   }.bind(this)
-      // },
-      move(offset, direction, speed) {
-
-        // if (!this.transitionEnd) return
-        // this.transitionEnd = false;
-        direction === -1 ? this.currentIndex += offset / 1300 : this.currentIndex -= offset / 1300;
+      init() {
+        this.play();
+        window.onblur = function () {
+          this.stop()
+        }.bind(this);
+        window.onfocus = function () {
+          this.play()
+        }.bind(this)
+      },
+      move(offset, direction, speed, item) {
+        console.log('1:', this.currentIndex);
+        if (item === 'begin') {
+          this.showBegin = false;
+          this.showMiddle = true;
+        } else if (item === 'middle') {
+          if (this.currentIndex === 5) {
+            this.showMiddle = false;
+            this.showEnd = true;
+          }
+        }
+        console.log('2:', this.currentIndex);
+        direction === -1 ? this.currentIndex += offset / 1200 : this.currentIndex -= offset / 1200;
+        if (this.currentIndex === 1) {
+          this.showBegin = true;
+          this.showMiddle = false;
+        }
+        console.log('3:', this.currentIndex);
         if (this.currentIndex > 6) this.currentIndex = 1;
         if (this.currentIndex < 1) this.currentIndex = 6;
-
+        console.log('4:', this.currentIndex);
         const destination = this.distance + offset * direction;
         this.animate(destination, direction, speed)
+        console.log('5:', this.currentIndex);
+        console.log('========');
       },
       animate(des, direc, speed) {
         if (this.temp) {
@@ -126,16 +143,22 @@
             this.transitionEnd = true;
             window.clearInterval(this.temp);
             this.distance = des;
-            if (des < -1300 * 6) this.distance = -1300;
-            if (des > -1300) this.distance = -1300 * 6
+            if (des < -1200 * 6) this.distance = -1200;
+            if (des > -1200) this.distance = -1200 * 6
           }
         }, 20)
       },
-      cancel(){
-        this.$router.push({name:'home'})
-      }
-
-      // play() {
+      jump(index) {
+        const direction = index - this.currentIndex >= 0 ? -1 : 1;
+        const offset = Math.abs(index - this.currentIndex) * 1200;
+        const jumpSpeed = Math.abs(index - this.currentIndex) === 0 ? this.speed : Math.abs(index - this.currentIndex) * this.speed;
+        this.move(offset, direction, jumpSpeed);
+        console.log(this.currentIndex);
+        this.showBegin = true;
+        this.showMiddle = false;
+        this.showEnd = false;
+      },
+      play() {
         // if (this.timer) {
         //   window.clearInterval(this.timer);
         //   this.timer = null
@@ -143,85 +166,107 @@
         // this.timer = window.setInterval(() => {
         //   this.move(600, -1, this.speed)
         // }, this.interval)
-      // },
-      // stop() {
+      },
+      stop() {
         // window.clearInterval(this.timer);
         // this.timer = null
-      // }
+      },
+      EndIntro() {
+        this.$router.push({name: 'home'})
+      }
     }
   }
 </script>
 
 <style scoped>
+  button {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
+
   ol, ul {
     list-style: none;
   }
 
+  #introduction {
+    width: 100%;
+    background-color: #333333;
+    text-align: center;
+  }
+
   .window {
     position: relative;
-    top: 10px;
-    width: 1300px;
-    height: 550px;
-    margin: 0 auto 0;
+    width: 1200px;
+    height: 665px;
+    margin: 0 auto;
     overflow: hidden;
   }
 
   .container {
+    margin-top: 20px;
     display: flex;
     position: absolute;
   }
 
-  .left, .right {
+  img {
+    user-select: none;
+  }
+
+  .win-bottom {
+    height: 75px;
+    width: 1200px;
     position: absolute;
     bottom: 0;
-    transform: translateY(-50%);
-    border-radius: 50%;
+    /*background-color: #fff;*/
+  }
+
+  .direction {
+    position: relative;
+  }
+
+  .dt-bt {
+    font-size: 18px;
+    width: 145px;
+    height: 30px;
+    line-height: 30px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    text-align: center;
+    color: #fff;
     cursor: pointer;
   }
-  .left img, .right img {
-    width: 50px;
-    height: 50px;
+
+  .begin .toIntro {
+    background-color: #1AAD19;
   }
+
+  .begin .end-Intro {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  .begin .end-Intro:hover {
+    text-decoration: underline;
+  }
+
   .left {
-    left: 45%;
-    padding-left: 12px;
-    padding-top: 10px;
+    border: 1px solid #fff;
+    position: absolute;
+    left: 35%;
   }
 
   .right {
-    right: 45%;
-    padding-right: 12px;
-    padding-top: 10px;
-  }
-
-  img {
-    user-select: none;
-    -webkit-background-size: 100%;
-    background-size: 100%;
-  }
-
-  #introduction {
-    text-align: center;
-    background-color: rgba(0,0,0,0.8);
-  }
-  .begin button {
-    margin-top: 40px;
-    width: 145px;
-    height: 40px;
-    border-radius: 3px;
-    color: #fff;
-    font-size: 18px;
     background-color: #1AAD19;
-  }
-  .begin span {
-    margin-top: 10px;
-    padding-bottom: 11px;
-    display: block;
-    color: #fff;
+    position: absolute;
+    right: 35%;
   }
 </style>
