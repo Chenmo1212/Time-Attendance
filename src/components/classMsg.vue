@@ -16,25 +16,6 @@
 
               <!--获取人数-->
               <div class="line" v-for="(value,index2) in classMsg[index1].students">
-<<<<<<< HEAD
-                <div class="person-box">
-                  <div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"
-                       :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
-                  </div>
-                  <div class="dropdown-content" v-show="true">
-                    <span @click="isSign(index1, index2)" style="border: none;">更改状态</span>
-                    <!--<span @click="isSign(index1, index2)">数据管理</span>-->
-                    <span v-if="!classMsg[index1].students[index2].isSign">设为迟到</span>
-                    <span v-if="!classMsg[index1].students[index2].isSign">设为旷课</span>
-                    <span v-if="classMsg[index1].students[index2].isSign" @click="getWorks('test1')">查看图片</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-=======
                 <div class="person-box" >
                   <!--单击-->
                   <!--<div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"-->
@@ -48,7 +29,6 @@
               </div>
             </div>
           </div>
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         </div>
       </div>
     </div>
@@ -82,11 +62,7 @@
 
 <script>
   import {mapState} from 'vuex'
-<<<<<<< HEAD
   import {getchick, anonymous, getnonchick} from "../axios/api";
-=======
-  import {works} from "../axios/api";
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
   export default {
     name: "classMsg",
@@ -109,9 +85,6 @@
         showPic: false,
 
         // 图片网址
-<<<<<<< HEAD
-        imgURL: ''
-=======
         imgURL: '',
 
         //点击的班级号
@@ -134,18 +107,14 @@
 
         //菜单栏向上还是向下
         classMenu: '',
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       }
     },
 
     computed: {
       ...mapState([
         'Class_lists',
-<<<<<<< HEAD
-=======
         'isLogin',
         'To_Data',
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       ])
     },
 
@@ -156,11 +125,7 @@
 
       //如果仓库为空则将本地的班级信息赋值给仓库—-------->if的表达式有疑问，为什么不能直接为空？明明他是一个数组，输出类型却为对象
       if (this.Class_lists.length === 0) {
-<<<<<<< HEAD
-        console.log(typeof(this.Class_lists));
-=======
         console.log(typeof (this.Class_lists));
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         console.log('本地存储有什么：', JSON.parse(localStorage.getItem('class_lists')));
         console.log('将本地存储的班级信息赋值到仓库：');
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
@@ -171,7 +136,6 @@
       this.classMsg = this.Class_lists;
       console.log('classMsg已经被赋值为：', this.classMsg);
     },
-<<<<<<< HEAD
     mounted() {
       //判断登陆状态
       if (this.$store.state.isLogin) {
@@ -186,26 +150,6 @@
       //疯狂刷新已签到人员
       // this.chickInStu()
     },
-
-    methods: {
-
-      getWorks(username) {
-        works(username).then(res => {
-          console.log(res.data);
-        }).catch(error => {
-          console.log(error.response)
-        });
-        this.showPic = true;
-      },
-
-      // dele(){
-      //   for (var i = 0; i < this.classMsg.length; i++){
-      //     for(var j = 0; j<this.classMsg[i].students.length;j++){
-      //       this.classMsg[i].students[j].ifShowMenu = false;
-      //     }
-      //   }
-      // },
-=======
 
 
     methods: {
@@ -246,27 +190,10 @@
       },
 
 
-      getWorks(username) {
-        works(username).then(res => {
-          console.log(res.data);
-          this.imgURL = 'https://1.cust.edu.cn/shufa/' + res.data.data[0].pieces[0].image.url
-        }).catch(error => {
-          console.log(error.response)
-        })
-
-        this.showPic = true;
-      },
-
-
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       // 更改签到状态
       isSign(index1, index2) {
         // 先输出看看你是个啥
         console.log(this.classMsg[index1].students[index2].isSign);
-<<<<<<< HEAD
-=======
-
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         this.warning = '更改成功';
         this.isLoading = true;
         setTimeout(() => {
@@ -290,7 +217,6 @@
       },
 
 
-<<<<<<< HEAD
       //获取学生 （未登录）
       chickNunStu() {
         const id = localStorage.getItem('res.data.body.id');
@@ -379,90 +305,6 @@
       // }
       //   },
     },
-=======
-      // 定时器//获取学生五秒请求一次
-      set_time() {
-
-        //最大请求120次
-        let stry = '012345678901234567890' +
-          '123456789012345678901234567890' +
-          '123456789012345678901234567890' +
-          '123456789012345678901234567890123456789';
-        for (let j = 0; j < stry.length; j++) {
-
-          (function () {
-            let t = j + 1;
-            let tyy = stry[j];
-            setTimeout(function () {
-              console.log(tyy + "stu");
-              get_stu().then(result => {
-
-                //这里将接受的数据遍历后逐个将index1/2 传入下一条函数
-                this.classMsg[index1].student[index2].push({isSign: true})
-              }).catch(error => {
-                console.log(error.response)
-              })
-            }, 5 * 1000 * t)
-          })()
-        }
-      },
-
-      // 关闭弹窗
-      alertDel() {
-        // 警告弹窗
-        this.showPic = false;
-      },
-
-      // 去“数据管理”
-      toData() {
-        if (this.isLogin === true) {
-          this.$router.push({name: 'data'});
-        } else {
-
-          console.log("classMsg————To_Data：", this.To_Data);
-
-          this.$store.commit('SET_ATTENTION', {
-            ifAlert: true,
-            at_warning: '该功能需要登陆后才可使用，请先登录。',
-            noLogin: true,
-            To_Data: true,
-          });
-
-          console.log("classMsg————To_Data：", this.To_Data);
-        }
-      },
-
-      Lshow(index1, index2) {
-        console.log("迟到了");
-        if (this.Class_lists[index1].students[index2].Late === true) {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了迟到'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-        } else {
-          this.Class_lists[index1].students[index2].Late = true;
-          this.judgeLate = true;
-          this.Class_lists[index1].students[index2].Truancy = false;
-          this.judgeTruancy = false;
-        }
-      },
-      Tshow(index1, index2) {
-        console.log("旷课了");
-        if (this.Class_lists[index1].students[index2].Late === false) {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了旷课'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-        } else {
-          this.Class_lists[index1].students[index2].Late = false;
-          this.Class_lists[index1].students[index2].Truancy = true;
-          this.judgeLate = false;
-          this.judgeTruancy = true;
-        }
-      }
-
-    }
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
 
   }
@@ -474,16 +316,6 @@
     margin: 0;
   }
 
-<<<<<<< HEAD
-  /*白色部分*/
-  .white {
-    width: 53.38vw;
-    margin-top: 5.555vh;
-    margin-left: 4.166vw;
-    background-color: #fff;
-    height: 85.185vh;
-  }
-=======
   /*!*白色部分*!*/
   /*.white {*/
     /*width: 53.38vw;*/
@@ -492,7 +324,6 @@
     /*background-color: #fff;*/
     /*height: 85.185vh;*/
   /*}*/
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
   /*白色主体，固定宽高，超出显示滚动条*/
   .white .main {
@@ -546,29 +377,13 @@
     cursor: pointer;
   }
 
-<<<<<<< HEAD
-  .person-box:hover .dropdown-content {
-    display: block;
-  }
-
-  .dropdown-content {
-    display: none;
-    position: absolute;
-=======
   .dropdown-content {
     position: absolute;
     display: flex;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     font-size: 14px;
     cursor: pointer;
   }
 
-<<<<<<< HEAD
-  .dropdown-content span {
-    margin-left: -20px;
-    display: block;
-    width: 120px;
-=======
   .dropdown-content-positive {
     flex-direction: column;
   }
@@ -582,30 +397,15 @@
     position: relative;
     display: block;
     width: 110px;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     height: 40px;
     line-height: 40px;
     text-align: center;
     background-color: #fff;
-<<<<<<< HEAD
-    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
-=======
     /* box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2); */
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     border-top: #e7e7eb solid 1px;
     cursor: pointer;
   }
 
-<<<<<<< HEAD
-  .dropdown-content span:hover {
-    background-color: #edeef0;
-  }
-
-  button:focus {
-    outline: none;
-  }
-
-=======
   .dropdown-content div:hover {
     background-color: #edeef0;
   }
@@ -658,7 +458,6 @@
   }
 
 
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .line .notSign {
     background-color: #d82828;
   }
@@ -667,10 +466,6 @@
     background-color: #12cbb3;
   }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .onLoad {
     position: absolute;
     height: 100px;
@@ -686,10 +481,6 @@
     z-index: 101;
   }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   /*====================    pic-begin    ================*/
   .picture {
     /*display: none;*/
@@ -789,14 +580,11 @@
 
   /*====================    pic-end    ================*/
 
-<<<<<<< HEAD
-=======
 
   .noLog {
     color: #8d8a8a;
   }
 
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .warning-enter-active {
     transition: all 0.3s ease;
   }
