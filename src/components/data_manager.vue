@@ -38,19 +38,6 @@
             </div>
             <div class="alert-detail-content">
               <div class="detail-content-header">
-<<<<<<< HEAD
-                <span>序号</span>
-                <span>学号</span>
-                <span>总缺勤次数</span>
-                <span>总考勤次数</span>
-              </div>
-              <div class="detail-content-body">
-                <div class="content" v-for="(value, index) in students">
-                  <span>{{ index + 1 }}</span>
-                  <span style="font-weight: bold;">{{ value.id }}</span>
-                  <span>{{ text }}</span>
-                  <span>{{ text }}</span>
-=======
                 <span>学号</span>
                 <span>迟到</span>
                 <span>旷课</span>
@@ -67,20 +54,12 @@
                   <span>{{ text }}</span>
                   <span>{{ text }}</span>
                   <span>{{ text }}&nbsp;/&nbsp;{{ text }}</span>
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
                 </div>
               </div>
             </div>
           </div>
-<<<<<<< HEAD
-
         </div>
       </transition>
-
-=======
-        </div>
-      </transition>
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     </div>
 
 
@@ -88,18 +67,11 @@
 </template>
 
 <script>
-<<<<<<< HEAD
   import { mapState } from 'vuex'
   import {getchickin} from "../axios/api";
 
   export default {
     name: 'data_manage',
-=======
-  import {mapState} from 'vuex'
-
-  export default {
-    name: 'data_mg',
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     data() {
       return {
         param: 0,
@@ -108,11 +80,7 @@
         ifShow: false,
         // 开关变量
         count: 0,
-<<<<<<< HEAD
-        text: '-',
-=======
         text: '—',
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 
         classMsg: [],
         students: [],
@@ -126,7 +94,6 @@
       ])
     },
 
-<<<<<<< HEAD
     created(){
       // 跟classMsg一毛一样，就不再解释了
       if(this.Class_lists.length === 0){
@@ -135,28 +102,15 @@
       this.classMsg = this.Class_lists;
       //获取历史考勤状态信息
       this.getChickinTo()
-=======
-    created() {
-      // 跟classMsg一毛一样，就不再解释了
-      if (this.Class_lists.length === 0) {
-        this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
-      }
-      this.classMsg = this.Class_lists;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     },
 
 
     methods: {
-<<<<<<< HEAD
-      showDetail(index){
-=======
       showDetail(index) {
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
         if (this.count === 0) {
           console.log(this.count);
           this.count = 1;
           this.param = index;
-<<<<<<< HEAD
           for(var i = 0; i < this.classMsg[index].students.length; i++){
 
             // console.log(this.classMsg[index].students[i].isSign);
@@ -188,74 +142,12 @@
 
       close(){
         this.ifShow = ! this.ifShow;
-=======
-          for (var i = 0; i < this.classMsg[index].students.length; i++) {
-            if (this.classMsg[index].students[i].isSign === false) {
-              this.students.push(this.classMsg[index].students[i]);
-            }
-          }
-          this.ifShow = !this.ifShow;
-
-        } else {
-          console.log(this.count);
-          this.ifShow = !this.ifShow;
-        }
-
-      },
-      close() {
-        this.ifShow = !this.ifShow;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
       }
     },
   }
 </script>
 
 <style scoped>
-<<<<<<< HEAD
-  .classroom{
-    height: 100%;
-    width: 100%;
-    padding: 30px 20px;
-    /*overflow-y: scroll;*/
-    box-sizing: border-box;
-  }
-
-  .classroom .table .table_header {
-    /*padding: 10px;*/
-    height: 40px;
-    width: 100%;
-    line-height: 40px;
-    border: #e7e7eb solid 1px;
-    background-color: #e7e7eb;
-  }
-
-  .table  span {
-    display: inline-block;
-    width: 19%;
-    text-align: center;
-    font-size: 14px;
-    /*outline: none;*/
-  }
-
-  .table .table_body {}
-
-  .table_body .item {
-    display: block;
-    border-bottom: #e7e7eb solid 1px;
-    height: 40px;
-    line-height: 40px;
-  }
-
-  .table_body .item button {
-    border: none;
-    background: none;
-    outline: none;
-    color: #2b2cff;
-  }
-
-  .table_body .item button:active {
-    color: #ff3e23;
-=======
   @import "../css/base.css";
 
   .list {
@@ -305,7 +197,6 @@
 
   .list-bd li a:hover {
     text-decoration: underline;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   }
 
   /*详情弹框-begin*/
@@ -315,13 +206,8 @@
     left: 0;
     height: 100%;
     width: 100%;
-<<<<<<< HEAD
-    z-index: 100;
-  }
-=======
   }
 
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .alert-detail-bg {
     width: 100%;
     height: 100%;
@@ -332,19 +218,11 @@
 
   .alert-detail-wrap {
     position: absolute;
-<<<<<<< HEAD
-    max-width: 600px;
-    height: 450px;
-    left: 50%;
-    top: 10%;
-    margin-left: -300px;
-=======
     max-width: 800px;
     height: 600px;
     left: 50%;
     top: 10%;
     margin-left: -400px;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     background: #fff;
     border-radius: 2px;
     -webkit-animation: alert .3s;
@@ -357,11 +235,6 @@
     margin-left: 15px;
     line-height: 30px;
   }
-<<<<<<< HEAD
-  /*   ×按钮    */
-=======
-
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   .alert-detail-del {
     cursor: pointer;
     width: 40px;
@@ -399,15 +272,9 @@
     font-size: 14px;
   }
 
-<<<<<<< HEAD
-  .alert-detail-content  span {
-    display: inline-block;
-    width: 24%;
-=======
   .alert-detail-content span {
     display: inline-block;
     width: 16%;
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
     text-align: center;
   }
 
@@ -419,18 +286,6 @@
     right: 0;
     overflow-y: scroll;
   }
-<<<<<<< HEAD
-  .alert-detail-content .detail-content-body .content {
-    line-height: 45px;
-    height: 45px;
-    border-bottom: #99C8EC solid 1px ;
-    font-size: 15px;
-  }
-
-  .detail-content-body::-webkit-scrollbar {
-    display: none;
-  }
-=======
 
   .alert-detail-content .detail-content-body .content {
     line-height: 45px;
@@ -450,7 +305,6 @@
     display: none;
   }
 
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
   /*详情弹框-end*/
 
   .detail-enter-active {
@@ -470,8 +324,6 @@
   .detail-leave-to {
     opacity: 0;
   }
-<<<<<<< HEAD
-=======
 
   /*webkit内核*/
   .scroll_content::-webkit-scrollbar {
@@ -552,5 +404,4 @@
     overflow: auto;
   }
 
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
 </style>
