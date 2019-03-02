@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 // 引入组件
 import home from '@/components/home'
+// import attendance from '@/components/attendance'
 import attendance from '@/components/attendance'
 import notfound from '@/components/notfound'
 import data_manager from '@/components/data_manager'

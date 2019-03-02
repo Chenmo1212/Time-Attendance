@@ -40,53 +40,55 @@
       <!--左边 end-->
       <!--右边 begin-->
       <div class="right">
-        <!--信息主体-->
-        <div class="main" ref="main">
+        <div class="main">
+          <div class="main-header">
+            <h3>考勤班级状态</h3>
+            <div class="menu bounce1" v-show="isMenu" id="bounce">
+              <ul>
+                <li @click="toData()" v-show="!ifSign" :class="{'noLogin': !isLogin,'menu-main': true}">
+                  <i class="iconfont">&#xe61b;</i>
+                  <span>数据管理</span>
+                </li>
+                <li class="spacer" v-show="!ifSign"></li>
+                <li class="menu-main" @click="getWorks('test1')" v-show="!ifSign">
+                  <i class="iconfont">&#xe633;</i>
+                  <span>查看照片</span>
+                </li>
+                <li class="spacer" v-show="!ifSign"></li>
+                <li class="menu-main" @click="showLate(classIndex, studentId)" v-show="ifSign">
+                  <i class="iconfont" v-if="ifLate">&#xe6f2;</i>
+                  <span>设为迟到</span>
+                </li>
+                <li class="spacer" v-show="ifSign"></li>
+                <li class="menu-main" @click="showTruancy(classIndex, studentId)" v-show="ifSign">
+                  <i class="iconfont" v-if="ifTruancy">&#xe6f2;</i>
+                  <span>设为旷课</span>
+                </li>
+                <li class="spacer" v-show="ifSign"></li>
+                <li class="menu-main" @click="setSign(classIndex, studentId)">
+                  <i class="iconfont">&#xe67a;</i>
+                  <span>更改状态</span>
+                </li>
 
-          <!-- 右键菜单栏(鼠标移出菜单自动消失) -->
-          <div class="dropdown-content" v-show="isMenu" v-bind:class="classMenu"
-               v-bind:style="{ top: yMenu+ 'px' , left: xMenu+ 'px' }"
-               @mouseleave="mouseout">
-            <div @click="isSign(classIndex, studentId)" style="border: none;">
-              <i class="iconfont">&#xe67a;</i>
-              <span class="text">更改状态</span>
-            </div>
-            <div v-if="judgeIsSign" @click="Lshow(classIndex, studentId)">
-              <i class="iconfont" v-if="judgeLate">&#xe6f2;</i>
-              <span class="text">设为迟到</span>
-            </div>
-            <div v-if="judgeIsSign" @click="Tshow(classIndex, studentId)">
-              <i class="iconfont" v-if="judgeTruancy">&#xe6f2;</i>
-              <span class="text">设为旷课</span>
-            </div>
-            <div v-if="!judgeIsSign" @click="getWorks('test1')">
-              <i class="iconfont">&#xe633;</i>
-              <span class="text">查看照片</span>
-            </div>
-            <div :class="{noLog:!isLogin}" @click="toData">
-              <i class="iconfont">&#xe61b;</i>
-              <span class="text">数据管理</span>
+              </ul>
             </div>
           </div>
-
-
-          <div class="box" >
-            <!--获取班级个数-->
-            <div v-for="(value, index1) in classMsg">
-              <!--班号-->
-              <div class="class_head">{{classMsg[index1].class_id}}班</div>
-              <div class="class_body">
-
-                <!--获取人数-->
-                <div class="line" v-for="(value,index2) in classMsg[index1].students">
-                  <div class="person-box">
-                    <!--单击-->
-                    <!--<div class="person" @click.stop="showMenu(index1,index2)" title="查看详情"-->
-                    <!--右键点击-->
-                    <!--<div class="person" title="查看详情" @contextmenu.prevent="menu" @contextmenu="setIndex(index1,index2)"-->
-                    <!--悬浮-->
-                    <div class="person" title="查看详情" @mouseover.prevent="menu" @mouseover="setIndex(index1,index2)"
-                         :class="classMsg[index1].students[index2].isSign ? 'isSign' : 'notSign'">{{index2 + 1}}
+          <div class="spacer"></div>
+          <!-- main-body begin -->
+          <div class="main-body" ref="main">
+            <div class="box">
+              <!--获取班级个数-->
+              <div v-for="(value, index1) in classMsg">
+                <!--班号-->
+                <div class="class_head">{{classMsg[index1].class_id}}班</div>
+                <div class="class_body">
+                  <!--获取人数-->
+                  <div class="line" v-for="(value,index2) in classMsg[index1].students">
+                    <div :class="{ person_box: classMsg[index1].students[index2].checkBtn}">
+                      <!--单击-->
+                      <div class="person" @click.stop="setIndex(index1,index2)" title="查看详情"
+                           :class="classMsg[index1].students[index2].ifSign ? 'isSign' : 'notSign'">{{index2 + 1}}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -95,8 +97,6 @@
           </div>
         </div>
       </div>
-
-
     </div>
 
     <!--提示弹窗-->
@@ -108,8 +108,7 @@
       <div class="picture" v-show="showPic">
         <div class="pic-bg"></div>
         <div class="pic-wrap">
-          <!--<span class="pic-del" title="关闭" @click="alertDel"></span>-->
-          <i class="pic-del iconfont" title="关闭" @click="alertDel">&#xe620;</i>
+          <i class="pic-del iconfont" title="关闭" @click="delAlert">&#xe620;</i>
           <span class="pic-title">学生头像</span>
           <img :src="imgURL"/>
         </div>
@@ -119,30 +118,8 @@
 </template>
 
 <script>
-  // 引入子组件
-  import qr_code from './qr_code';
-  import classMsg from './classMsg';
-export default {
-    name: "Attendance",
-    data() {
-      return {
-
-      }
-    },
-    methods: {
-
-    },
-
-    // 声明子组件
-    components: {
-      qr_code,
-      classMsg,
   import {mapState} from 'vuex';
-  import {works} from "../axios/api";
-
-  // 引入子组件
-  import qr_code from './qr_code';
-  import classMsg from './classMsg';
+  // import {works} from "../axios/api";
 
   export default {
     name: "Attendance",
@@ -166,27 +143,24 @@ export default {
         studentId: '',
 
         //菜单栏的判断
-        judgeIsSign: true,
-        judgeLate: true,
-        judgeTruancy: true,
+        ifSign: true,
+        ifLate: true,
+        ifTruancy: true,
 
         //是否显示菜单栏
         isMenu: false,
 
-        //菜单栏的位置
-        xMenu: '',
-        yMenu: '',
-
-        //菜单栏向上还是向下
-        classMenu: '',
-
+        // 进度条
         loader_width: 300,    // 进度条盒子宽度
         loader_height: 8,    // 进度条盒子高度
         loaded_width: 0,      // 进度条内容宽度——初始宽度
         loaded_height: 8,    // 进度条内容高度
         loader_speed: 10000,  // 进度条速度(ms)
-
         time: '',
+
+        checkBtn: true,
+
+        ani_status: 0,
       }
     },
     computed: {
@@ -204,24 +178,17 @@ export default {
     },
     created() {
 
-      console.log("full", this.full);
-
       // 创建之前先看看仓库里有啥
       console.log('创建之前先看看仓库里有啥', this.Class_lists);
 
       //如果仓库为空则将本地的班级信息赋值给仓库—-------->if的表达式有疑问，为什么不能直接为空？明明他是一个数组，输出类型却为对象
       if (this.Class_lists.length === 0) {
-        console.log(typeof (this.Class_lists));
-        console.log('本地存储有什么：', JSON.parse(localStorage.getItem('class_lists')));
-        console.log('将本地存储的班级信息赋值到仓库：');
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
-        console.log('再看看仓库里有啥', this.Class_lists);
       }
 
       //将仓库中的班级信息赋值给classMsg----------------为安全起见，还是新建一个数组吧，就不直接从仓库里拿直接用了
       this.classMsg = this.Class_lists;
       console.log('classMsg已经被赋值为：', this.classMsg);
-
 
       //请求接口
       // this.set_time();
@@ -230,18 +197,9 @@ export default {
       this.forClock();
 
       // 进度条
-      this.processbar();
+      this.processBar();
     },
     mounted() {
-      if(!this.full){
-        this.$store.commit('SET_ATTENTION', {
-          ifAlert: true,
-          at_warning: '为方便您拥有更好的考勤体验，请您按下键盘F11键',
-          full_screen: true,
-        });
-      }
-
-
       // 获取元素
       var loader = document.getElementById("loader"); // 获取进度条盒子
       var loaded = document.getElementById("loaded"); // 获取进度条内容
@@ -252,34 +210,10 @@ export default {
       loaded.style.height = this.loaded_height + 'px'; // 设置内容高度
       console.log("盒子当前设置宽度为:", loader.style.width);
     },
-    destroyed(){
+    destroyed() {
       clearTimeout(this.time);
     },
     methods: {
-
-      endSign() {
-        if (this.ShowBlock === false) {
-          this.$store.commit('SET_ATTENTION', {
-            ifAlert: true,  // 提示窗口
-            at_warning: '当前正在考勤，确定要结束当前考勤？', // 提示语
-            EndSign: true
-          });
-        } else {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '考勤已结束'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-        }
-
-      },
-
-      //循环计时器60次
-      forClock() {
-        for (let i = 1; i < 60; i++) {
-          this.clock()
-        }
-      },
-
       //数字计时器
       clock() {
         const TIME_COUNT = 10;
@@ -290,7 +224,6 @@ export default {
             if (this.count > 1 && this.count <= TIME_COUNT) {
               this.count--;
             } else {
-              // this.show = true;
               clearInterval(this.timer);
               this.timer = null;
               //重置计时器
@@ -300,7 +233,50 @@ export default {
           }, 1000)
         }
       },
-
+      // 删除选中按钮
+      clearCheckBtn() {
+        for (var i = 0; i < this.classMsg.length; i++) {
+          for (var j = 0; j < this.classMsg[i].students.length; j++)
+            this.classMsg[i].students[j].checkBtn = false;
+        }
+      },
+      // 关闭弹窗
+      delAlert() {
+        // 警告弹窗
+        this.showPic = false;
+      },
+      endSign() {
+        if (this.ShowBlock === false) {
+          this.setAttention("当前正在考勤，确定要结束当前考勤？", {EndSign: true});
+          // this.$store.commit("")
+        } else {
+          this.setWarning('考勤已结束');
+        }
+      },
+      //循环计时器60次
+      forClock() {
+        for (let i = 1; i < 60; i++) {
+          this.clock();
+        }
+      },
+      // 进度条
+      processBar() {
+        var count = (this.loader_width * 20) / this.loader_speed; // 进度条单次增加宽度（px）
+        var total = 0; // 进度条累加总宽度
+        var width = this.loader_width;
+        this.time = setInterval(function () { // 定义计时器
+          total += count;
+          loaded.style.width = total + 'px';
+          var d_width = loaded.style.width;
+          if (parseInt(d_width) >= width) {
+            var myDate = new Date(); // 显示当前日期时间
+            console.log("当前时间：", myDate.toLocaleString());
+            console.log("进度条满了，重置！");
+            total = 0;
+            loaded.style.width = total + 'px';
+          }
+        }, 20);
+      },
       //定时器//获取二维码
       set_time() {
         //首次获取二维码
@@ -312,15 +288,12 @@ export default {
         //最大请求60次
         let stry = '012345678901234567890123456789012345678901234567890123456789';
         for (let j = 0; j < stry.length; j++) {
-
           (function () {
             let t = j + 1;
             let tyy = stry[j];
             setTimeout(function () {
               console.log(tyy + 'code');
-
               // 第二次及以后的二维码
-
               get_code().then(result => {
                 //  push二维码
               }).catch(error => {
@@ -331,95 +304,63 @@ export default {
         }
       },
 
-      processbar() {
-        var count = (this.loader_width * 20) / this.loader_speed; // 进度条单次增加宽度（px）
-        var total = 0; // 进度条累加总宽度
-        var width = this.loader_width;
-        this.time = setInterval(function () { // 定义计时器
-          total += count;
-          loaded.style.width = total + 'px';
-          var d_width = loaded.style.width;
-          if (parseInt(d_width) >= width) {
-            var myDate = new Date(); // 显示当前日期时间
-            console.log("当前时间：",myDate.toLocaleString());
-            console.log("进度条满了，重置！");
-            total = 0;
-            loaded.style.width = total + 'px';
-          }
-        }, 20);
-      },
-
       setIndex(index1, index2) {
+        var student = this.classMsg[index1].students[index2];
+        this.clearCheckBtn(index1, index2);
+        this.showMenu(index1, index2);
         this.classIndex = index1;
         this.studentId = index2;
-        this.judgeIsSign = !this.classMsg[index1].students[index2].isSign;
-        this.judgeLate = this.Class_lists[index1].students[index2].Late;
-        this.judgeTruancy = this.Class_lists[index1].students[index2].Truancy;
-        this.setMenu();
+        this.ifSign = !student.ifSign;
+        this.ifLate = student.Late;
+        this.ifTruancy = student.Truancy;
       },
-      menu(e) {
-        console.log('鼠标右键单击元素开启右键菜单');
-        //详细讲解 https://blog.csdn.net/u010885548/article/details/82260576
-        this.xMenu = e.clientX; //x坐标，相对于浏览器的坐标
-        this.yMenu = e.clientY;  //同上
-        // let clientHeight =`${document.documentElement.clientHeight}`
-      },
-      setMenu() {
-        let height = 200;
-        if (!this.judgeIsSign) height -= 40;
-        if (this.$refs.main.offsetHeight + this.$refs.main.getBoundingClientRect().top - this.yMenu <= height) {
-          this.yMenu = this.yMenu - height + 30;
-          // this.classMenu = "dropdown-content-negative";  // 向下排列
-          this.classMenu = "dropdown-content-positive";  // 向下排列
+
+      showMenu(index1, index2) {
+        var student = this.classMsg[index1].students[index2];
+        if (this.classIndex === index1 && this.studentId === index2 && this.isMenu === true) {
+          this.isMenu = false;
+          student.checkBtn = false;
         } else {
-          this.classMenu = "dropdown-content-positive";   // 向上排列
+          this.isMenu = true;
+          student.checkBtn = true;
+          this.setAnimation();
         }
-        this.isMenu = true;
-        console.log("height:", height)                              // 计算后的到的菜单的高度
-        console.log("main:", this.$refs.main.offsetHeight)          // main的高度
-        console.log("yMenu:", this.yMenu)                           // 鼠标点击处距离顶部的距离
-        console.log(this.$refs.main.getBoundingClientRect().top)   // main距离顶部的距离
       },
-      //鼠标移出事件
-      mouseout() {
-        this.isMenu = false;
+      setAnimation() {
+        var ani_icon = document.getElementById('bounce');
+        if (this.ani_status === 1) {
+          ani_icon.className = 'menu bounce1';
+          this.ani_status = 2;
+        } else {
+          ani_icon.className = 'menu bounce2';
+          this.ani_status = 1;
+        }
       },
-
-      getWorks(username) {
-        works(username).then(res => {
-          console.log(res.data);
-          this.imgURL = 'https://1.cust.edu.cn/shufa/' + res.data.data[0].pieces[0].image.url
-        }).catch(error => {
-          console.log(error.response)
+      // 设置提示
+      setAttention(msg,obj){
+        this.$store.commit('SET_ATTENTION', {
+          ifAlert: true,  // 提示窗口
+          at_warning: msg, // 提示语
+          EndSign: obj.EndSign,
+          noLogin: obj.noLogin,
+          To_Data: obj.To_Data,
         });
-        console.log('showPic:', this.showPic);
-        this.showPic = true;
-        console.log('showPic:', this.showPic);
       },
-
-
-      // 更改签到状态
-      isSign(index1, index2) {
-        // 先输出看看你是个啥
-        console.log(this.classMsg[index1].students[index2].isSign);
-
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '更改成功'});
+      // 设置警告
+      setWarning(msg){
+        this.$store.commit('SET_LOADING', {isLoading: true, warning: msg});
         setTimeout(() => {
           this.$store.commit('SET_LOADING', false);
         }, 1000);
-
-        // 取反
-        this.classMsg[index1].students[index2].isSign = !this.classMsg[index1].students[index2].isSign;
-
-        // 未签到人数改变
-        // console.log(this.classMsg[index1].student[index2].isSign);
-        if (this.classMsg[index1].students[index2].isSign === true) {
-          this.classMsg[index1].noSign -= 1;
-        } else {
-          this.classMsg[index1].noSign += 1;
-        }
-        console.log(this.classMsg[index1].students[index2].id);
-
+      },
+      // 更改签到状态
+      setSign(index1, index2) {
+        var classroom = this.classMsg[index1];
+        var student = this.classMsg[index1].students[index2];
+        this.setWarning('更改成功');
+        student.ifSign = !student.ifSign;
+        student.ifSign === true ? classroom.noSign -= 1 : classroom.noSign += 1;
+        this.ifSign = !student.ifSign;
         // 数据有改变，需要改变本地存储中的数据
         localStorage.setItem('class_lists', JSON.stringify(this.classMsg));
       },
@@ -427,21 +368,18 @@ export default {
 
       // 定时器//获取学生五秒请求一次
       set_time() {
-
         //最大请求120次
         let stry = '012345678901234567890' +
           '123456789012345678901234567890' +
           '123456789012345678901234567890' +
           '123456789012345678901234567890123456789';
         for (let j = 0; j < stry.length; j++) {
-
           (function () {
             let t = j + 1;
             let tyy = stry[j];
             setTimeout(function () {
               console.log(tyy + "stu");
               get_stu().then(result => {
-
                 //这里将接受的数据遍历后逐个将index1/2 传入下一条函数
                 this.classMsg[index1].student[index2].push({isSign: true})
               }).catch(error => {
@@ -452,82 +390,50 @@ export default {
         }
       },
 
-      // 关闭弹窗
-      alertDel() {
-        // 警告弹窗
-        this.showPic = false;
+      showLate(index1, index2) {
+        const student = this.Class_lists[index1].students[index2];
+        this.setWarning('更改为迟到');
+        if (student.Late === true) {
+          this.setWarning('您已经选择了迟到');
+        } else {
+          student.Late = true;
+          this.ifLate = true;
+          student.Truancy = false;
+          this.ifTruancy = false;
+        }
       },
 
+      showTruancy(index1, index2) {
+        console.log("旷课了");
+        const student = this.Class_lists[index1].students[index2];
+        this.setWarning('更改为旷课');
+        if (this.Class_lists[index1].students[index2].Late === false) {
+          this.setWarning('您已经选择了旷课');
+        } else {
+          student.Late = false;
+          student.Truancy = true;
+          this.ifLate = false;
+          this.ifTruancy = true;
+        }
+      },
       // 去“数据管理”
       toData() {
-        if (this.isLogin === true) {
-          this.$router.push({name: 'data'});
-        } else {
-
-          console.log("classMsg————To_Data：", this.To_Data);
-
-          this.$store.commit('SET_ATTENTION', {
-            ifAlert: true,
-            at_warning: '该功能需要登陆后才可使用，请先登录。',
-            noLogin: true,
-            To_Data: true,
-          });
-
-          console.log("classMsg————To_Data：", this.To_Data);
-        }
-      },
-
-      Lshow(index1, index2) {
-        console.log("迟到了");
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '更改为迟到'});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 800);
-        if (this.Class_lists[index1].students[index2].Late === true) {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了迟到'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-        } else {
-          this.Class_lists[index1].students[index2].Late = true;
-          this.judgeLate = true;
-          this.Class_lists[index1].students[index2].Truancy = false;
-          this.judgeTruancy = false;
-        }
-      },
-      Tshow(index1, index2) {
-        console.log("旷课了");
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '更改为旷课'});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 800);
-        if (this.Class_lists[index1].students[index2].Late === false) {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已经选择了旷课'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-        } else {
-          this.Class_lists[index1].students[index2].Late = false;
-          this.Class_lists[index1].students[index2].Truancy = true;
-          this.judgeLate = false;
-          this.judgeTruancy = true;
-        }
+        this.isLogin ?
+          this.$router.push({name: 'data'}) :
+          this.setAttention('该功能需要登陆后才可使用，请先登录。',{noLogin: true,To_Data: true});
       },
     },
-    updated: function () {
-      this.globalClick(this.mouseout);
->>>>>>> 91dd05a50ecb9d361a91be5c3fbd21580646c4f9
-    }
   }
 </script>
 
 <style scoped>
+  @import "../css/css3.css";
+
   .mw {
     margin: 2px auto;
     width: 1400px;
     height: 600px;
     position: relative;
-    /*background-color: #aaa;*/
   }
 
   .left .box {
@@ -537,7 +443,6 @@ export default {
   .left {
     width: 535px;
     height: 650px;
-    /*background-color: #ddd;*/
     float: left;
   }
 
@@ -593,95 +498,6 @@ export default {
     border-bottom: 2px solid #e7e9ef;
   }
 
-  .clip {
-    /* Safari 5.1 - 6.0 */
-    background: -webkit-linear-gradient(left, #f9f586, #96fbc4);
-    /* Opera 11.1 - 12.0 */
-    background: -o-linear-gradient(left, #f9f586, #96fbc4);
-    /* Firefox 3.6 - 15 */
-    background: -moz-linear-gradient(left, #f9f586, #96fbc4);
-    /* 标准的语法 */
-    background: linear-gradient(to right, #f9f586, #96fbc4);
-    width: 10px;
-    margin: 1px 0px;
-    box-shadow: 0px 0px 2px #0dd2ea;
-    height: 8px;
-    border-radius: 20px;
-  }
-
-  .progress_bar .progress_box {
-    position: absolute;
-    width: 380px;
-    left: 50%;
-    margin-left: -190px;
-    background: #fff;
-    height: 9px;
-    border-radius: 3px;
-    border-left: 1px solid #e7e9ef;
-    border-top: 2px solid #e7e9ef;
-    border-right: 1px solid #e7e9ef;
-    border-bottom: 2px solid #e7e9ef;
-  }
-
-  .progress_bar .progress_box .progress_content {
-    height: 4px;
-    margin: 2px 0;
-    background: #1aad19;
-    position: absolute;
-    left: 0;
-    width: 300px;
-    box-shadow: 0 0 10px 1px rgba(75, 173, 67, 0.4);
-    animation: content 10s infinite;
-    -moz-animation: content 10s infinite; /* Firefox */
-    -webkit-animation: content 10s infinite; /* Safari and Chrome */
-    -o-animation: content 10s infinite; /* Opera */
-  }
-
-  /* Firefox */
-  @-moz-keyframes content {
-    0% {
-      width: 0;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-
-  /* Safari and Chrome */
-  @-webkit-keyframes content {
-    0% {
-      width: 0;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-
-  /*Opera */
-  @-o-keyframes content {
-    0% {
-      width: 0;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-
-  .popIn {
-    position: absolute;
-    top: 50px;
-    left: -50px;
-    height: 100%;
-    width: 535px;
-    text-align: center;
-    background-color: #F6F8F9;
-    /*border: #e7e9ef 3px solid;*/
-    -webkit-animation: fadeleftIn 2s;
-    animation: fadeleftIn 2s;
-    -webkit-animation-name: popIn;
-    animation-name: popIn;
-  }
-
   .block .block_header p {
     font-size: 20px;
     margin-top: 10vh;
@@ -693,43 +509,13 @@ export default {
     margin-left: 60px;
   }
 
-
-  @-webkit-keyframes popIn {
-    0% {
-      -webkit-transform: scale3d(0, 0, 0);
-      transform: scale3d(0.5, 0.5, 0.5);
-      opacity: 0;
-    }
-    50% {
-      -webkit-animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715);
-      animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715);
-    }
-    100% {
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1);
-      -webkit-animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      opacity: 1;
-    }
-  }
-
-  @keyframes popIn {
-    0% {
-      -webkit-transform: scale3d(0, 0, 0);
-      transform: scale3d(0.5, 0.5, 0.5);
-      opacity: 0;
-    }
-    50% {
-      -webkit-animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715);
-      animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715);
-    }
-    100% {
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1);
-      -webkit-animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      opacity: 1;
-    }
+  .popIn {
+    position: absolute;
+    top: 50px;
+    left: -50px;
+    height: 100%;
+    width: 535px;
+    text-align: center;
   }
 
   .right {
@@ -741,34 +527,90 @@ export default {
     overflow: hidden;
   }
 
-  /*主体，固定宽高，超出显示滚动条*/
-  .right .main {
-    height: 550px;
-    width: 700px;
-    margin: 25px auto;
-    /*background-color: #F6F8F9;*/
-    overflow-y: auto;
+  .main {
 
+    margin: 30px auto;
+    width: 700px;
+  }
+
+  .main-header {
+    height: 40px;
+    line-height: 40px;
+    background-color: #F6F8F9;
+    border: 1px solid #c9cace;
+    margin-bottom: 5px;
+  }
+
+  .main-header h3 {
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: top;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1aad19;
+  }
+
+  .main-header .menu {
+    float: right;
+    margin-right: 20px;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .main-header .menu .iconfont {
+    font-size: 12px;
+  }
+
+  .main-header .menu ul {
+    margin-top: 10px;
+  }
+
+  .main-header .menu li {
+    float: right;
+    cursor: pointer;
+  }
+
+  .main-header .menu li:hover {
+    color: #1aad19;
+  }
+
+  .main-header .menu .spacer {
+    height: 15px;
+    width: 1px;
+    background-color: #aaa;
+    margin-top: 3px;
+  }
+
+  .main-header .menu .menu-main {
+    font-size: 12px;
+    line-height: 20px;
+    padding: 0 15px;
+    margin: 0 3px;
+  }
+
+  /*主体，固定宽高，超出显示滚动条*/
+  .right .main-body {
+    height: 500px;
+    overflow-y: auto;
   }
 
   /*跟随班级长度弹性边框*/
-  .main .box {
-    border: #e7e7eb solid 2px;
+  .main-body .box {
+    border: 1px solid #c9cace;
   }
 
   /*班级班号*/
   .class_head {
-    background-color: #e7e7eb;
+    background-color: #F6F8F9;
     height: 25px;
     line-height: 25px;
     font-weight: 700;
     padding-left: 18px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
   }
 
-  /*!*班级人数所在盒子*!*/
+  /*班级人数所在盒子*/
   .class_body {
-    padding-bottom: 10px;
     width: 675px;
   }
 
@@ -781,7 +623,13 @@ export default {
     font-size: 14px;
     border-bottom: #e7e7eb solid 1px;
     border-top: #e7e7eb solid 1px;
-    margin: 4px 0;
+    margin-bottom: 10px;
+  }
+
+  .person_box {
+    border: 1px solid #96c2f1;
+    background: #eff7ff;
+    margin: -1px;
   }
 
   /*圆形*/
@@ -794,21 +642,6 @@ export default {
     color: white;
     vertical-align: middle;
     cursor: pointer;
-  }
-
-  .dropdown-content {
-    display: flex;
-    position: absolute;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  .dropdown-content-positive {
-    flex-direction: column;
-  }
-
-  .dropdown-content-negative {
-    flex-direction: column-reverse;
   }
 
   .dropdown-content div {
@@ -845,19 +678,37 @@ export default {
     margin-left: 20px;
   }
 
-  .dropdown-content .noLog {
+  .right .main-header .noLogin {
     color: #8d8a8a;
-    cursor: not-allowed; /*鼠标禁止样式*/
+    cursor: not-allowed;
   }
 
+  .right .main-header .noLogin:hover {
+    color: #8d8a8a;
+  }
+
+  .main .spacer {
+    margin-top: -1px;
+    border-bottom: 1px solid #c9cace;
+  }
+
+
   .line .isSign {
-    background-color: #12cbb3;
+    background-color: #47d156;
+  }
+
+  .line .isSign:hover {
+    background-color: #7BD189;
   }
 
   .line .notSign {
-    background-color: #d82828;
+    background-color: #f4362a;
+    /*background-color: #F78989;*/
   }
 
+  .line .notSign:hover {
+    background-color: #F4706D;
+  }
 
   /*====================    pic-begin    ================*/
   .picture {

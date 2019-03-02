@@ -34,9 +34,6 @@ export default {
     state.newSign = obj.newSign;  // 新建签到
     state.To_Data = obj.To_Data;  // 是在想去data的路上触发登录框
     state.EndSign = obj.EndSign;  // 结束考勤
-
-
-    console.log("mutation————To_Data：", state.To_Data);
   },
 
   // 显示登录
@@ -55,7 +52,23 @@ export default {
     state.ShowBlock = boolean;
   },
 
-
+  // 设置提示
+  setAttention(msg,obj){
+    this.$store.commit('SET_ATTENTION', {
+      ifAlert: true,  // 提示窗口
+      at_warning: msg, // 提示语
+      EndSign: obj.EndSign,
+      noLogin: obj.noLogin,
+      To_Data: obj.To_Data,
+    });
+  },
+  // 设置警告
+  setWarning(msg){
+    this.$store.commit('SET_LOADING', {isLoading: true, warning: msg});
+    setTimeout(() => {
+      this.$store.commit('SET_LOADING', false);
+    }, 1000);
+  },
   // 前往数据管理
   // TO_DATA(state, boolean){
   //   state.To_Data = obj.To_Data;  // 是在想去data的路上触发登录框

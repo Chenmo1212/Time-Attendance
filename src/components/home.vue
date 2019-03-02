@@ -6,17 +6,15 @@
       <button class="sign-bt" @click="toAttendance">开始签到</button>
       <div class="change">
         <i class="iconfont" @click="addList" title="添加班级">&#xe66b;</i>
-        <i class="iconfont" @click="reduceList(list)" title="减少班级">&#xe603;</i>
-        <!--<button class="add" @click="addList" title="添加班级"><img src="../png/add.png" alt=""></button>-->
-        <!--<button class="reduce" @click="reduceList(list)" title="减少班级"><img src="../png/reduce.png" alt=""></button>-->
+        <i class="iconfont" @click="reduceList()" title="减少班级">&#xe603;</i>
       </div>
       <div class="msg">
         <ul>
           <li v-for="list in lists">
             <input type="number" v-model="list.class_id" placeholder="请输入班级号">
-            <input type="number" v-model="list.input1" placeholder="第一位同学学号" @change="saveList()"
+            <input type="number" v-model="list.firstStu_id" placeholder="第一位同学学号" @change="saveList()"
                    @keyup.enter="toAttendance"> -
-            <input type="number" v-model="list.input2" placeholder="最后一位同学学号" @change="saveList()"
+            <input type="number" v-model="list.lastStu_id" placeholder="最后一位同学学号" @change="saveList()"
                    @keyup.enter="toAttendance">
           </li>
         </ul>
@@ -41,8 +39,14 @@
         post_list: []
       }
     },
-    mounted() {
-      this.addList();
+    created() {
+      let lists = JSON.parse(localStorage.getItem('lists'));
+      console.log('created:',lists);
+      if (lists) {
+        this.lists = lists;
+      } else {
+        this.addList();
+      }
     },
     methods: {
       // 本地存储
@@ -56,13 +60,12 @@
 
       // 增加班级
       addList() {
-        this.lists.push({input1: '1', input2: '', total: ''});
+        this.lists.push({class_id: '', firstStu_id: '1', lastStu_id: '', total: ''});
         this.saveList();
       },
 
-
       // 减少班级
-      reduceList(list) {
+      reduceList(){
         if (this.lists.length === 1)
           alert("只有一个了，不能再减少了");
         else {
@@ -75,9 +78,9 @@
       toAttendance() {
         // 班级的个数
         console.log('班级的个数:', this.lists.length);
-        for (var i = 0; i < this.lists.length; i++) {
+        for (let i = 0; i < this.lists.length; i++) {
 
-          if (this.lists[i].input1 === '' || this.lists[i].input2 === '' , this.lists[i].class_id === '') {
+          if (this.lists[i].firstStu_id === '' || this.lists[i].lastStu_id === '' , this.lists[i].class_id === '') {
             this.$store.commit('SET_LOADING', {isLoading: true, warning: '请将信息填写完整'});
             setTimeout(() => {
               this.$store.commit('SET_LOADING', false);
@@ -87,13 +90,13 @@
 
           // 新建一个对象，用来push进入数组
           const obj = {students: []};
-          const list = lists[i];
+          const list = this.lists[i];
 
           // 班级学号赋值
-          obj.class_id = this.class_id;
+          obj.class_id = list.class_id;
 
           // 班级人数总数
-          obj.total = list.input2 - list.input1 + 1;
+          obj.total = list.lastStu_id - list.firstStu_id + 1;
 
           // 班级未签到人数
           obj.noSign = obj.total;
@@ -120,7 +123,7 @@
         console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
 
         //post信息
-        this.getList()
+        this.getList();
 
         // 跳转路由
         this.$router.push({name: 'attendance'});
@@ -129,7 +132,7 @@
       //整理班级信息post
       getList() {
 
-        let a = {}
+        let a = {};
         //遍历
         for (let i = 0; i < this.class_lists.length; i++) {
           let gid = this.class_lists[i].class_id;
@@ -157,22 +160,21 @@
         localStorage.setItem('seed', res.data.body.seed);
         localStorage.setItem('res.data.body.id', res.data.body.id);
       }
-
-        localStorage.setItem("lists", JSON.stringify(this.lists));
-        console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
-
-        // 跳转路由
-        this.$router.push({name: 'attendance'});
-      }
-    },
+        // localStorage.setItem("lists", JSON.stringify(this.lists));
+        // console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
+        //
+        // // 跳转路由
+        // this.$router.push({name: 'attendance'});
+      },
 
     mounted() {
       // 本地存储
-      let lists = JSON.parse(localStorage.getItem('lists'));
-      if (lists) {
-        this.lists = lists;
-      }
-
+      // let lists = JSON.parse(localStorage.getItem('lists'));
+      // console.log('mounted',lists);
+      // if (lists) {
+      //   this.lists = lists;
+      // }
+      // console.log('mounted',this.lists);
       // 清除本地数据
       // window.onbeforeunload = function (e) {
       //   var storage = window.localStorage;

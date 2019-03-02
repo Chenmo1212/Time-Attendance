@@ -170,7 +170,7 @@
 
 
   export default {
-    name: "header",
+    name: "navVue",
     data() {
       return {
         // 当前界面——导航菜单栏选中样式
@@ -227,21 +227,21 @@
         if (bool) {
           if (this.$route.name === 'attendance') {
             if (this.ShowBlock === false) {
+              // 表示在未结束签到的情况下点击“新建签到”
               this.$store.commit('SET_ATTENTION', {
                 ifAlert: true,  // 提示窗口
                 at_warning: '当前正在考勤，确定要结束当前考勤重新开始签到？', // 提示语
                 noLogin: false, // 未登录时的按钮
                 newSign: true,  // 新建签到时的按钮
               });
-              this.$store.commit('SHOW_BLOCK', false);
             } else {
+              // 表示在已结束签到的情况下点击“新建签到”
               this.$store.commit('SET_ATTENTION', {
                 ifAlert: true,  // 提示窗口
                 at_warning: '此操作将清除本次数据，确定要重新开始签到？', // 提示语
                 noLogin: false, // 未登录时的按钮
                 newSign: true,  // 新建签到时的按钮
               });
-              // this.$router.push({name: 'home'});
             }
           } else {
             this.$router.push({name: 'home'});
@@ -249,7 +249,7 @@
         } else {
           this.$store.commit('SET_ATTENTION', false);
           this.$store.commit('change', '');
-          console.log(this.Class_lists);
+          this.$store.commit('SHOW_BLOCK', false);
           this.$router.push({name: 'home'});
         }
 
@@ -476,6 +476,10 @@
 
   .img_data:hover {
     color: #1aad19;
+  }
+  .fl .noLogin {
+    color: #8d8a8a;
+    cursor: not-allowed;
   }
 
   /* 导航菜单 left end */
