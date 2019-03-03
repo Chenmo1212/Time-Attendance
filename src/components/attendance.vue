@@ -120,8 +120,11 @@
 
 <script>
   import {mapState} from 'vuex';
+<<<<<<< HEAD
   import authenticator from 'otplib/authenticator';
   import crypto from 'crypto';
+=======
+>>>>>>> refs/remotes/origin/master
   // import {works} from "../axios/api";
 
   export default {
@@ -212,10 +215,13 @@
       loaded.style.width = this.loaded_width + 'px';  // 设置内容宽度
       loaded.style.height = this.loaded_height + 'px'; // 设置内容高度
       console.log("盒子当前设置宽度为:", loader.style.width);
+<<<<<<< HEAD
 
       //循环二维码
       console.log("loopCode open");
       this.loopCode();
+=======
+>>>>>>> refs/remotes/origin/master
     },
     destroyed() {
       clearTimeout(this.time);
@@ -240,6 +246,7 @@
           }, 1000)
         }
       },
+<<<<<<< HEAD
 
 
       //循环调用otp组件并请求相应二维码
@@ -269,6 +276,8 @@
           qrcode.makeCode(url);
         }, 100);
       },
+=======
+>>>>>>> refs/remotes/origin/master
       // 删除选中按钮
       clearCheckBtn() {
         for (var i = 0; i < this.classMsg.length; i++) {
@@ -314,6 +323,34 @@
         }, 20);
       },
       //定时器//获取二维码
+<<<<<<< HEAD
+=======
+      set_time() {
+        //首次获取二维码
+        get_code().then(result => {
+          //  push二维码
+        }).catch(error => {
+          console.log(error.response)
+        });
+        //最大请求60次
+        let stry = '012345678901234567890123456789012345678901234567890123456789';
+        for (let j = 0; j < stry.length; j++) {
+          (function () {
+            let t = j + 1;
+            let tyy = stry[j];
+            setTimeout(function () {
+              console.log(tyy + 'code');
+              // 第二次及以后的二维码
+              get_code().then(result => {
+                //  push二维码
+              }).catch(error => {
+                console.log(error.response)
+              })
+            }, 10 * 1000 * t)
+          })()
+        }
+      },
+>>>>>>> refs/remotes/origin/master
 
       setIndex(index1, index2) {
         var student = this.classMsg[index1].students[index2];
