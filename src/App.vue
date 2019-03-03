@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <nav-vue></nav-vue>
-
     <router-view/>
-
     <transition name="login">
       <login-vue v-show="ifShow_login_alert" ></login-vue>
     </transition>
