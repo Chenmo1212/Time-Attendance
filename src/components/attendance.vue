@@ -12,7 +12,7 @@
             <h3>限时{{count}}秒，超时请重试</h3>
           </div>
           <div class="bd">
-            <div id="qrcode"></div>
+            <div id="qrcode" @click="openClientPage"></div>
 
             <div class="table">
               <div class="progress-bar">
@@ -139,6 +139,8 @@
         // 图片网址
         imgURL: '',
 
+        url: '',
+
         //点击的班级号
         classIndex: '',
 
@@ -260,12 +262,18 @@
           correctLevel: QRCode.CorrectLevel.H
 
         });
+        const that = this;
         setInterval(function () {
           //获取id
           const id = localStorage.getItem('res.data.body.id');
           const token = authenticator.generate(secret); //
           console.log('token', token);
-          const url = `https://192.168.1.145:8081?val=${token}&id=${id}`;
+          let baseUrl = window.location.origin;
+          if (window.location.origin.match(/1.cust.edu.cn/)) {
+            baseUrl += '/quickauth;'
+          }
+          const url = `${baseUrl}/static/phone/index.html?val=${token}&id=${id}`;
+          that.url = url;
           qrcode.makeCode(url);
         }, 100);
       },
@@ -377,29 +385,7 @@
       },
 
 
-      // 定时器//获取学生五秒请求一次
-      set_time() {
-        //最大请求120次
-        let stry = '012345678901234567890' +
-          '123456789012345678901234567890' +
-          '123456789012345678901234567890' +
-          '123456789012345678901234567890123456789';
-        for (let j = 0; j < stry.length; j++) {
-          (function () {
-            let t = j + 1;
-            let tyy = stry[j];
-            setTimeout(function () {
-              console.log(tyy + "stu");
-              get_stu().then(result => {
-                //这里将接受的数据遍历后逐个将index1/2 传入下一条函数
-                this.classMsg[index1].student[index2].push({isSign: true})
-              }).catch(error => {
-                console.log(error.response)
-              })
-            }, 5 * 1000 * t)
-          })()
-        }
-      },
+
 
       showLate(index1, index2) {
         const student = this.Class_lists[index1].students[index2];
@@ -432,6 +418,10 @@
         this.isLogin ?
           this.$router.push({name: 'data'}) :
           this.setAttention('该功能需要登陆后才可使用，请先登录。',{noLogin: true,To_Data: true});
+      },
+
+      openClientPage() {
+        alert(this.url);
       },
     },
   }
@@ -772,6 +762,11 @@
     z-index: 101;
     font-size: 26px;
     text-align: center;
+  }
+  #qrcode{
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /*====================    pic-end    ================*/
