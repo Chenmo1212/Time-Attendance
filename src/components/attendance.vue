@@ -9,7 +9,7 @@
         <div class="box">
           <div class="hd">
             <h4>Tip:请使用任意具有扫一扫功能的APP进行考勤</h4>
-            <h3>限时{{count}}秒，超时请重试</h3>
+            <h3>限时{{timeRemaining}}秒，超时请重试</h3>
           </div>
           <div class="bd">
             <div id="qrcode" @click="openClientPage"></div>
@@ -128,7 +128,10 @@
     name: "Attendance",
     data() {
       return {
-        count: '',
+        //剩余时长
+        timeRemaining: '',
+
+        timeUsed: '',
 
         // 班级信息
         classMsg: [],
@@ -158,13 +161,11 @@
         // 进度条
         loader_width: 300,    // 进度条盒子宽度
         loader_height: 8,    // 进度条盒子高度
-        loaded_width: 0,      // 进度条内容宽度——初始宽度
+        loaded_width: '',      // 进度条内容宽度——初始宽度
         loaded_height: 8,    // 进度条内容高度
         loader_speed: 10000,  // 进度条速度(ms)
         time: '',
-
         checkBtn: true,
-
         ani_status: 0,
       }
     },
@@ -194,13 +195,6 @@
       //将仓库中的班级信息赋值给classMsg----------------为安全起见，还是新建一个数组吧，就不直接从仓库里拿直接用了
       this.classMsg = this.Class_lists;
       console.log('classMsg已经被赋值为：', this.classMsg);
-
-      //请求接口
-      // this.set_time();
-
-      //计时器
-      this.forClock();
-
       // 进度条
       this.processBar();
     },
@@ -211,7 +205,7 @@
       // 设置宽高
       loader.style.width = this.loader_width + 'px';  // 设置盒子宽度
       loader.style.height = this.loader_height + 'px'; // 设置盒子高度
-      loaded.style.width = this.loaded_width + 'px';  // 设置内容宽度
+      loaded.style.width = '';  // 设置内容宽度
       loaded.style.height = this.loaded_height + 'px'; // 设置内容高度
       console.log("盒子当前设置宽度为:", loader.style.width);
 
@@ -223,27 +217,6 @@
       clearTimeout(this.time);
     },
     methods: {
-      //数字计时器
-      clock() {
-        const TIME_COUNT = 10;
-        if (!this.timer) {
-          this.count = TIME_COUNT;
-          // this.show = false;
-          this.timer = setInterval(() => {
-            if (this.count > 1 && this.count <= TIME_COUNT) {
-              this.count--;
-            } else {
-              clearInterval(this.timer);
-              this.timer = null;
-              //重置计时器
-              this.count = 10;
-              this.forClock()
-            }
-          }, 1000)
-        }
-      },
-
-
       //循环调用otp组件并请求相应二维码
       loopCode() {
         const result = localStorage.getItem('seed');
@@ -275,6 +248,9 @@
           const url = `${baseUrl}/static/phone/index.html?val=${token}&id=${id}`;
           that.url = url;
           qrcode.makeCode(url);
+          that.timeUsed = authenticator.timeUsed();
+          that.timeRemaining = authenticator.timeRemaining();
+          // console.log(that.timeRemaining);
         }, 100);
       },
       // 删除选中按钮
@@ -297,31 +273,17 @@
           this.setWarning('考勤已结束');
         }
       },
-      //循环计时器60次
-      forClock() {
-        for (let i = 1; i < 60; i++) {
-          this.clock();
-        }
-      },
       // 进度条
       processBar() {
-        var count = (this.loader_width * 20) / this.loader_speed; // 进度条单次增加宽度（px）
-        var total = 0; // 进度条累加总宽度
-        var width = this.loader_width;
-        this.time = setInterval(function () { // 定义计时器
-          total += count;
-          loaded.style.width = total + 'px';
-          var d_width = loaded.style.width;
-          if (parseInt(d_width) >= width) {
-            var myDate = new Date(); // 显示当前日期时间
-            console.log("当前时间：", myDate.toLocaleString());
-            console.log("进度条满了，重置！");
-            total = 0;
-            loaded.style.width = total + 'px';
-          }
+        const that = this;
+        this.time = setInterval(function () {
+          // console.log(that.timeUsed);
+          let total = ( that.timeUsed) / 6* 300;
+          this.loaded.style.width =  total +'px';
+          // console.log("total:" +total);
+          // console.log('width'+this.loaded_width)
         }, 20);
       },
-      //定时器//获取二维码
 
       setIndex(index1, index2) {
         var student = this.classMsg[index1].students[index2];
@@ -356,7 +318,7 @@
         }
       },
       // 设置提示
-      setAttention(msg,obj){
+      setAttention(msg, obj) {
         this.$store.commit('SET_ATTENTION', {
           ifAlert: true,  // 提示窗口
           at_warning: msg, // 提示语
@@ -366,7 +328,7 @@
         });
       },
       // 设置警告
-      setWarning(msg){
+      setWarning(msg) {
         this.$store.commit('SET_LOADING', {isLoading: true, warning: msg});
         setTimeout(() => {
           this.$store.commit('SET_LOADING', false);
@@ -383,9 +345,6 @@
         // 数据有改变，需要改变本地存储中的数据
         localStorage.setItem('class_lists', JSON.stringify(this.classMsg));
       },
-
-
-
 
       showLate(index1, index2) {
         const student = this.Class_lists[index1].students[index2];
@@ -417,7 +376,7 @@
       toData() {
         this.isLogin ?
           this.$router.push({name: 'data'}) :
-          this.setAttention('该功能需要登陆后才可使用，请先登录。',{noLogin: true,To_Data: true});
+          this.setAttention('该功能需要登陆后才可使用，请先登录。', {noLogin: true, To_Data: true});
       },
 
       openClientPage() {
@@ -693,7 +652,6 @@
     border-bottom: 1px solid #c9cace;
   }
 
-
   .line .isSign {
     background-color: #47d156;
   }
@@ -763,7 +721,8 @@
     font-size: 26px;
     text-align: center;
   }
-  #qrcode{
+
+  #qrcode {
     display: flex;
     align-items: center;
     justify-content: center;

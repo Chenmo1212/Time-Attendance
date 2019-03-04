@@ -278,35 +278,6 @@
         }
       },
 
-      //定时器//获取二维码
-      set_time() {
-        //首次获取二维码
-        get_code().then(result => {
-          //  push二维码
-        }).catch(error => {
-          console.log(error.response)
-        });
-        //最大请求60次
-        let stry = '012345678901234567890123456789012345678901234567890123456789';
-        for (let j = 0; j < stry.length; j++) {
-
-          (function () {
-            let t = j + 1;
-            let tyy = stry[j];
-            setTimeout(function () {
-              console.log(tyy + 'code');
-
-              // 第二次及以后的二维码
-
-              get_code().then(result => {
-                //  push二维码
-              }).catch(error => {
-                console.log(error.response)
-              })
-            }, 10 * 1000 * t)
-          })()
-        }
-      },
 
       processbar() {
         var count = (this.loader_width * 20) / this.loader_speed; // 进度条单次增加宽度（px）
@@ -402,32 +373,6 @@
       },
 
 
-      // 定时器//获取学生五秒请求一次
-      set_time() {
-
-        //最大请求120次
-        let stry = '012345678901234567890' +
-          '123456789012345678901234567890' +
-          '123456789012345678901234567890' +
-          '123456789012345678901234567890123456789';
-        for (let j = 0; j < stry.length; j++) {
-
-          (function () {
-            let t = j + 1;
-            let tyy = stry[j];
-            setTimeout(function () {
-              console.log(tyy + "stu");
-              get_stu().then(result => {
-
-                //这里将接受的数据遍历后逐个将index1/2 传入下一条函数
-                this.classMsg[index1].student[index2].push({isSign: true})
-              }).catch(error => {
-                console.log(error.response)
-              })
-            }, 5 * 1000 * t)
-          })()
-        }
-      },
 
       // 关闭弹窗
       alertDel() {
