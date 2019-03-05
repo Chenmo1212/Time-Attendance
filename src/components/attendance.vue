@@ -254,7 +254,7 @@
           console.log('token', token);
           let baseUrl = window.location.origin;
           if (window.location.origin.match(/1.cust.edu.cn/)) {
-            baseUrl += '/quickauth;'
+            baseUrl += '/quickauth'
           }
           const url = `${baseUrl}/static/phone/index.html?val=${token}&id=${id}`;
           that.url = url;
