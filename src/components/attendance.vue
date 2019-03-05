@@ -395,7 +395,7 @@
       // 更改签到状态
       setSign(index1, index2) {
         const classroom = this.classMsg.find((c) => { return c.class_id == index1 })
-        const student = classroom.find((s) => { return s.id == index2 })
+        const student = classroom.students.find((s) => { return s.id == index2 })
 
         this.setWarning('更改成功');
         student.ifSign = !student.ifSign;
