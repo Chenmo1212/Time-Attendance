@@ -397,12 +397,13 @@
         const classroom = this.classMsg.find((c) => { return c.class_id == index1 })
         const student = classroom.students.find((s) => { return s.id == index2 })
 
-        this.setWarning('更改成功');
-        student.ifSign = !student.ifSign;
-        student.ifSign === true ? classroom.noSign -= 1 : classroom.noSign += 1;
-        this.ifSign = !student.ifSign;
-        // 数据有改变，需要改变本地存储中的数据
-        localStorage.setItem('class_lists', JSON.stringify(this.classMsg));
+        student.ifSign = true;
+        // this.setWarning('更改成功');
+        // student.ifSign = !student.ifSign;
+        // student.ifSign === true ? classroom.noSign -= 1 : classroom.noSign += 1;
+        // this.ifSign = !student.ifSign;
+        // // 数据有改变，需要改变本地存储中的数据
+        // localStorage.setItem('class_lists', JSON.stringify(this.classMsg));
       },
 
       showLate(index1, index2) {
