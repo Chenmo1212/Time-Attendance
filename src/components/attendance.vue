@@ -308,8 +308,10 @@
               console.log('未登录', res);
               console.log('未登录2', res.data.body);
               for (let class_id in res.data.body) {
-                let student_number = res[class_id];
-                that.setSign(class_id, student_number);
+                let students = res.data.body[class_id];
+                students.forEach((s) => {
+                  that.setSign(class_id, s.id);
+                })
                 // this.classMsg[k].students[v].push({isSign: false})
               }
               //
