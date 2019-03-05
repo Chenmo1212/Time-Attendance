@@ -299,15 +299,12 @@
 
       //获取学生 （未登录）
       chickNunStu() {
-        // const id = localStorage.getItem('res.data.body.id');
+        const id = localStorage.getItem('res.data.body.id');
         const that = this;
         anonymous().then(result => {
           console.log('未登录', result);
-
-
-
           setInterval(function () {
-            getnonchick(result.data.body.key, result.data.body.id).then(res => {
+            getnonchick(result.data.body.key, id).then(res => {
               console.log('未登录', res);
               console.log('未登录2', res.data.body);
               for (let class_id in res.data.body) {

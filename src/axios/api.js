@@ -34,8 +34,6 @@ export function postList(a) {
 }
 //刷新签到人员（未登录）
 export function getnonchick(key,id) {
-  localStorage.setItem('result.data.body.key', key);
-  localStorage.setItem('res.data.body.id', id);
   return api.post('/api/v1/checkin/status',{id} , {
       headers: {
         'X-Auth-Key': key
