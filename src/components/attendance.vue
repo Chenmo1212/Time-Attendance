@@ -123,6 +123,7 @@
   import authenticator from 'otplib/authenticator';
   import crypto from 'crypto';
   // import {works} from "../axios/api";
+  import {getchick, anonymous, getnonchick} from "../axios/api";
 
   export default {
     name: "Attendance",
@@ -199,6 +200,15 @@
       this.processBar();
     },
     mounted() {
+      //判断登陆状态
+      if (this.$store.state.isLogin) {
+        console.log('已登录');
+        this.chickInStu()
+
+      } else {
+        console.log('未登录');
+        this.chickNunStu()
+      }
       // 获取元素
       var loader = document.getElementById("loader"); // 获取进度条盒子
       var loaded = document.getElementById("loaded"); // 获取进度条内容
@@ -217,6 +227,7 @@
       clearTimeout(this.time);
     },
     methods: {
+
       //循环调用otp组件并请求相应二维码
       loopCode() {
         const result = localStorage.getItem('seed');
@@ -284,6 +295,50 @@
           // console.log('width'+this.loaded_width)
         }, 20);
       },
+
+
+      //获取学生 （未登录）
+      chickNunStu() {
+        const id = localStorage.getItem('res.data.body.id');
+        anonymous().then(result => {
+          console.log('未登录', result);
+          setInterval(function () {
+            getnonchick(result.data.body.key, id).then(res => {
+              console.log('未登录', res);
+              console.log('未登录2', res.data.body);
+              for (let class_id in res) {
+                let student_number = res[class_id];
+                this.setSign(class_id, student_number);
+                // this.classMsg[k].students[v].push({isSign: false})
+              }
+              //
+            }).catch(error => {
+              console.log(error)
+            })
+          }, 5000)
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+
+      // 获取学生0.5秒请求一次(已登录)
+      chickInStu() {
+        setInterval(function () {
+          getchick().then(result => {
+            console.log('已登录', result)
+            this.changeSign(result)
+            for (let k in result) {
+              let v = result[k];
+              this.classMsg[k].students[v].push({isSign: true})
+            }
+            // this.classMsg[index1].student[index2].push({isSign: true})
+          }).catch(error => {
+            console.log(error)
+          })
+        }, 5000);
+
+      },
+
 
       setIndex(index1, index2) {
         var student = this.classMsg[index1].students[index2];

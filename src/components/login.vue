@@ -35,6 +35,7 @@
   import {mapState} from 'vuex';
   import {login} from "../axios/api";
 
+
   export default {
     name: "login",
     data() {
@@ -97,18 +98,21 @@
             if (result.data.ok) {
               console.log('登陆成功');
               localStorage.setItem('result.data.body.key', result.data.body.key);
-              this.store.$state.isLogin = true;
-              console.log(this.store.state.isLogin);
+              console.log('key'+ result.data.body.key);
+              // console.log(this.store.state.isLogin);
               alert('登陆成功');
+              this.$store.state.isLogin = true;
               //返回首页
               this.$router.push({name: 'home'})
             } else {
-              console.log('登陆失败')
-              alert('登陆失败')
+              console.log('登陆失败');
+              alert('登陆失败');
+              //返回首页
             }
             //向全局抛出key
           }).catch(error => {
-            console.log(error.result)
+            console.log(error)
+            // console.log(error.result)
           });
 
           // this.$store.commit('SET_LOADING', {isLoading:true, warning:'账号密码不得为空'});

@@ -78,14 +78,14 @@
         // 昵称
         var regName = new RegExp("^([a-z]|[A-Z]|[0-9]|_){6,}$");
         // 密码
-        var pwd = new RegExp("^([a-z]|[A-Z]|[0-9]|.){8,}$")
+        var pwd = new RegExp("^([a-z]|[A-Z]|[0-9]|.){8,}$");
         // 手机号码
         var reg_phone = new RegExp("^1(3|4|5|7|8)\\d{9}$");
         // 验证码
         var reCode = new RegExp("^\\d{6}$");
 
         // 判断是否为空
-        if (this.name === '' || this.reg_pwd === '' || this.phone === '' || this.code === '') {
+        if ( this.reg_pwd === '' || this.phone === '' || this.code === '') {
           this.$store.commit('SET_LOADING', {isLoading: true, warning: '请将信息输入完整'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
@@ -101,12 +101,9 @@
                 if (reg_phone.test(this.phone)) {
                   // 判断验证码
                   if (reCode.test(this.code)) {
-
-
                     console.log('到达接口');
                     this.getRegTo(this.phone,this.login_pwd);
                     console.log('注册');
-
 
                     this.$store.commit('SET_LOADING', {isLoading: true, warning: '注册成功,请登录'});
                     setTimeout(() => {
@@ -139,9 +136,6 @@
                 }, 1000);
                 this.reg_pwd = '';
               }
-            // } else {
-            //   // 账号不合理
-            //   this.$store.commit('SET_LOADING', {isLoading: true, warning: '昵称输入不合法！'});
               setTimeout(() => {
                 this.$store.commit('SET_LOADING', false);
               }, 1000);

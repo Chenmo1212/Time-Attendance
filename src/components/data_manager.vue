@@ -135,7 +135,7 @@
 
           console.log('获取',result);
         }).catch(error => {
-          console.log(error.result)
+          // console.log(error)
         });
 
       },

@@ -67,7 +67,7 @@ export function anonymous() {
 //获取用户所创建的考勤
 export function getchickin() {
   //获取key
-  const result = localStorage.getItem('result.data.body.authkey');
+  const result = localStorage.getItem('result.data.body.key');
   console.log('key', result);
   return api.get('/api/v1/user/checkin', {
     headers: {
@@ -80,7 +80,7 @@ export function getchickin() {
 //获取用户信息
 export function getInfo() {
   //获取key
-  const result =localStorage.getItem('result.data.body.authkey');
+  const result =localStorage.getItem('result.data.body.key');
   return api.get('/api/v1/user/info', {
     headers: {
       'X-Auth-Key': result
