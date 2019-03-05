@@ -300,6 +300,7 @@
       //获取学生 （未登录）
       chickNunStu() {
         const id = localStorage.getItem('res.data.body.id');
+        const that = tihs;
         anonymous().then(result => {
           console.log('未登录', result);
           setInterval(function () {
@@ -308,7 +309,7 @@
               console.log('未登录2', res.data.body);
               for (let class_id in res) {
                 let student_number = res[class_id];
-                this.setSign(class_id, student_number);
+                that.setSign(class_id, student_number);
                 // this.classMsg[k].students[v].push({isSign: false})
               }
               //
