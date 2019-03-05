@@ -392,8 +392,9 @@
       },
       // 更改签到状态
       setSign(index1, index2) {
-        var classroom = this.classMsg[index1];
-        var student = this.classMsg[index1].students[index2];
+        const classroom = this.classMsg.find((c) => { return c.class_id == index1 })
+        const student = classroom.find((s) => { return s.id == index2 })
+
         this.setWarning('更改成功');
         student.ifSign = !student.ifSign;
         student.ifSign === true ? classroom.noSign -= 1 : classroom.noSign += 1;
