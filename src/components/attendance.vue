@@ -310,7 +310,7 @@
               for (let class_id in res.data.body) {
                 let students = res.data.body[class_id];
                 students.forEach((s) => {
-                  that.setSign(class_id, s.id);
+                  that.setSign(class_id, s);
                 })
                 // this.classMsg[k].students[v].push({isSign: false})
               }
