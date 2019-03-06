@@ -22,34 +22,22 @@ export function login(login_acc, login_pwd) {
 
 
 //新建考勤
-export function postList(a) {
-  //获取key
-  const result = localStorage.getItem('result.data.body.key');
+export function postList(a, creatListKey) {
+
   console.log('新建考勤', a);
   return api.post('/api/v1/checkin/new', a, {
     headers: {
-      'X-Auth-Key': result
+      'X-Auth-Key': creatListKey
     }
   })
 }
-//刷新签到人员（未登录）
-export function getnonchick(key,id) {
-  return api.post('/api/v1/checkin/status',{id} , {
-      headers: {
-        'X-Auth-Key': key
-      }
-    }
-  )
-}
 
-//疯狂刷新签到人员（已登录）
-export function getchick() {
+//疯狂刷新签到人员
+export function getchick(id) {
   //获取key
-  const key = localStorage.getItem('result.data.body.key');
-  //获取id
-  const id = localStorage.getItem('res.data.body.id');
-  // console.log('id',id)
-  return api.post('/api/v1/checkin/status', {id},{
+  const key = localStorage.getItem('creatListKey');
+
+  return api.post('/api/v1/checkin/status', {id}, {
       headers: {
         'X-Auth-Key': key
       },
@@ -79,7 +67,6 @@ export function getchickin() {
 //获取用户信息
 export function getInfo() {
   //获取key
-  const result =localStorage.getItem('result.data.body.key');
   return api.get('/api/v1/user/info', {
     headers: {
       'X-Auth-Key': result
@@ -87,3 +74,17 @@ export function getInfo() {
   })
 }
 
+//获取用户的脸
+export function getFace(id,gid,code) {
+  //获取key
+  const key = localStorage.getItem('creatListKey');
+  return api.post('/api/v1/checkin/spec', {
+    id:id,
+    gid:gid,
+    code:code,
+  }, {
+    headers: {
+      'X-Auth-Key': key
+    }
+  })
+}

@@ -13,7 +13,6 @@
           </div>
           <div class="bd">
             <div id="qrcode" @click="openClientPage"></div>
-
             <div class="table">
               <div class="progress-bar">
                 <div id='loader'>
@@ -87,7 +86,9 @@
                   <div class="line" v-for="(value,index2) in classMsg[index1].students">
                     <div :class="{ person_box: classMsg[index1].students[index2].checkBtn}">
                       <!--单击-->
-                      <div class="person" @click.stop="setIndex(index1,index2)" title="查看详情"
+                      <div class="person"
+                           @click.stop="setIndex(index1,index2);getStuFace(classMsg[classIndex].class_id,studentId+1)"
+                           title="查看详情"
                            :class="classMsg[index1].students[index2].ifSign ? 'isSign' : 'notSign'">{{index2 + 1}}
                       </div>
                     </div>
@@ -122,8 +123,7 @@
   import {mapState} from 'vuex';
   import authenticator from 'otplib/authenticator';
   import crypto from 'crypto';
-  // import {works} from "../axios/api";
-  import {getchick, anonymous, getnonchick} from "../axios/api";
+  import {getchick, getFace} from "../axios/api";
 
   export default {
     name: "Attendance",
@@ -170,6 +170,7 @@
         ani_status: 0,
       }
     },
+    watch: {},
     computed: {
       ...mapState([
         'isLoading',
@@ -185,6 +186,8 @@
     },
     created() {
 
+
+      this.onunload
       // 创建之前先看看仓库里有啥
       console.log('创建之前先看看仓库里有啥', this.Class_lists);
 
@@ -200,15 +203,7 @@
       this.processBar();
     },
     mounted() {
-      //判断登陆状态
-      if (this.$store.state.isLogin) {
-        console.log('已登录');
-        this.chickInStu()
 
-      } else {
-        console.log('未登录');
-        this.chickNunStu()
-      }
       // 获取元素
       var loader = document.getElementById("loader"); // 获取进度条盒子
       var loaded = document.getElementById("loaded"); // 获取进度条内容
@@ -219,25 +214,67 @@
       loaded.style.height = this.loaded_height + 'px'; // 设置内容高度
       console.log("盒子当前设置宽度为:", loader.style.width);
 
-      //循环二维码
-      console.log("loopCode open");
-      this.loopCode();
+      // 判断home组件是否传值
+      this.judgeSeedAndId();
+
+
+      window.addEventListener('beforeunload', e => {
+        alert('text')
+        window.localStorage.removeItem('titleName')
+      });
+
+
     },
     destroyed() {
       clearTimeout(this.time);
     },
     methods: {
 
+      //   //关闭浏览器
+      //   window.onbeforeunload = function () {
+      //   alert('你确定要关闭此页');
+      // },
+      // onunload() {
+      //
+      //   window.onunload = function () {
+      //     alert('你确定要关闭此页');
+      //   }
+      // },
+
+      //判断是否收到id；seed
+      judgeSeedAndId() {
+        const that = this;
+        const interval_id = setInterval(function () {
+          const id = localStorage.getItem('messionId');
+          const result = localStorage.getItem('seed');
+          if (id == null || result == null) {
+            console.log('要老子等');
+            return
+          } else {
+            console.log('不等了');
+            //调用 二维码
+            that.loopCode();
+            //调用 拉取学生接口
+            that.getChickState(id);
+            // //调用 获取面部信息
+            // that.getStuFace(id,that.classIndex,that.studentId);
+            //清除轮询
+            clearInterval(interval_id);
+          }
+        }, 100);
+      },
       //循环调用otp组件并请求相应二维码
       loopCode() {
+        const id = localStorage.getItem('messionId');
         const result = localStorage.getItem('seed');
-        console.log('qrCode', result);
+        console.log('qrCode:id', id);
+        console.log('qrCode:seed', result);
         authenticator.options = {
           crypto: crypto,
           step: 7,
           window: 1
         };
-        const secret = result;
+        // const secret = result;
         let qrcode = new QRCode('qrcode', {
           width: 328,
           height: 328,
@@ -248,9 +285,8 @@
         });
         const that = this;
         setInterval(function () {
-          //获取id
-          const id = localStorage.getItem('res.data.body.id');
-          const token = authenticator.generate(secret); //
+          const secret = result;
+          const token = authenticator.generate(secret);
           console.log('token', token);
           let baseUrl = window.location.origin;
           if (window.location.origin.match(/1.cust.edu.cn/)) {
@@ -261,9 +297,43 @@
           qrcode.makeCode(url);
           that.timeUsed = authenticator.timeUsed();
           that.timeRemaining = authenticator.timeRemaining();
-          // console.log(that.timeRemaining);
         }, 100);
       },
+
+      //拉取登陆状态
+      getChickState(id) {
+        const that = this;
+        const chick_state = setInterval(function () {
+          getchick(id).then(result => {
+            console.log('已登录', result);
+            // this.changeSign(result);
+            for (let class_id in result.data.body) {
+              let students = result.data.body[class_id];
+              students.forEach((s) => {
+                that.setSign(class_id, s);
+              })
+            }
+          }).catch(error => {
+            console.log(error)
+          });
+          console.log('状态内', that.$store.state.EndSign);
+          if (that.$store.state.EndSign == true) {
+            clearInterval(chick_state);
+          }
+        }, 1000);
+      },
+
+      //获取面部信息
+      getStuFace(gid, code) {
+        const id = localStorage.getItem('messionId');
+        console.log('id:', id, 'gid:', gid, 'code:', code);
+        getFace(id, gid, code).then(result => {
+          console.log(result)
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+
       // 删除选中按钮
       clearCheckBtn() {
         for (var i = 0; i < this.classMsg.length; i++) {
@@ -276,9 +346,18 @@
         // 警告弹窗
         this.showPic = false;
       },
+
+      //结束考勤
       endSign() {
+        const that = this;
+
         if (this.ShowBlock === false) {
-          this.setAttention("当前正在考勤，确定要结束当前考勤？", {EndSign: true});
+          this.setAttention("当前正在考勤，确定要结束当前考勤？",
+            {
+              EndSign: true
+            });
+          // that.otp_state = false;
+          // console.log(that.otp_state);
           // this.$store.commit("")
         } else {
           this.setWarning('考勤已结束');
@@ -288,61 +367,65 @@
       processBar() {
         const that = this;
         this.time = setInterval(function () {
-          // console.log(that.timeUsed);
-          let total = ( that.timeUsed) / 6* 300;
-          this.loaded.style.width =  total +'px';
-          // console.log("total:" +total);
-          // console.log('width'+this.loaded_width)
+
+          let total = (that.timeUsed) / 6 * 300;
+          this.loaded.style.width = total + 'px';
+
         }, 20);
       },
 
-
       //获取学生 （未登录）
-      chickNunStu() {
-        const id = localStorage.getItem('res.data.body.id');
-        const that = this;
-        anonymous().then(result => {
-          console.log('未登录', result);
-          setInterval(function () {
-            getnonchick(result.data.body.key, id).then(res => {
-              console.log('未登录', res);
-              console.log('未登录2', res.data.body);
-              for (let class_id in res.data.body) {
-                let students = res.data.body[class_id];
-                students.forEach((s) => {
-                  that.setSign(class_id, s);
-                })
-                // this.classMsg[k].students[v].push({isSign: false})
-              }
-              //
-            }).catch(error => {
-              console.log(error)
-            })
-          }, 1000)
-        }).catch(error => {
-          console.log(error)
-        })
-      },
-
+      // chickNunStu() {
+      //   // function () {
+      //   //
+      //   // }
+      //   // const id = localStorage.getItem('res.data.body.id');
+      //   const that = this;
+      //   anonymous().then(result => {
+      //     console.log('未登录匿名用户', result);
+      //     //存id
+      //     localStorage.setItem('unLoginKey', result.data.body.key);
+      //     console.log("匿名用户的key"+ result.data.body.key);
+      //     setInterval(function () {
+      //       getnonchick(result.data.body.key, result.data.body.id).then(res => {
+      //         console.log('未登录', res);
+      //         console.log('未登录2', res.data.body);
+      //         for (let class_id in res.data.body) {
+      //           let students = res.data.body[class_id];
+      //           students.forEach((s) => {
+      //             that.setSign(class_id, s);
+      //           })
+      //           // this.classMsg[k].students[v].push({isSign: false})
+      //         }
+      //         //
+      //       }).catch(error => {
+      //         console.log(error)
+      //       })
+      //     }, 1000)
+      //   }).catch(error => {
+      //     console.log(error)
+      //   })
+      // },
+      //
       // 获取学生0.5秒请求一次(已登录)
-      chickInStu() {
-        setInterval(function () {
-          getchick().then(result => {
-            console.log('已登录', result)
-            this.changeSign(result)
-            for (let k in result) {
-              let v = result[k];
-              this.classMsg[k].students[v].push({isSign: true})
-            }
-            // this.classMsg[index1].student[index2].push({isSign: true})
-          }).catch(error => {
-            console.log(error)
-          })
-        }, 1000);
-
-      },
-
-
+      // chickInStu() {
+      //   const that = this;
+      //   setInterval(function () {
+      //     getchick().then(result => {
+      //       console.log('已登录', result)
+      //       this.changeSign(result);
+      //       for (let class_id in result.data.body) {
+      //         let students = result.data.body[class_id];
+      //         students.forEach((s) => {
+      //           that.setSign(class_id, s);
+      //         })
+      //       }
+      //     }).catch(error => {
+      //       console.log(error)
+      //     })
+      //   }, 1000);
+      //
+      // },
       setIndex(index1, index2) {
         var student = this.classMsg[index1].students[index2];
         this.clearCheckBtn(index1, index2);
@@ -353,7 +436,6 @@
         this.ifLate = student.Late;
         this.ifTruancy = student.Truancy;
       },
-
       showMenu(index1, index2) {
         var student = this.classMsg[index1].students[index2];
         if (this.classIndex === index1 && this.studentId === index2 && this.isMenu === true) {
@@ -394,8 +476,12 @@
       },
       // 更改签到状态
       setSign(index1, index2) {
-        const classroom = this.classMsg.find((c) => { return c.class_id == index1 })
-        const student = classroom.students.find((s) => { return s.id == index2 })
+        const classroom = this.classMsg.find((c) => {
+          return c.class_id == index1
+        });
+        const student = classroom.students.find((s) => {
+          return s.id == index2
+        });
 
         student.ifSign = true;
         // this.setWarning('更改成功');
@@ -442,7 +528,8 @@
       openClientPage() {
         alert(this.url);
       },
-    },
+    }
+    ,
   }
 </script>
 

@@ -26,7 +26,7 @@
 
 <script>
 
-  import {postList} from '../axios/api'
+  import {postList, anonymous} from '../axios/api'
   import {mapState} from 'vuex'
 
   export default {
@@ -41,7 +41,7 @@
     },
     created() {
       let lists = JSON.parse(localStorage.getItem('lists'));
-      console.log('created:',lists);
+      console.log('created:', lists);
       if (lists) {
         this.lists = lists;
       } else {
@@ -65,7 +65,7 @@
       },
 
       // 减少班级
-      reduceList(){
+      reduceList() {
         if (this.lists.length === 1)
           alert("只有一个了，不能再减少了");
         else {
@@ -91,81 +91,76 @@
           // 新建一个对象，用来push进入数组
           const obj = {students: []};
           const list = this.lists[i];
-
           // 班级学号赋值
           obj.class_id = list.class_id;
-
           // 班级人数总数
           obj.total = list.lastStu_id - list.firstStu_id + 1;
-
           // 班级未签到人数
           obj.noSign = obj.total;
-
           // 给对象中的数组赋值
           for (var j = 0; j < obj.total; j++) {
             obj.students.push({id: j + 1, isSign: false, Late: true, Truancy: false});
           }
-
           // 将对象push进入数组
           this.class_lists.push(obj);
           console.log(obj.class_id, ':', obj);
         }
-
         // 将数据传入仓库
         console.log('class_list:', this.class_lists);
         this.$store.commit('change', this.class_lists);
-
         // 将班级数据保存在本地
         localStorage.setItem("class_lists", JSON.stringify(this.class_lists));
-
         // 本地存储
-        this.saveList()
+        this.saveList();
         console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
 
-        //post信息
-        this.getList();
-
+        //注册匿名用户
+        this.getAnonyMous();
         // 跳转路由
         this.$router.push({name: 'attendance'});
       },
 
+      //注册匿名用户
+      getAnonyMous() {
+        anonymous().then(result => {
+          console.log('匿名用户信息', result);
+          localStorage.setItem('creatListKey', result.data.body.key);
+          // localStorage.setItem('getChickId', result.data.body.id);
+          this.getList();
+        }).catch(error => {
+          console.log(error)
+
+        });
+      },
+
       //整理班级信息post
       getList() {
-
         let a = {};
         //遍历
         for (let i = 0; i < this.class_lists.length; i++) {
           let gid = this.class_lists[i].class_id;
           a[gid] = {from: 1, to: this.class_lists[i].students.length, exclude: []}
         }
-
         //a为给后端的数组
-        console.log('给后端的array（）');
-        console.log(a);
-        this.postListTo(a)
-
+        this.postListTo(a);
       },
 
-      getAuthKey() {
-        return localStorage.getItem('result.data.body.key');
+      //postarry接口
+      postListTo(a) {
+        const creatListKey =  localStorage.getItem('creatListKey');
+        console.log('给后端的array', a);
+        console.log(creatListKey);
+          postList(a,creatListKey).then(res => {
+            console.log('postarray',res);
+            //存seed  messionId
+            localStorage.setItem('seed',res.data.body.seed);
+            localStorage.setItem('messionId',res.data.body.id);
+          })
       },
 
-      //postArray接口
-      async postListTo(a) {
-        const result = this.getAuthKey();
-        console.log('key', result);
-        const res = await postList(a);
-        console.log('home新建', res);
-        console.log('seed', res.data.body.seed);
-        localStorage.setItem('seed', res.data.body.seed);
-        localStorage.setItem('res.data.body.id', res.data.body.id);
-      }
-        // localStorage.setItem("lists", JSON.stringify(this.lists));
-        // console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
-        //
-        // // 跳转路由
-        // this.$router.push({name: 'attendance'});
-      },
+
+
+    },
 
     mounted() {
       // 本地存储

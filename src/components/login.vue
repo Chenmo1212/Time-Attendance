@@ -101,9 +101,6 @@
               console.log('key'+ result.data.body.key);
               // console.log(this.store.state.isLogin);
               alert('登陆成功');
-              this.$store.state.isLogin = true;
-              //返回首页
-              this.$router.push({name: 'home'})
             } else {
               console.log('登陆失败');
               alert('登陆失败');
