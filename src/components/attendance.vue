@@ -52,7 +52,7 @@
                   <span>数据管理</span>
                 </li>
                 <li class="spacer" v-show="!ifSign"></li>
-                <li class="menu-main" @click="getWorks('test1')" v-show="!ifSign">
+                <li class="menu-main" @click="getStuFace(classMsg[classIndex].class_id,studentId+1)" v-show="!ifSign">
                   <i class="iconfont">&#xe633;</i>
                   <span>查看照片</span>
                 </li>
@@ -67,7 +67,7 @@
                   <span>设为旷课</span>
                 </li>
                 <li class="spacer" v-show="ifSign"></li>
-                <li class="menu-main" @click="setSign(classIndex, studentId)">
+                <li class="menu-main" @click="setSign(Class_lists[classIndex].class_id, studentId + 1)">
                   <i class="iconfont">&#xe67a;</i>
                   <span>更改状态</span>
                 </li>
@@ -89,7 +89,7 @@
                     <div :class="{ person_box: classMsg[index1].students[index2].checkBtn}">
                       <!--单击-->
                       <div class="person"
-                           @click.stop="setIndex(index1,index2);getStuFace(classMsg[classIndex].class_id,studentId+1)"
+                           @click.stop="setIndex(index1,index2)"
                            title="查看详情"
                            :class="classMsg[index1].students[index2].ifSign ? 'isSign' : 'notSign'">{{index2 + 1}}
                       </div>
@@ -103,7 +103,8 @@
       </div>
     </div>
     <!--<img src="data:image/png;base64,"(v-model=photo_base64) >-->
-    <img v-bind:src="photo_base64" v-bind:class={photo_show:photo_show,photo_del:photo_del} @click="photo_del=true,photo_show=true">
+    <img v-bind:src="photo_base64" v-bind:class={photo_show:photo_show,photo_del:photo_del}
+         @click="photo_del=true,photo_show=true">
 
     <!--提示弹窗-->
     <!--<transition name="warning">-->
@@ -134,10 +135,10 @@
     data() {
       return {
         //学生照片base64
-        photo_base64:'',
+        photo_base64: '',
         //显示状态
-        photo_show:false,
-        photo_del:true,
+        photo_show: false,
+        photo_del: true,
 
         //剩余时长
         timeRemaining: '',
@@ -175,6 +176,7 @@
         loaded_width: '',      // 进度条内容宽度——初始宽度
         loaded_height: 8,    // 进度条内容高度
         loader_speed: 10000,  // 进度条速度(ms)
+        step: 7,
         time: '',
         checkBtn: true,
         ani_status: 0,
@@ -227,7 +229,6 @@
       // 判断home组件是否传值
       this.judgeSeedAndId();
 
-
       window.addEventListener('beforeunload', e => {
         alert('text');
         window.localStorage.removeItem('titleName')
@@ -239,6 +240,12 @@
       clearTimeout(this.time);
     },
     methods: {
+
+      totpTimeUsedAccureated() {
+        const epoch = Date.now()
+        const step = this.step
+        return Math.floor(epoch % (step*1000))/1000;
+      },
 
       //判断是否收到id；seed
       judgeSeedAndId() {
@@ -286,7 +293,7 @@
         setInterval(function () {
           const secret = result;
           const token = authenticator.generate(secret);
-          console.log('token', token);
+          // console.log('token', token);
           let baseUrl = window.location.origin;
           if (window.location.origin.match(/1.cust.edu.cn/)) {
             baseUrl += '/quickauth'
@@ -304,7 +311,7 @@
         const that = this;
         const chick_state = setInterval(function () {
           getchick(id).then(result => {
-            console.log('已登录', result);
+            // console.log('已登录', result);
             // this.changeSign(result);
             for (let class_id in result.data.body) {
               let students = result.data.body[class_id];
@@ -328,8 +335,8 @@
         console.log('id:', id, 'gid:', gid, 'code:', code);
         getFace(id, gid, code).then(result => {
           console.log(result);
-          this.photo_show=true;
-          this.photo_del=false;
+          this.photo_show = true;
+          this.photo_del = false;
           this.photo_base64 = result.data.body.face;
         }).catch(error => {
           console.log(error)
@@ -363,17 +370,16 @@
           // console.log(that.otp_state);
           // this.$store.commit("")
         } else {
-          this.setWarning('考勤已结束');
+          this.$store.commit('SET_LOADING','考勤已结束');
         }
       },
       // 进度条
       processBar() {
         const that = this;
         this.time = setInterval(function () {
-
-          let total = (that.timeUsed) / 6 * 300;
+          const timeUsed = that.totpTimeUsedAccureated()
+          const total = timeUsed / (that.step ) * that.loader_width;
           this.loaded.style.width = total + 'px';
-
         }, 20);
       },
 
@@ -418,13 +424,6 @@
           To_Data: obj.To_Data,
         });
       },
-      // 设置警告
-      setWarning(msg) {
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: msg});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 1000);
-      },
       // 更改签到状态
       setSign(index1, index2) {
         const classroom = this.classMsg.find((c) => {
@@ -433,15 +432,16 @@
         const student = classroom.students.find((s) => {
           return s.id == index2
         });
-
         student.ifSign = true;
+        this.ifSign = !student.ifSign;
+        this.setAnimation();
       },
 
       showLate(index1, index2) {
         const student = this.Class_lists[index1].students[index2];
-        this.setWarning('更改为迟到');
+        this.$store.commit('SET_LOADING','更改为迟到');
         if (student.Late === true) {
-          this.setWarning('您已经选择了迟到');
+          this.$store.commit('SET_LOADING','您已经选择了迟到');
         } else {
           student.Late = true;
           this.ifLate = true;
@@ -453,9 +453,9 @@
       showTruancy(index1, index2) {
         console.log("旷课了");
         const student = this.Class_lists[index1].students[index2];
-        this.setWarning('更改为旷课');
+        this.$store.commit('SET_LOADING','更改为旷课');
         if (this.Class_lists[index1].students[index2].Late === false) {
-          this.setWarning('您已经选择了旷课');
+          this.$store.commit('SET_LOADING','您已经选择了旷课');
         } else {
           student.Late = false;
           student.Truancy = true;
@@ -820,14 +820,13 @@
     justify-content: center;
   }
 
-
-  .photo_show{
+  .photo_show {
     position: absolute;
     top: 200px;
     width: 328px;
   }
 
-  .photo_del{
+  .photo_del {
     display: none;
   }
 

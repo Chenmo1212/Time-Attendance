@@ -8,6 +8,11 @@
     <transition name="register" >
       <register-vue v-show="ifShow_reg_alert" ></register-vue>
     </transition>
+
+    <!--提示弹窗-->
+    <transition name="warning">
+      <div class="onLoad" v-if="isLoading === true"><span>{{ warning }}</span></div>
+    </transition>
     <!--<footer-vue></footer-vue>-->
   </div>
 </template>
@@ -23,8 +28,30 @@
       ...mapState([
         'ifShow_reg_alert',
         'ifShow_login_alert',
+        'isLoading',
+        'warning',
       ])
     },
+    methods: {
+      // 设置警告
+      setWarning() {
+        if(this.isLoading) {
+          console.log("123123123213");
+          this.$store.commit('SET_LOADING', this.warning);
+          console.log(this.isLoading)
+          setTimeout(() => {
+            // this.$store.commit('SET_LOADING', false);
+            this.$store.commit('CLOSE_LOADING', false);
+          }, 1000);
+
+        }
+      },
+    },
+    watch: {
+      isLoading: function (){
+      this.setWarning();
+  }
+    }
   }
 </script>
 
@@ -61,5 +88,38 @@
 .register-leave-to {
   opacity: 0;
 }
+  /*====================    warning-begin     ================*/
+  .onLoad {
+    position: absolute;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    width: 160px;
+    background-color: rgba(66, 66, 66, .9);
+    border-radius: 3%;
+    color: #FFF;
+    top: 240px;
+    left: 50%;
+    margin-left: -80px;
+    z-index: 101;
+  }
+  .warning-enter-active {
+    transition: all 0.3s ease;
+  }
 
+  .warning-enter {
+    /* .slide-fade-leave-active for below version 2.1.8 */
+    transform: translateY(7px);
+    opacity: 0;
+  }
+
+  .warning-leave-active {
+    transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+
+  .warning-leave-to {
+    opacity: 0;
+  }
+
+  /*====================    warning-end     ================*/
 </style>

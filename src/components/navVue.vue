@@ -92,10 +92,7 @@
       </div>
     </transition>
 
-    <!--提示弹窗-->
-    <transition name="warning">
-      <div class="onLoad" v-if="isLoading === true"><span>{{ warning }}</span></div>
-    </transition>
+
 
     <transition name="introduction">
       <div class="intro" v-show="showIntro">
@@ -259,12 +256,7 @@
       toAttendance() {
         console.log(this.Class_lists.length);
         if (this.Class_lists.length === 0) {
-
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '请点击"开始签到"'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
-
+          this.$store.commit('SET_LOADING', '请点击"开始签到"');
           this.$router.push({name: 'home'})
         } else {
           this.$router.push({name: 'attendance'});
@@ -281,10 +273,7 @@
 
             console.log("仓库中没有数据");
             console.log("弹出警告框");
-            this.$store.commit('SET_LOADING', {isLoading: true, warning: '请填全信息开始签到'});
-            setTimeout(() => {
-              this.$store.commit('SET_LOADING', false);
-            }, 1000);
+            this.$store.commit('SET_LOADING', '请填全信息开始签到');
             console.log("返回主页");
             this.$router.push({name: 'home'})
           } else {
@@ -313,8 +302,8 @@
         // }, 1000);
         //   console.log("123");
         // }, 1000);
-        // this.$router.push({name: 'introduction'});
-        this.showIntro = true;
+        this.$router.push({name: 'introduction'});
+        // this.showIntro = true;
       },
 
       // 账号详情
@@ -327,11 +316,7 @@
 
       // 清除数据
       del() {
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '数据已删,请刷新'});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 1000);
-
+        this.$store.commit('SET_LOADING',  '数据已删,请刷新');
         this.$router.push({name: 'home'});
         // 清除缓存
         window.onbeforeunload = function (e) {
@@ -376,10 +361,7 @@
 
       // 注销
       toLogout() {
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '注销成功'});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 1000);
+        this.$store.commit('SET_LOADING',  '注销成功');
         if (this.$route.name !== 'home') {
           this.$router.push({name: 'home'});
         }
@@ -775,44 +757,24 @@
   /*====================    intro-end    ================*/
 
 
-  /*====================    warning-begin     ================*/
-  .onLoad {
-    position: absolute;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
-    width: 160px;
-    background-color: rgba(66, 66, 66, .9);
-    border-radius: 3%;
-    color: #FFF;
-    top: 240px;
-    left: 50%;
-    margin-left: -80px;
-    z-index: 101;
-  }
 
-  /*====================    warning-end     ================*/
 
   .alert-enter-active,
-  .introduction-enter-active,
-  .warning-enter-active {
+  .introduction-enter-activee {
     transition: all 0.3s ease;
   }
 
   .alert-enter,
-  .introduction-enter,
-  .warning-enter {
+  .introduction-enter{
     /* .slide-fade-leave-active for below version 2.1.8 */
     transform: translateY(7px);
     opacity: 0;
   }
 
-  .warning-leave-active,
   .introduction-leave-active {
     transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
   }
 
-  .warning-leave-to,
   .introduction-leave-to {
     opacity: 0;
   }

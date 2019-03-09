@@ -78,7 +78,13 @@
         console.log('ifShow_login_alert:', this.ifShow_login_alert);
         // this.ifShow_login_alert = false;
       },
-
+      // 设置警告
+      setWarning(msg) {
+        this.$store.commit('SET_LOADING', {isLoading: true, warning: msg});
+        setTimeout(() => {
+          this.$store.commit('SET_LOADING', false);
+        }, 1000);
+      },
       // 登录界面
       Login() {
 
@@ -93,40 +99,26 @@
         } else {
           //去登陆
           login(this.login_acc, this.login_pwd).then(result => {
-            console.log(result);
+            // console.log(result);
             // console.log(result.data.body.authkey);
             if (result.data.ok) {
-              console.log('登陆成功');
+              // console.log('登陆成功');
               localStorage.setItem('result.data.body.key', result.data.body.key);
-              console.log('key'+ result.data.body.key);
+              // console.log('key'+ result.data.body.key);
               // console.log(this.store.state.isLogin);
-              alert('登陆成功');
             } else {
-              console.log('登陆失败');
-              alert('登陆失败');
-              //返回首页
+              this.$store.commit('SET_LOADING','账号或密码错误');
             }
             //向全局抛出key
           }).catch(error => {
             console.log(error)
-            // console.log(error.result)
+            console.log(error.result)
           });
-
-          // this.$store.commit('SET_LOADING', {isLoading:true, warning:'账号密码不得为空'});
-          // this.$store.commit('SET_LOADING', {isLoading:true, warning:'登录成功'});
-          // this.$store.commit('SET_LOADING', {isLoading: true, warning: '账号密码不得为空'});
           setTimeout(() => {
             this.$store.commit('SET_LOADING', false);
           }, 1000);
           this.$store.commit('SET_LOGIN', true);
-          console.log("isLogin", this.isLogin);
           this.$store.commit('SET_ATTENTION', false);
-
-          if (this.Class_lists.length === 0) {
-            this.$router.push({name: 'home'});
-          } else {
-            this.$router.push({name: 'data'});
-          }
           this.$store.commit('SHOW_LOGIN', false);
           this.$store.commit('SET_ATTENTION', false);
         }
@@ -146,7 +138,7 @@
         console.log("去注册");
         this.$store.commit('SHOW_LOGIN', false);
         this.$store.commit('SHOW_REGISTER', true);
-        console.log('ifShow_reg_alert:', this.ifShow_reg_alert);
+        // console.log('ifShow_reg_alert:', this.ifShow_reg_alert);
       },
     }
   }

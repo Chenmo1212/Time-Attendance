@@ -5,6 +5,7 @@ export default {
 
   // 警告框
   isLoading: false,
+  warning: '',
 
   // 登录状态
   isLogin: false,
@@ -21,8 +22,6 @@ export default {
   // 想去data
   To_Data: false,
 
-  // 警告语
-  warning: '',
 
   // attendance的警告语
   at_warning: '',

@@ -10,10 +10,14 @@ export default {
   },
 
   // 更改loading
-  SET_LOADING(state, obj) {
-    state.isLoading = obj.isLoading;
-    state.warning = obj.warning;
+  SET_LOADING(state, warning) {
+    state.isLoading = true;
+    state.warning = warning;
   },
+  CLOSE_LOADING(state, bool) {
+    state.isLoading = bool;
+  },
+
 
   // 更改登录状态
   SET_LOGIN(state, boolean) {
