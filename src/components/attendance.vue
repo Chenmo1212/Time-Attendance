@@ -330,7 +330,7 @@
           console.log(result);
           this.photo_show=true;
           this.photo_del=false;
-          this.photo_base64 = result.body.face;
+          this.photo_base64 = result.data.body.face;
         }).catch(error => {
           console.log(error)
         })
