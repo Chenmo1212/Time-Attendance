@@ -1,5 +1,7 @@
 <template>
+
   <div id="Attendance">
+
     <div class="mw">
       <!-- 左边 begin -->
       <div class="left">
@@ -100,6 +102,8 @@
         </div>
       </div>
     </div>
+    <!--<img src="data:image/png;base64,"(v-model=photo_base64) >-->
+    <img v-bind:src="photo_base64" v-bind:class={photo_show:photo_show,photo_del:photo_del} @click="photo_del=true,photo_show=true">
 
     <!--提示弹窗-->
     <!--<transition name="warning">-->
@@ -129,6 +133,12 @@
     name: "Attendance",
     data() {
       return {
+        //学生照片base64
+        photo_base64:'',
+        //显示状态
+        photo_show:false,
+        photo_del:true,
+
         //剩余时长
         timeRemaining: '',
 
@@ -219,7 +229,7 @@
 
 
       window.addEventListener('beforeunload', e => {
-        alert('text')
+        alert('text');
         window.localStorage.removeItem('titleName')
       });
 
@@ -229,17 +239,6 @@
       clearTimeout(this.time);
     },
     methods: {
-
-      //   //关闭浏览器
-      //   window.onbeforeunload = function () {
-      //   alert('你确定要关闭此页');
-      // },
-      // onunload() {
-      //
-      //   window.onunload = function () {
-      //     alert('你确定要关闭此页');
-      //   }
-      // },
 
       //判断是否收到id；seed
       judgeSeedAndId() {
@@ -328,11 +327,15 @@
         const id = localStorage.getItem('messionId');
         console.log('id:', id, 'gid:', gid, 'code:', code);
         getFace(id, gid, code).then(result => {
-          console.log(result)
+          console.log(result);
+          this.photo_show=true;
+          this.photo_del=false;
+          this.photo_base64 = result.body.face;
         }).catch(error => {
           console.log(error)
         })
       },
+
 
       // 删除选中按钮
       clearCheckBtn() {
@@ -374,58 +377,6 @@
         }, 20);
       },
 
-      //获取学生 （未登录）
-      // chickNunStu() {
-      //   // function () {
-      //   //
-      //   // }
-      //   // const id = localStorage.getItem('res.data.body.id');
-      //   const that = this;
-      //   anonymous().then(result => {
-      //     console.log('未登录匿名用户', result);
-      //     //存id
-      //     localStorage.setItem('unLoginKey', result.data.body.key);
-      //     console.log("匿名用户的key"+ result.data.body.key);
-      //     setInterval(function () {
-      //       getnonchick(result.data.body.key, result.data.body.id).then(res => {
-      //         console.log('未登录', res);
-      //         console.log('未登录2', res.data.body);
-      //         for (let class_id in res.data.body) {
-      //           let students = res.data.body[class_id];
-      //           students.forEach((s) => {
-      //             that.setSign(class_id, s);
-      //           })
-      //           // this.classMsg[k].students[v].push({isSign: false})
-      //         }
-      //         //
-      //       }).catch(error => {
-      //         console.log(error)
-      //       })
-      //     }, 1000)
-      //   }).catch(error => {
-      //     console.log(error)
-      //   })
-      // },
-      //
-      // 获取学生0.5秒请求一次(已登录)
-      // chickInStu() {
-      //   const that = this;
-      //   setInterval(function () {
-      //     getchick().then(result => {
-      //       console.log('已登录', result)
-      //       this.changeSign(result);
-      //       for (let class_id in result.data.body) {
-      //         let students = result.data.body[class_id];
-      //         students.forEach((s) => {
-      //           that.setSign(class_id, s);
-      //         })
-      //       }
-      //     }).catch(error => {
-      //       console.log(error)
-      //     })
-      //   }, 1000);
-      //
-      // },
       setIndex(index1, index2) {
         var student = this.classMsg[index1].students[index2];
         this.clearCheckBtn(index1, index2);
@@ -484,12 +435,6 @@
         });
 
         student.ifSign = true;
-        // this.setWarning('更改成功');
-        // student.ifSign = !student.ifSign;
-        // student.ifSign === true ? classroom.noSign -= 1 : classroom.noSign += 1;
-        // this.ifSign = !student.ifSign;
-        // // 数据有改变，需要改变本地存储中的数据
-        // localStorage.setItem('class_lists', JSON.stringify(this.classMsg));
       },
 
       showLate(index1, index2) {
@@ -875,7 +820,16 @@
     justify-content: center;
   }
 
-  /*====================    pic-end    ================*/
+
+  .photo_show{
+    position: absolute;
+    top: 200px;
+    width: 328px;
+  }
+
+  .photo_del{
+    display: none;
+  }
 
 
 </style>
