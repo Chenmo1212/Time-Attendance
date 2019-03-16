@@ -296,7 +296,7 @@
           const token = authenticator.generate(secret);
           // console.log('token', token);
           let baseUrl = window.location.origin;
-          if (window.location.origin.match(/1.cust.edu.cn/)) {
+          if (window.location.origin.match(/cust.edu.cn/)) {
             baseUrl += '/quickauth'
           }
           const url = `${baseUrl}/static/phone/index.html?val=${token}&id=${id}`;
