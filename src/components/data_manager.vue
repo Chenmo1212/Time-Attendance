@@ -9,13 +9,13 @@
         <li><h4>未签到人数</h4></li>
         <li><h4>备注</h4></li>
       </ul>
-      <ul class="list-bd" v-for="(value, index) in classMsg">
+      <ul class="list-bd" v-for="(value, index) in overViewClassMsg[0]">
         <li>{{ index + 1 }}</li>
-        <li>{{ value.class_id }}</li>
-        <li>{{ value.total }}</li>
-        <li class="noSign-num">{{ value.noSign }}</li>
+        <li>{{ value.code}}</li>
+        <li>{{ 0-value.total }}</li>
+        <li class="noSign-num">{{(0-value.total)- value.attend }}</li>
         <li>
-          <a @click="showDetail(index)">详情</a>
+          <a @click="showDetail(index);">详情</a>
         </li>
       </ul>
     </div>
@@ -32,26 +32,24 @@
           <div class="alert-detail-wrap">
             <div class="alert-detail-header">
               <span class="detail-header-title">缺勤学生名单</span>
-              <span>（{{ classMsg[param].class_id }}班）</span>
-              <span>{{ classMsg[param].noSign }}人</span>
+              <!--<span>（{{ overViewClassMsg[0][this.class].name}}班）</span>-->
+              <span>{{ -overViewClassMsg[0][this.class].total}}人</span>
               <span @click="close" class="alert-detail-del"></span>
             </div>
             <div class="alert-detail-content">
               <div class="detail-content-header">
                 <span>学号</span>
-                <span>迟到</span>
+                <!--<span>迟到</span>-->
                 <span>旷课</span>
-                <span>迟到次数</span>
                 <span>旷课次数</span>
-                <span>缺勤次数&nbsp;/&nbsp;总次数</span>
+                <span>缺勤&nbsp;/&nbsp;总次数</span>
 
               </div>
               <div class="detail-content-body">
-                <div class="content" v-for="(value, index) in students">
-                  <span style="font-weight: bold;">{{ value.id }}</span>
-                  <span><img src="../png/check.png" alt="" v-show="value.Late"></span>
-                  <span><img src="../png/check.png" alt="" v-show="value.Truancy"></span>
-                  <span>{{ text }}</span>
+                <div class="content" v-for="item in overViewStuMsg[this.class]">
+                  <span style="font-weight: bold;">{{ item.id+1 }}</span>
+                  <span><img src="../png/check.png" alt="" v-show="item.Late"></span>
+                  <span><img src="../png/check.png" alt="" v-show="item.Truancy"></span>
                   <span>{{ text }}</span>
                   <span>{{ text }}&nbsp;/&nbsp;{{ text }}</span>
                 </div>
@@ -67,14 +65,16 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import {getchickin} from "../axios/api";
+  import {mapState} from 'vuex'
+  import {getStatus} from "../axios/api";
+  import index from "../router";
 
   export default {
     name: 'data_manage',
     data() {
       return {
         param: 0,
+        class:'',
 
         // 详情弹框
         ifShow: false,
@@ -84,6 +84,8 @@
 
         classMsg: [],
         students: [],
+        overViewClassMsg: [],
+        overViewStuMsg: [],
 
       }
     },
@@ -94,54 +96,83 @@
       ])
     },
 
-    created(){
+    created() {
+      //打开拉去考勤状态
+      this.getStatusTo();
       // 跟classMsg一毛一样，就不再解释了
-      if(this.Class_lists.length === 0){
+      if (this.Class_lists.length === 0) {
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
       }
       this.classMsg = this.Class_lists;
-      //获取历史考勤状态信息
-      this.getChickinTo()
+
     },
 
 
     methods: {
       showDetail(index) {
+        this.class=index;
+        console.log('index',index)
         if (this.count === 0) {
           console.log(this.count);
           this.count = 1;
           this.param = index;
-          for(var i = 0; i < this.classMsg[index].students.length; i++){
+          for (var i = 0; i < this.classMsg[index].students.length; i++) {
 
             // console.log(this.classMsg[index].students[i].isSign);
-            if(this.classMsg[index].students[i].isSign === false){
+            if (this.classMsg[index].students[i].isSign === false) {
               // console.log(this.classMsg[index].students[i]);
               this.students.push(this.classMsg[index].students[i]);
             }
           }
           // console.log(this.students);
-          this.ifShow = ! this.ifShow;
+          this.ifShow = !this.ifShow;
 
         } else {
           console.log(this.count);
-          this.ifShow = ! this.ifShow;
+          this.ifShow = !this.ifShow;
         }
 
       },
+//获取统计信息
+      getStatusTo() {
+        getStatus().then(result => {
 
-      //获取用户创建的考勤 登陆时直接获取
-      getChickinTo(){
-        getchickin().then(result => {
-
-          console.log('获取',result);
+          console.log('获取统计信息', result);
+          this.overViewClassMsg = result.data.body;
+          console.log("this.overViewClassMsg", this.overViewClassMsg);
+          console.log("student", this.students);
+          this.makeStudentList()
         }).catch(error => {
           // console.log(error)
         });
 
       },
 
-      close(){
-        this.ifShow = ! this.ifShow;
+
+    //遍历学生
+      makeStudentList() {
+
+
+        let a = new Array();
+        for (let i = 0; i < this.overViewClassMsg.length; i++) {
+          a[i] = new Array();
+          console.log( 'ai',a[i]);
+          this.overViewStuMsg = a[i];
+          // console.log(0-this.overViewClassMsg[i][1].total);
+          for (let c = 0; c < this.overViewClassMsg[i].length; c++) {
+            a[i][c] = new Array();
+            for (let b = 0; b <( 0-this.overViewClassMsg[i][c].total); b++) {
+              a[i][c].push({id: b, isSign: true, Late: false})
+            }
+          }
+        }
+
+        console.log('this.overViewStuMsg',this.overViewStuMsg);
+
+      },
+
+      close() {
+        this.ifShow = !this.ifShow;
       }
     },
   }
@@ -235,6 +266,7 @@
     margin-left: 15px;
     line-height: 30px;
   }
+
   .alert-detail-del {
     cursor: pointer;
     width: 40px;

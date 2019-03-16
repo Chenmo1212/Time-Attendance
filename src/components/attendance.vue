@@ -27,7 +27,8 @@
           <!--结束考勤 begin-->
           <div class="popIn block" v-show="ShowBlock">
             <div class="block_header">
-              <p>Tip:别扫了，考勤结束了</p>
+              <p @click="conserveData()">Tip:点击此处进行保存</p>
+              <span></span>
             </div>
 
             <div class="block_body">
@@ -54,20 +55,20 @@
                 <li class="spacer" v-show="!ifSign"></li>
                 <li class="menu-main" @click="getStuFace(classMsg[classIndex].class_id,studentId+1)" v-show="!ifSign">
                   <i class="iconfont">&#xe633;</i>
-                  <span>查看照片</span>
+                  <span  @click="photo_del=false,photo_show=true">查看照片</span>
                 </li>
                 <li class="spacer" v-show="!ifSign"></li>
-                <li class="menu-main" @click="showLate(classIndex, studentId)" v-show="ifSign">
-                  <i class="iconfont" v-if="ifLate">&#xe6f2;</i>
-                  <span>设为迟到</span>
-                </li>
+                <!--<li class="menu-main" @click="showLate(classIndex, studentId)" v-show="ifSign">-->
+                  <!--<i class="iconfont" v-if="ifLate">&#xe6f2;</i>-->
+                  <!--<span>设为迟到</span>-->
+                <!--</li>-->
                 <li class="spacer" v-show="ifSign"></li>
                 <li class="menu-main" @click="showTruancy(classIndex, studentId)" v-show="ifSign">
                   <i class="iconfont" v-if="ifTruancy">&#xe6f2;</i>
                   <span>设为旷课</span>
                 </li>
                 <li class="spacer" v-show="ifSign"></li>
-                <li class="menu-main" @click="setSign(Class_lists[classIndex].class_id, studentId + 1)">
+                <li class="menu-main" @click="setSign(Class_lists[classIndex].class_id, studentId + 1);getToggle(Class_lists[classIndex].class_id, studentId + 1)">
                   <i class="iconfont">&#xe67a;</i>
                   <span>更改状态</span>
                 </li>
@@ -104,7 +105,7 @@
     </div>
     <!--<img src="data:image/png;base64,"(v-model=photo_base64) >-->
     <img v-bind:src="photo_base64" v-bind:class={photo_show:photo_show,photo_del:photo_del}
-         @click="photo_del=true,photo_show=true">
+         @click="photo_del=true,photo_show=false">
 
     <!--提示弹窗-->
     <!--<transition name="warning">-->
@@ -128,7 +129,7 @@
   import {mapState} from 'vuex';
   import authenticator from 'otplib/authenticator';
   import crypto from 'crypto';
-  import {getchick, getFace} from "../axios/api";
+  import {getchick, getFace,toggle} from "../axios/api";
 
   export default {
     name: "Attendance",
@@ -316,7 +317,7 @@
             for (let class_id in result.data.body) {
               let students = result.data.body[class_id];
               students.forEach((s) => {
-                that.setSign(class_id, s);
+                 that.setSign(class_id, s);
               })
             }
           }).catch(error => {
@@ -362,17 +363,32 @@
         const that = this;
 
         if (this.ShowBlock === false) {
-          this.setAttention("当前正在考勤，确定要结束当前考勤？",
+          this.setAttention("当前正在考勤，确定要结束当前考勤",
             {
               EndSign: true
             });
-          // that.otp_state = false;
-          // console.log(that.otp_state);
-          // this.$store.commit("")
+
         } else {
           this.$store.commit('SET_LOADING','考勤已结束');
         }
       },
+
+      //保存
+      conserveData(){
+        if(!this.$store.state.isLogin){
+          alert("当前未登录，请先登录");
+          //弹窗
+          this.$store.commit('SET_ATTENTION', {ifAlert: false, To_Data: true});
+          // this.$store.commit('TO_DATA', true);
+          this.$store.commit('SHOW_LOGIN', true);
+          console.log('弹出登录窗口--保存',this.$store.state.ifShow_login_alert);
+
+        }else{
+          alert('保存成功"')
+        }
+
+      },
+
       // 进度条
       processBar() {
         const that = this;
@@ -426,6 +442,7 @@
       },
       // 更改签到状态
       setSign(index1, index2) {
+
         const classroom = this.classMsg.find((c) => {
           return c.class_id == index1
         });
@@ -434,9 +451,22 @@
         });
         student.ifSign = true;
         this.ifSign = !student.ifSign;
+        //发送状态信息
+        // this.getToggle(index1,index2);
+
         this.setAnimation();
       },
+      //发送状态信息
+      getToggle(index1,index2){
 
+        const id = localStorage.getItem('messionId');
+        console.log(id,index1,index2);
+        toggle(id, index1, index2).then(result => {
+         console.log(result)
+        }).catch(error => {
+          console.log(error)
+        })
+      },
       showLate(index1, index2) {
         const student = this.Class_lists[index1].students[index2];
         this.$store.commit('SET_LOADING','更改为迟到');

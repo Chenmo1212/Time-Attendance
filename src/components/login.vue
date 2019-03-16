@@ -98,9 +98,10 @@
           this.login_pwd = '';
         } else {
           //去登陆
-          login(this.login_acc, this.login_pwd).then(result => {
-            // console.log(result);
-            // console.log(result.data.body.authkey);
+
+          login(this.login_acc, this.login_pwd,).then(result => {
+            console.log(result);
+
             if (result.data.ok) {
               // console.log('登陆成功');
               localStorage.setItem('result.data.body.key', result.data.body.key);
@@ -111,7 +112,7 @@
             }
             //向全局抛出key
           }).catch(error => {
-            console.log(error)
+            console.log(error);
             console.log(error.result)
           });
           setTimeout(() => {

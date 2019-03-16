@@ -14,10 +14,26 @@ export function regTo(phone, reg_pwd) {
 //登陆
 export function login(login_acc, login_pwd) {
   console.log('登陆接口');
+  //获取key
+  const key = localStorage.getItem('creatListKey');
+  //判断 Authkey
+  function resKey(key) {
+    if(key=="null"){
+      return 'undefined'
+    }else{
+      return key
+    }
+  }
   return api.post('/api/v1/user/login', {
     username: login_acc,
     password: login_pwd
-  })
+  },
+    {
+      headers: {
+        'X-Auth-Key': resKey()
+      },
+    }
+    )
 }
 
 
@@ -83,6 +99,29 @@ export function getFace(id,gid,code) {
     gid:gid,
     code:code,
   }, {
+    headers: {
+      'X-Auth-Key': key
+    }
+  })
+}
+//获取统计信息
+export function getStatus(){
+  const key = localStorage.getItem('creatListKey');
+  return api.post('/api/v1/analytics/overview',{},{
+      headers: {
+        'X-Auth-Key': key
+      }
+    })
+}
+//更改被考勤者状态
+export function toggle(id,gid,code) {
+  const key = localStorage.getItem('creatListKey');
+  console.log('key',key)
+  return api.post('/api/v1/checkin/toggle',{
+    id:id,
+    gid:gid,
+    code:code,
+  },{
     headers: {
       'X-Auth-Key': key
     }
