@@ -16,24 +16,26 @@ export function login(login_acc, login_pwd) {
   console.log('登陆接口');
   //获取key
   const key = localStorage.getItem('creatListKey');
+
   //判断 Authkey
   function resKey(key) {
-    if(key=="null"){
+    if (key == "null") {
       return 'undefined'
-    }else{
+    } else {
       return key
     }
   }
+
   return api.post('/api/v1/user/login', {
-    username: login_acc,
-    password: login_pwd
-  },
+      username: login_acc,
+      password: login_pwd
+    },
     {
       headers: {
         'X-Auth-Key': resKey()
       },
     }
-    )
+  )
 }
 
 
@@ -91,37 +93,59 @@ export function getInfo() {
 }
 
 //获取用户的脸
-export function getFace(id,gid,code) {
+export function getFace(id, gid, code) {
   //获取key
   const key = localStorage.getItem('creatListKey');
   return api.post('/api/v1/checkin/spec', {
-    id:id,
-    gid:gid,
-    code:code,
+    id: id,
+    gid: gid,
+    code: code,
   }, {
     headers: {
       'X-Auth-Key': key
     }
   })
 }
+
 //获取统计信息
-export function getStatus(){
+export function getStatus() {
   const key = localStorage.getItem('creatListKey');
-  return api.post('/api/v1/analytics/overview',{},{
-      headers: {
-        'X-Auth-Key': key
-      }
-    })
+  return api.post('/api/v1/analytics/overview', {}, {
+    headers: {
+      'X-Auth-Key': key
+    }
+  })
 }
+
 //更改被考勤者状态
-export function toggle(id,gid,code) {
+export function toggle(id, gid, code) {
   const key = localStorage.getItem('creatListKey');
-  console.log('key',key)
-  return api.post('/api/v1/checkin/toggle',{
-    id:id,
-    gid:gid,
-    code:code,
-  },{
+  console.log('key', key)
+  return api.post('/api/v1/checkin/toggle', {
+    id: id,   //
+    gid: gid, //班级号
+    code: code,
+  }, {
+    headers: {
+      'X-Auth-Key': key
+    }
+  })
+}
+
+// 获取当前考勤信息
+export function getCurrentInfo() {
+  return api.get('', {}, {
+    headers: {
+      'X-Auth-Key': key
+    }
+  })
+}
+
+// 获取历史考勤信息
+export function getHistoryInfo() {
+  const key = localStorage.getItem('creatListKey');
+  console.log('key', key);
+  return api.get('', {}, {
     headers: {
       'X-Auth-Key': key
     }

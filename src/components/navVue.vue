@@ -256,7 +256,7 @@
       toAttendance() {
         console.log(this.Class_lists.length);
         if (this.Class_lists.length === 0) {
-          this.$store.commit('SET_LOADING', '请点击"开始签到"');
+          this.$store.commit('SET_LOADING', '请点击"新建签到"');
           this.$router.push({name: 'home'})
         } else {
           this.$router.push({name: 'attendance'});

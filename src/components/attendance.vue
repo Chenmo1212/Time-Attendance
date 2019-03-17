@@ -1,7 +1,5 @@
 <template>
-
   <div id="Attendance">
-
     <div class="mw">
       <!-- 左边 begin -->
       <div class="left">
@@ -48,19 +46,19 @@
             <h3>考勤班级状态</h3>
             <div class="menu bounce1" v-show="isMenu" id="bounce">
               <ul>
-                <li @click="toData()" v-show="!ifSign" :class="{'noLogin': !isLogin,'menu-main': true}">
+                <li @click="toData()" :class="{'noLogin': !isLogin,'menu-main': true}">
                   <i class="iconfont">&#xe61b;</i>
                   <span>数据管理</span>
                 </li>
                 <li class="spacer" v-show="!ifSign"></li>
                 <li class="menu-main" @click="getStuFace(classMsg[classIndex].class_id,studentId+1)" v-show="!ifSign">
                   <i class="iconfont">&#xe633;</i>
-                  <span  @click="photo_del=false,photo_show=true">查看照片</span>
+                  <span @click="photo_del=false,photo_show=true">查看照片</span>
                 </li>
                 <li class="spacer" v-show="!ifSign"></li>
                 <!--<li class="menu-main" @click="showLate(classIndex, studentId)" v-show="ifSign">-->
-                  <!--<i class="iconfont" v-if="ifLate">&#xe6f2;</i>-->
-                  <!--<span>设为迟到</span>-->
+                <!--<i class="iconfont" v-if="ifLate">&#xe6f2;</i>-->
+                <!--<span>设为迟到</span>-->
                 <!--</li>-->
                 <li class="spacer" v-show="ifSign"></li>
                 <li class="menu-main" @click="showTruancy(classIndex, studentId)" v-show="ifSign">
@@ -68,11 +66,11 @@
                   <span>设为旷课</span>
                 </li>
                 <li class="spacer" v-show="ifSign"></li>
-                <li class="menu-main" @click="setSign(Class_lists[classIndex].class_id, studentId + 1);getToggle(Class_lists[classIndex].class_id, studentId + 1)">
+                <li class="menu-main"
+                    @click="setSign(Class_lists[classIndex].class_id, studentId + 1);getToggle(Class_lists[classIndex].class_id, studentId + 1)">
                   <i class="iconfont">&#xe67a;</i>
                   <span>更改状态</span>
                 </li>
-
               </ul>
             </div>
           </div>
@@ -129,7 +127,7 @@
   import {mapState} from 'vuex';
   import authenticator from 'otplib/authenticator';
   import crypto from 'crypto';
-  import {getchick, getFace,toggle} from "../axios/api";
+  import {getchick, getFace, toggle} from "../axios/api";
 
   export default {
     name: "Attendance",
@@ -245,7 +243,7 @@
       totpTimeUsedAccureated() {
         const epoch = Date.now()
         const step = this.step
-        return Math.floor(epoch % (step*1000))/1000;
+        return Math.floor(epoch % (step * 1000)) / 1000;
       },
 
       //判断是否收到id；seed
@@ -255,10 +253,10 @@
           const id = localStorage.getItem('messionId');
           const result = localStorage.getItem('seed');
           if (id == null || result == null) {
-            console.log('要老子等');
+            // console.log('要老子等');
             return
           } else {
-            console.log('不等了');
+            // console.log('不等了');
             //调用 二维码
             that.loopCode();
             //调用 拉取学生接口
@@ -317,7 +315,7 @@
             for (let class_id in result.data.body) {
               let students = result.data.body[class_id];
               students.forEach((s) => {
-                 that.setSign(class_id, s);
+                that.setSign(class_id, s);
               })
             }
           }).catch(error => {
@@ -369,21 +367,21 @@
             });
 
         } else {
-          this.$store.commit('SET_LOADING','考勤已结束');
+          this.$store.commit('SET_LOADING', '考勤已结束');
         }
       },
 
       //保存
-      conserveData(){
-        if(!this.$store.state.isLogin){
+      conserveData() {
+        if (!this.$store.state.isLogin) {
           alert("当前未登录，请先登录");
           //弹窗
           this.$store.commit('SET_ATTENTION', {ifAlert: false, To_Data: true});
           // this.$store.commit('TO_DATA', true);
           this.$store.commit('SHOW_LOGIN', true);
-          console.log('弹出登录窗口--保存',this.$store.state.ifShow_login_alert);
+          console.log('弹出登录窗口--保存', this.$store.state.ifShow_login_alert);
 
-        }else{
+        } else {
           alert('保存成功"')
         }
 
@@ -394,7 +392,7 @@
         const that = this;
         this.time = setInterval(function () {
           const timeUsed = that.totpTimeUsedAccureated()
-          const total = timeUsed / (that.step ) * that.loader_width;
+          const total = timeUsed / (that.step) * that.loader_width;
           this.loaded.style.width = total + 'px';
         }, 20);
       },
@@ -457,21 +455,20 @@
         this.setAnimation();
       },
       //发送状态信息
-      getToggle(index1,index2){
-
+      getToggle(index1, index2) {
         const id = localStorage.getItem('messionId');
-        console.log(id,index1,index2);
+        console.log(id, index1, index2);
         toggle(id, index1, index2).then(result => {
-         console.log(result)
+          console.log(result)
         }).catch(error => {
           console.log(error)
         })
       },
       showLate(index1, index2) {
         const student = this.Class_lists[index1].students[index2];
-        this.$store.commit('SET_LOADING','更改为迟到');
+        this.$store.commit('SET_LOADING', '更改为迟到');
         if (student.Late === true) {
-          this.$store.commit('SET_LOADING','您已经选择了迟到');
+          this.$store.commit('SET_LOADING', '您已经选择了迟到');
         } else {
           student.Late = true;
           this.ifLate = true;
@@ -483,9 +480,9 @@
       showTruancy(index1, index2) {
         console.log("旷课了");
         const student = this.Class_lists[index1].students[index2];
-        this.$store.commit('SET_LOADING','更改为旷课');
+        this.$store.commit('SET_LOADING', '更改为旷课');
         if (this.Class_lists[index1].students[index2].Late === false) {
-          this.$store.commit('SET_LOADING','您已经选择了旷课');
+          this.$store.commit('SET_LOADING', '您已经选择了旷课');
         } else {
           student.Late = false;
           student.Truancy = true;

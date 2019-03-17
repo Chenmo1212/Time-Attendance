@@ -1,28 +1,81 @@
 <template>
   <div id="data_mg">
-
-    <div class="list">
-      <ul class="list-hd clearFix">
-        <li><h4>序号</h4></li>
-        <li><h4>课堂号</h4></li>
-        <li><h4>学生总人数</h4></li>
-        <li><h4>未签到人数</h4></li>
-        <li><h4>备注</h4></li>
+    <!-- title-tab begin -->
+    <div class="title-tab w">
+      <ul>
+        <li class="selected" id="tab1" @click="choosePage(1)">当前考勤</li>
+        <li class="" id="tab2" @click="choosePage(2)">历史考勤</li>
       </ul>
-      <ul class="list-bd" v-for="(value, index) in overViewClassMsg[0]">
-        <li>{{ index + 1 }}</li>
-        <li>{{ value.code}}</li>
-        <li>{{ 0-value.total }}</li>
-        <li class="noSign-num">{{(0-value.total)- value.attend }}</li>
+    </div>
+    <!-- title-tab end -->
+
+    <!--current page begin-->
+    <div class="w card" v-show="currentPage === 1">
+      <ul>
         <li>
-          <a @click="showDetail(index);">详情</a>
+          <div class="classCard">
+            <div class="cc-hd">一班</div>
+            <div class="cc-bd">
+              <div class="block"><p>查看详情</p></div>
+              <p>总人数： 35</p>
+              <p>实到人数： 20</p>
+              <p>缺勤人数： 15</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="classCard">
+            <div class="cc-hd">一班</div>
+            <div class="cc-bd">
+              <div class="block"><p>查看详情</p></div>
+              <p>总人数： 35</p>
+              <p>实到人数： 20</p>
+              <p>缺勤人数： 15</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="classCard">
+            <div class="cc-hd">一班</div>
+            <div class="cc-bd">
+              <div class="block"><p>查看详情</p></div>
+              <p>总人数： 35</p>
+              <p>实到人数： 20</p>
+              <p>缺勤人数： 15</p>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
+    <!--current page end-->
 
+    <!--history page begin-->
+    <div class="w historyBox" v-show="currentPage === 2">
+      <div class="hty-date">
+        <div class="hty-hd">时间：2019年3月17日</div>
+        <div class="hty-bd" style="overflow: hidden;">
+          <ul class="list-hd clearFix">
+            <li><h4>序号</h4></li>
+            <li><h4>课堂号</h4></li>
+            <li><h4>学生总人数</h4></li>
+            <li><h4>未签到人数</h4></li>
+            <li><h4>备注</h4></li>
+          </ul>
+          <ul class="list-bd" v-for="(value, index) in classMsg">
+            <li>{{ index + 1 }}</li>
+            <li>{{ value.class_id }}</li>
+            <li>{{ value.total }}</li>
+            <li class="noSign-num">{{ value.noSign }}</li>
+            <li>
+              <a @click="showDetail(index)">详情</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--history page end-->
 
     <div class="classroom">
-
       <!--详情弹框-->
       <transition name="detail">
         <div class="alert-detail" v-if="ifShow">
@@ -32,24 +85,25 @@
           <div class="alert-detail-wrap">
             <div class="alert-detail-header">
               <span class="detail-header-title">缺勤学生名单</span>
-              <!--<span>（{{ overViewClassMsg[0][this.class].name}}班）</span>-->
-              <span>{{ -overViewClassMsg[0][this.class].total}}人</span>
+              <span>（{{ classMsg[param].class_id }}班）</span>
+              <span>{{ classMsg[param].noSign }}人</span>
               <span @click="close" class="alert-detail-del"></span>
             </div>
             <div class="alert-detail-content">
               <div class="detail-content-header">
                 <span>学号</span>
-                <!--<span>迟到</span>-->
+                <span>迟到</span>
                 <span>旷课</span>
+                <span>迟到次数</span>
                 <span>旷课次数</span>
-                <span>缺勤&nbsp;/&nbsp;总次数</span>
-
+                <span>缺勤次数&nbsp;/&nbsp;总次数</span>
               </div>
               <div class="detail-content-body">
-                <div class="content" v-for="item in overViewStuMsg[this.class]">
-                  <span style="font-weight: bold;">{{ item.id+1 }}</span>
-                  <span><img src="../png/check.png" alt="" v-show="item.Late"></span>
-                  <span><img src="../png/check.png" alt="" v-show="item.Truancy"></span>
+                <div class="content" v-for="(value, index) in students">
+                  <span style="font-weight: bold;">{{ value.id }}</span>
+                  <span><img src="../png/check.png" alt="" v-show="value.Late"></span>
+                  <span><img src="../png/check.png" alt="" v-show="value.Truancy"></span>
+                  <span>{{ text }}</span>
                   <span>{{ text }}</span>
                   <span>{{ text }}&nbsp;/&nbsp;{{ text }}</span>
                 </div>
@@ -74,8 +128,9 @@
     data() {
       return {
         param: 0,
-        class:'',
+        class: '',
 
+        currentPage: 1,
         // 详情弹框
         ifShow: false,
         // 开关变量
@@ -99,7 +154,6 @@
     created() {
       //打开拉去考勤状态
       this.getStatusTo();
-      // 跟classMsg一毛一样，就不再解释了
       if (this.Class_lists.length === 0) {
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
       }
@@ -109,9 +163,30 @@
 
 
     methods: {
+      // 根据id获取元素
+      getById(id) {
+        return document.getElementById(id);
+      },
+      // 选择界面
+      choosePage(index) {
+        switch (index) {
+          case 1:
+            this.getById("tab1").className = "selected";
+            this.getById("tab2").className = "";
+            this.currentPage = 1;
+            break;
+          case 2:
+            this.getById("tab1").className = "";
+            this.getById("tab2").className = "selected";
+            this.currentPage = 2;
+            break;
+        }
+      },
+
+
       showDetail(index) {
-        this.class=index;
-        console.log('index',index)
+        this.class = index;
+        console.log('index', index)
         if (this.count === 0) {
           console.log(this.count);
           this.count = 1;
@@ -133,41 +208,40 @@
         }
 
       },
-//获取统计信息
+      //获取统计信息
       getStatusTo() {
         getStatus().then(result => {
-
           console.log('获取统计信息', result);
           this.overViewClassMsg = result.data.body;
           console.log("this.overViewClassMsg", this.overViewClassMsg);
           console.log("student", this.students);
           this.makeStudentList()
         }).catch(error => {
-          // console.log(error)
+          console.log(error)
         });
 
       },
 
 
-    //遍历学生
+      //遍历学生
       makeStudentList() {
 
 
         let a = new Array();
         for (let i = 0; i < this.overViewClassMsg.length; i++) {
           a[i] = new Array();
-          console.log( 'ai',a[i]);
+          console.log('ai', a[i]);
           this.overViewStuMsg = a[i];
           // console.log(0-this.overViewClassMsg[i][1].total);
           for (let c = 0; c < this.overViewClassMsg[i].length; c++) {
             a[i][c] = new Array();
-            for (let b = 0; b <( 0-this.overViewClassMsg[i][c].total); b++) {
+            for (let b = 0; b < (0 - this.overViewClassMsg[i][c].total); b++) {
               a[i][c].push({id: b, isSign: true, Late: false})
             }
           }
         }
 
-        console.log('this.overViewStuMsg',this.overViewStuMsg);
+        console.log('this.overViewStuMsg', this.overViewStuMsg);
 
       },
 
@@ -181,45 +255,112 @@
 <style scoped>
   @import "../css/base.css";
 
-  .list {
-    width: 1400px;
-    margin: 0 auto;
+  /*title-tab begin*/
+  .title-tab {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border-bottom: 1px solid #e0e1e2;
   }
 
-  .list-hd {
+  .title-tab ul li {
+    float: left;
+    padding: 5px 0;
+    margin: 0 10px;
+    cursor: pointer;
+    margin-bottom: -1px;
+  }
+
+  .title-tab ul li:hover {
+    color: #1aad19;
+  }
+
+  .title-tab .selected {
+    color: #1aad19;
+    border-bottom: 2px solid #1aad19;
+  }
+
+  /*title-tab end*/
+
+  /*current page begin*/
+  .card ul li {
+    float: left;
+    width: 200px;
+    background-color: #fff;
+    margin-right: 20px;
+    box-shadow: 0 1px 20px 0 #E4E8EB;
+    border-radius: 2px;
+    text-align: center;
+  }
+
+  .cc-hd {
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 20px;
+  }
+
+  .cc-bd {
+    height: 150px;
+    cursor: default;
+    position: relative;
+  }
+  .block {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 115%;
     width: 100%;
-    margin-top: 40px;
-    height: 50px;
-    line-height: 50px;
-    background-color: #E7E7EB;
-    text-align: center;
+    position: absolute;
+    top: -15%;
+  }
+  .block p {
+    position: absolute;
+    height: 20px;
+    width: 100px;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -10px;
+    color: #fff;
+  }
+  .cc-bd:hover .block{
+    display: block;
+  }
+  .cc-bd p {
+    height: 40px;
   }
 
-  .list-hd li {
+  /*current page end*/
+  /*history page begin*/
+  .historyBox {
+    height: 550px;
+    padding-top: 50px;
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .historyBox .hty-date {
+    width: 90%;
+    margin: 0 auto;
+    border: 1px solid #e7e7eb;
+  }
+
+  .hty-hd {
+    height: 30px;
+    line-height: 30px;
+    padding-left: 10px;
+    font-size: 12px;
+    background-color: #f4f5f9;
+  }
+
+  .hty-bd li {
+    text-align: center;
     width: 20%;
     float: left;
-    font-size: 16px;
-  }
-
-  .list-hd li h4 {
-    font-size: 14px;
-  }
-
-  .list-bd {
-    text-align: center;
-  }
-
-  .list-bd li {
-    width: 20%;
-    float: left;
-    height: 50px;
-    line-height: 50px;
-    border-bottom: 2px solid #e7e7eb;
-    font-size: 14px;
-  }
-
-  .list-bd .noSign-num {
-    color: #f00;
+    font-size: 12px;
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid #e7e7eb;
+    margin-top: -1px;
   }
 
   .list-bd li a {
@@ -229,6 +370,8 @@
   .list-bd li a:hover {
     text-decoration: underline;
   }
+
+  /*history page end*/
 
   /*详情弹框-begin*/
   .alert-detail {

@@ -10,6 +10,15 @@
   margin: auto;
 }
 
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+
 a {
   text-decoration: none;
   color: #000;
@@ -105,6 +114,7 @@ input {
   border: none;
   outline: none;
 }
+
 @font-face {
   font-family: 'iconfont';
   src: url('../fonts/iconfont.eot');
@@ -114,6 +124,7 @@ input {
   url('../fonts/iconfont.ttf') format('truetype'),
   url('../fonts/iconfont.svg#iconfont') format('svg');
 }
+
 .iconfont {
   font-family: "iconfont" !important;
   font-size: 16px;
@@ -121,4 +132,5 @@ input {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 /*去掉一大堆预设end*/
