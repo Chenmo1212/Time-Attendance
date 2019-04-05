@@ -25,6 +25,9 @@
     data() {
       return {}
     },
+    created(){
+     this.myBrowser();
+    },
     computed: {
       ...mapState([
         'ifShow_reg_alert',
@@ -43,6 +46,15 @@
 
         }
       },
+      myBrowser() {
+        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        if (!(userAgent.indexOf("Chrome") > -1)) {
+          console.log("no Chrome")
+          return "no Chrome";
+        } else {
+          console.log("Chrome")
+        }//判断是否Chrome浏览器
+      }
     },
     watch: {
       isLoading: function () {

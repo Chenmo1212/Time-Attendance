@@ -11,37 +11,15 @@
 
     <!--current page begin-->
     <div class="w card" v-show="currentPage === 1">
-      <ul>
+      <ul v-for="(value, index) in currentInfo">
         <li>
           <div class="classCard">
-            <div class="cc-hd">一班</div>
-            <div class="cc-bd">
+            <div class="cc-hd">{{ value.classId }} 班</div>
+            <div class="cc-bd" @click="showDetail()">
               <div class="block"><p>查看详情</p></div>
-              <p>总人数： 35</p>
-              <p>实到人数： 20</p>
-              <p>缺勤人数： 15</p>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="classCard">
-            <div class="cc-hd">一班</div>
-            <div class="cc-bd">
-              <div class="block"><p>查看详情</p></div>
-              <p>总人数： 35</p>
-              <p>实到人数： 20</p>
-              <p>缺勤人数： 15</p>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="classCard">
-            <div class="cc-hd">一班</div>
-            <div class="cc-bd">
-              <div class="block"><p>查看详情</p></div>
-              <p>总人数： 35</p>
-              <p>实到人数： 20</p>
-              <p>缺勤人数： 15</p>
+              <p>总人数： {{ value.totalNum }}</p>
+              <p>实到人数： {{ value.actualNum }}</p>
+              <p>缺勤人数： {{ value.absenceNum }}</p>
             </div>
           </div>
         </li>
@@ -92,18 +70,14 @@
             <div class="alert-detail-content">
               <div class="detail-content-header">
                 <span>学号</span>
-                <span>迟到</span>
                 <span>旷课</span>
-                <span>迟到次数</span>
                 <span>旷课次数</span>
                 <span>缺勤次数&nbsp;/&nbsp;总次数</span>
               </div>
               <div class="detail-content-body">
                 <div class="content" v-for="(value, index) in students">
                   <span style="font-weight: bold;">{{ value.id }}</span>
-                  <span><img src="../png/check.png" alt="" v-show="value.Late"></span>
-                  <span><img src="../png/check.png" alt="" v-show="value.Truancy"></span>
-                  <span>{{ text }}</span>
+                  <span><img src="../png/check.png" alt="" v-show="true"></span>
                   <span>{{ text }}</span>
                   <span>{{ text }}&nbsp;/&nbsp;{{ text }}</span>
                 </div>
@@ -120,7 +94,7 @@
 
 <script>
   import {mapState} from 'vuex'
-  import {getStatus} from "../axios/api";
+  import {getStatus, getCurrentInfo} from "../axios/api";
   import index from "../router";
 
   export default {
@@ -132,16 +106,33 @@
 
         currentPage: 1,
         // 详情弹框
-        ifShow: false,
+        ifShow: true,
         // 开关变量
         count: 0,
         text: '—',
 
         classMsg: [],
-        students: [],
+        students: [{id: "12"},{id: "13"},{id: "14"},],
         overViewClassMsg: [],
         overViewStuMsg: [],
 
+        // 当前考勤
+        currentInfo: [{
+          classId: '1701112',
+          totalNum: 35,
+          actualNum: 30,
+          absenceNum: 5,
+        }, {
+          classId: '1701111',
+          totalNum: 35,
+          actualNum: 30,
+          absenceNum: 5,
+        }, {
+          classId: '1701113',
+          totalNum: 35,
+          actualNum: 30,
+          absenceNum: 5,
+        }, ]
       }
     },
 
@@ -160,7 +151,14 @@
       this.classMsg = this.Class_lists;
 
     },
-
+    mounted(){
+      getCurrentInfo( res=>{
+        console.log(res);
+      })
+        .catch( err => {
+          console.log(err)
+        })
+    },
 
     methods: {
       // 根据id获取元素
@@ -184,30 +182,32 @@
       },
 
 
-      showDetail(index) {
-        this.class = index;
-        console.log('index', index)
-        if (this.count === 0) {
-          console.log(this.count);
-          this.count = 1;
-          this.param = index;
-          for (var i = 0; i < this.classMsg[index].students.length; i++) {
-
-            // console.log(this.classMsg[index].students[i].isSign);
-            if (this.classMsg[index].students[i].isSign === false) {
-              // console.log(this.classMsg[index].students[i]);
-              this.students.push(this.classMsg[index].students[i]);
-            }
-          }
-          // console.log(this.students);
-          this.ifShow = !this.ifShow;
-
-        } else {
-          console.log(this.count);
-          this.ifShow = !this.ifShow;
-        }
-
+      showDetail() {
+        // this.class = index;
+        // console.log('index', index)
+        // if (this.count === 0) {
+        //   console.log(this.count);
+        //   this.count = 1;
+        //   this.param = index;
+        //   for (var i = 0; i < this.classMsg[index].students.length; i++) {
+        //
+        //     // console.log(this.classMsg[index].students[i].isSign);
+        //     if (this.classMsg[index].students[i].isSign === false) {
+        //       // console.log(this.classMsg[index].students[i]);
+        //       this.students.push(this.classMsg[index].students[i]);
+        //     }
+        //   }
+        //   // console.log(this.students);
+        //   this.ifShow = !this.ifShow;
+        //
+        // } else {
+        //   console.log(this.count);
+        //   this.ifShow = !this.ifShow;
+        // }
+        this.ifShow = true;
       },
+
+
       //获取统计信息
       getStatusTo() {
         getStatus().then(result => {
@@ -321,6 +321,7 @@
     margin-left: -50px;
     margin-top: -10px;
     color: #fff;
+    cursor: default;
   }
   .cc-bd:hover .block{
     display: block;
@@ -449,7 +450,7 @@
 
   .alert-detail-content span {
     display: inline-block;
-    width: 16%;
+    width: 24%;
     text-align: center;
   }
 

@@ -196,8 +196,6 @@
       ])
     },
     created() {
-
-
       this.onunload
       // 创建之前先看看仓库里有啥
       console.log('创建之前先看看仓库里有啥', this.Class_lists);
@@ -254,7 +252,7 @@
           const result = localStorage.getItem('seed');
           if (id == null || result == null) {
             // console.log('要老子等');
-            return
+            return ;
           } else {
             // console.log('不等了');
             //调用 二维码
@@ -360,8 +358,8 @@
       endSign() {
         const that = this;
 
-        if (this.ShowBlock === false) {
-          this.setAttention("当前正在考勤，确定要结束当前考勤",
+        if (that.ShowBlock === false) {
+          this.SET_Attention("当前正在考勤，确定要结束当前考勤",
             {
               EndSign: true
             });
@@ -429,7 +427,7 @@
         }
       },
       // 设置提示
-      setAttention(msg, obj) {
+      SET_Attention(msg, obj) {
         this.$store.commit('SET_ATTENTION', {
           ifAlert: true,  // 提示窗口
           at_warning: msg, // 提示语
@@ -457,7 +455,7 @@
       //发送状态信息
       getToggle(index1, index2) {
         const id = localStorage.getItem('messionId');
-        console.log(id, index1, index2);
+        // console.log(id, index1, index2);
         toggle(id, index1, index2).then(result => {
           console.log(result)
         }).catch(error => {
@@ -494,7 +492,7 @@
       toData() {
         this.isLogin ?
           this.$router.push({name: 'data'}) :
-          this.setAttention('该功能需要登陆后才可使用，请先登录。', {noLogin: true, To_Data: true});
+          this.SET_Attention('该功能需要登陆后才可使用，请先登录。', {noLogin: true, To_Data: true});
       },
 
       openClientPage() {

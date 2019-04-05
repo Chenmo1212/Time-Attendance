@@ -1,12 +1,13 @@
 export default {
+  // 给仓库赋值
   change(state, lists) {
-    console.log('--------------------------------------');
-    console.log('数据接收：');
-    console.log('班级情况为：', lists);
+    // console.log('--------------------------------------');
+    // console.log('数据接收：');
+    // console.log('班级情况为：', lists);
     state.Class_lists = lists;
-    console.log('给仓库的值赋值：');
-    console.log('仓库的值已赋值为：', state.Class_lists);
-    console.log('--------------------------------------');
+    // console.log('给仓库的值赋值：');
+    // console.log('仓库的值已赋值为：', state.Class_lists);
+    // console.log('--------------------------------------');
   },
 
   // 更改loading
@@ -57,7 +58,7 @@ export default {
   },
 
   // 设置提示
-  setAttention(msg,obj){
+  SET_Attention(msg, obj){
     this.$store.commit('SET_ATTENTION', {
       ifAlert: true,  // 提示窗口
       at_warning: msg, // 提示语
