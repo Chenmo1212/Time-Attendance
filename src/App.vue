@@ -91,7 +91,8 @@
     height: 100px;
     line-height: 100px;
     text-align: center;
-    width: 160px;
+    width: auto;
+    min-width: 160px;
     background-color: rgba(66, 66, 66, .9);
     border-radius: 3%;
     color: #FFF;
@@ -99,6 +100,9 @@
     left: 50%;
     margin-left: -80px;
     z-index: 101;
+  }
+  .onLoad > span {
+    padding: 0 1em;
   }
   .warning-enter-active {
     transition: all 0.3s ease;

@@ -3,7 +3,7 @@
 
     <div class="sign-box w">
       <h4>Tip:默认一次仅支持一个班级进行考勤，多个班级考勤时请点击“+”增加考勤班级</h4>
-      <button class="sign-bt" @click="toAttendance">开始签到</button>
+      <button class="sign-bt" @click="toAttendance" title="开始签到">开始签到</button>
       <div class="change">
         <i class="iconfont" @click="addList" title="添加班级">&#xe66b;</i>
         <i class="iconfont" @click="reduceList()" title="减少班级">&#xe603;</i>
@@ -11,10 +11,10 @@
       <div class="msg">
         <ul>
           <li v-for="list in lists">
-            <input type="number" v-model="list.class_id" placeholder="请输入班级号">
-            <input type="number" v-model="list.firstStu_id" placeholder="第一位同学学号" @change="saveList()"
+            <input type="number" v-model="list.class_id" placeholder="请输入班级号" title="请输入班级号">
+            <input type="number" v-model="list.firstStu_id" placeholder="第一位同学学号" @change="saveList()" title="第一位同学学号"
                    @keyup.enter="toAttendance"> -
-            <input type="number" v-model="list.lastStu_id" placeholder="最后一位同学学号" @change="saveList()"
+            <input type="number" v-model="list.lastStu_id" placeholder="最后一位同学学号" @change="saveList()" title="最后一位同学学号"
                    @keyup.enter="toAttendance">
           </li>
         </ul>
@@ -27,7 +27,7 @@
 <script>
 
   import {postList, anonymous} from '../axios/api'
-  import {mapState,mapActions} from 'vuex'
+  import {mapState, mapActions} from 'vuex'
 
   export default {
     name: 'app',
@@ -69,9 +69,9 @@
 
       // 减少班级
       reduceList() {
-        if (this.lists.length === 1)
-          alert("只有一个了，不能再减少了");
-        else {
+        if (this.lists.length === 1) {
+          this.setWarn("不能再减少了")
+        } else {
           this.lists.splice(this.lists.length - 1, 1);
           this.saveList();
         }
@@ -80,15 +80,25 @@
       // 跳转开始签到界面
       toAttendance() {
         // 班级的个数
-        console.log('班级的个数:', this.lists.length);
+        // console.log('班级:', this.lists);
+        // 新建班级名称数组-用于判断是否有重复班级号
+        var classIdArr = [];
         for (let i = 0; i < this.lists.length; i++) {
-
-          if (this.lists[i].firstStu_id === '' || this.lists[i].lastStu_id === '' , this.lists[i].class_id === '') {
+          // 判断是否为空
+          if (this.lists[i].firstStu_id === '' || this.lists[i].lastStu_id === '' || this.lists[i].class_id === '') {
             this.setWarn("请将信息填写完整");
             return 0;
           }
+          // 判断学号是否为负数
+          if (this.lists[i].firstStu_id < 0 || this.lists[i].lastStu_id < 0 || (this.lists[i].firstStu_id >= this.lists[i].lastStu_id)) {
+            this.setWarn("请填写正确信息");
+            this.lists[i].firstStu_id = '';
+            this.lists[i].lastStu_id = '';
+            return 0;
+          }
+          // 将班级号push到班级号数组里
+          classIdArr.push(this.lists[i].class_id);
 
-          // 新建一个对象，用来push进入数组
           const obj = {students: []};
           const list = this.lists[i];
           // 班级学号赋值
@@ -105,6 +115,16 @@
           this.class_lists.push(obj);
           console.log(obj.class_id, ':', obj);
         }
+
+        // 判断是否有班级号重名
+        let s = classIdArr.join(",") + ",";
+        for (let i = 0; i < classIdArr.length; i++) {
+          if (s.replace(classIdArr[i] + ",", "").indexOf(classIdArr[i] + ",") > -1) {
+            this.setWarn("班级号有重名");
+            return 0;
+          }
+        }
+
         // 将数据传入仓库
         console.log('class_list:', this.class_lists);
         this.$store.commit('change', this.class_lists);
@@ -149,17 +169,16 @@
 
       //postarry接口
       postListTo(a) {
-        const creatListKey =  localStorage.getItem('creatListKey');
+        const creatListKey = localStorage.getItem('creatListKey');
         console.log('给后端的array', a);
         console.log(creatListKey);
-          postList(a,creatListKey).then(res => {
-            console.log('postarray',res);
-            //存seed  messionId
-            localStorage.setItem('seed',res.data.body.seed);
-            localStorage.setItem('messionId',res.data.body.id);
-          })
+        postList(a, creatListKey).then(res => {
+          console.log('postarray', res);
+          //存seed  messionId
+          localStorage.setItem('seed', res.data.body.seed);
+          localStorage.setItem('messionId', res.data.body.id);
+        })
       },
-
 
 
     },
@@ -183,7 +202,13 @@
 </script>
 
 <style>
-
+  html,body {
+    -moz-user-select: none; /*火狐*/
+    -webkit-user-select: none; /*webkit浏览器*/
+    -ms-user-select: none; /*IE10*/
+    -khtml-user-select: none; /*早期浏览器*/
+    user-select: none;
+  }
   .sign-box {
     width: 1000px;
     margin: 150px auto;

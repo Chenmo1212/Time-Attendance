@@ -22,9 +22,14 @@ Change the suspension menu to right-click menu, and keep three menu modes: mouse
 3. 当前考勤仅局限于从1开始的考勤，且不考虑是否有断号现象
 4. 无法更改旷课信息
    
---- 
+---
+后端： 
 1. 缺少当前未考勤学生信息   
 2. 缺少总旷课次数   
 3. 缺少总缺勤次数   
 4. 缺少总考勤次数
 5. 缺少旷课判断 
+
+### Start checkin logic judgment(开始签到逻辑判断)
+1. 增加开始签到界面的逻辑判断
+2. 增加css样式使文字不可选中
