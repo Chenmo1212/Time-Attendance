@@ -27,20 +27,20 @@
 <script>
 
   import {postList, anonymous} from '../axios/api'
-  import {mapState} from 'vuex'
+  import {mapState,mapActions} from 'vuex'
 
   export default {
     name: 'app',
     data() {
       return {
         lists: [],
-
         class_lists: [],
         post_list: []
       }
     },
     created() {
       let lists = JSON.parse(localStorage.getItem('lists'));
+      console.log('created:', lists);
       if (lists) {
         this.lists = lists;
       } else {
@@ -48,6 +48,10 @@
       }
     },
     methods: {
+      ...mapActions([
+        'toShowBlock',
+        'setWarn',
+      ]),
       // 本地存储
       saveList() {
         localStorage.setItem("lists", JSON.stringify(this.lists));
@@ -76,14 +80,11 @@
       // 跳转开始签到界面
       toAttendance() {
         // 班级的个数
-        // console.log('班级的个数:', this.lists.length);
+        console.log('班级的个数:', this.lists.length);
         for (let i = 0; i < this.lists.length; i++) {
 
           if (this.lists[i].firstStu_id === '' || this.lists[i].lastStu_id === '' , this.lists[i].class_id === '') {
-            this.$store.commit('SET_LOADING', {isLoading: true, warning: '请将信息填写完整'});
-            setTimeout(() => {
-              this.$store.commit('SET_LOADING', false);
-            }, 1000);
+            this.setWarn("请将信息填写完整");
             return 0;
           }
 
@@ -98,23 +99,25 @@
           obj.noSign = obj.total;
           // 给对象中的数组赋值
           for (var j = 0; j < obj.total; j++) {
-            obj.students.push({id: j + 1, isSign: false, Late: true, Truancy: false});
+            obj.students.push({id: j + 1, ifSign: false, Late: true, Truancy: false});
           }
           // 将对象push进入数组
           this.class_lists.push(obj);
-          // console.log(obj.class_id, ':', obj);
+          console.log(obj.class_id, ':', obj);
         }
         // 将数据传入仓库
-        // console.log('class_list:', this.class_lists);
+        console.log('class_list:', this.class_lists);
         this.$store.commit('change', this.class_lists);
         // 将班级数据保存在本地
         localStorage.setItem("class_lists", JSON.stringify(this.class_lists));
         // 本地存储
         this.saveList();
-        // console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
+        console.log('存储的数据为', JSON.parse(localStorage.getItem('lists')));
 
         //注册匿名用户
         this.getAnonyMous();
+        // 关闭结束考勤动画
+        this.toShowBlock(false);
         // 跳转路由
         this.$router.push({name: 'attendance'});
       },

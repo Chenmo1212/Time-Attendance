@@ -32,4 +32,7 @@ export default {
 
   ifShow_reg_alert: false,
   ifShow_login_alert: false,
+
+  // 当前考勤结束时考勤状态信息
+  attended: [],
 }

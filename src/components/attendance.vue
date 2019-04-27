@@ -12,7 +12,8 @@
             <h3>限时{{timeRemaining}}秒，超时请重试</h3>
           </div>
           <div class="bd">
-            <div id="qrcode" @click="openClientPage"></div>
+            <!--<div id="qrcode" @click="openClientPage"></div>-->
+            <div id="qrcode"></div>
             <div class="table">
               <div class="progress-bar">
                 <div id='loader'>
@@ -22,21 +23,33 @@
               </div>
             </div>
           </div>
-          <!--结束考勤 begin-->
-          <div class="popIn block" v-show="ShowBlock">
-            <div class="block_header">
-              <p @click="conserveData()">Tip:点击此处进行保存</p>
-              <span></span>
-            </div>
-
-            <div class="block_body">
-              <!--二维码-->
-              <img src="../png/home.gif" alt="" class="code">
-              <p>放弃挣扎吧（左为你，右为老师）</p>
-            </div>
-          </div>
-          <!--结束考勤 end-->
         </div>
+        <!--结束考勤 begin-->
+        <div class="popIn block lowBlock" v-show="ShowBlock">
+          <div class="block_header">
+            <!--这是我写的?忘记了,天哪,这是要保存什么玩意-->
+            <!--<p @click="conserveData()">Tip:点击此处进行保存</p>-->
+            <p>Tip:考勤已结束,请听老师安排</p>
+            <span></span>
+          </div>
+
+          <div class="block_body">
+            <!--二维码-->
+            <img src="../png/home.gif" alt="" class="code">
+            <p>放弃挣扎吧（左为你，右为老师）</p>
+          </div>
+        </div>
+        <div class="block highBlock" v-if="ifEndSign">
+
+          <div class="block_header">
+            <p>Tip:考勤已结束,请听老师安排</p>
+          </div>
+          <div class="block_body">
+            <img src="../png/home.gif" alt="" class="code">
+            <p>放弃挣扎吧（左为你，右为老师）</p>
+          </div>
+        </div>
+        <!--结束考勤 end-->
       </div>
       <!--左边 end-->
       <!--右边 begin-->
@@ -50,10 +63,10 @@
                   <i class="iconfont">&#xe61b;</i>
                   <span>数据管理</span>
                 </li>
-                <li class="spacer" v-show="!ifSign"></li>
-                <li class="menu-main" @click="getStuFace(classMsg[classIndex].class_id,studentId+1)" v-show="!ifSign">
+                <li class="spacer" v-show="ifSign"></li>
+                <li class="menu-main" @click="getStuFace(classMsg[classIndex].class_id,studentId+1)" v-show="ifSign">
                   <i class="iconfont">&#xe633;</i>
-                  <span @click="photo_del=false,photo_show=true">查看照片</span>
+                  <span>查看照片</span>
                 </li>
                 <li class="spacer" v-show="!ifSign"></li>
                 <!--<li class="menu-main" @click="showLate(classIndex, studentId)" v-show="ifSign">-->
@@ -61,13 +74,13 @@
                 <!--<span>设为迟到</span>-->
                 <!--</li>-->
                 <li class="spacer" v-show="ifSign"></li>
-                <li class="menu-main" @click="showTruancy(classIndex, studentId)" v-show="ifSign">
+                <li class="menu-main" @click="showTruancy(classIndex, studentId)" v-show="!ifSign">
                   <i class="iconfont" v-if="ifTruancy">&#xe6f2;</i>
                   <span>设为旷课</span>
                 </li>
-                <li class="spacer" v-show="ifSign"></li>
+                <li class="spacer" v-show="!ifSign"></li>
                 <li class="menu-main"
-                    @click="setSign(Class_lists[classIndex].class_id, studentId + 1);getToggle(Class_lists[classIndex].class_id, studentId + 1)">
+                    @click="btnSetSign(Class_lists[classIndex].class_id, studentId + 1);getToggle(Class_lists[classIndex].class_id, studentId + 1)">
                   <i class="iconfont">&#xe67a;</i>
                   <span>更改状态</span>
                 </li>
@@ -102,13 +115,8 @@
       </div>
     </div>
     <!--<img src="data:image/png;base64,"(v-model=photo_base64) >-->
-    <img v-bind:src="photo_base64" v-bind:class={photo_show:photo_show,photo_del:photo_del}
-         @click="photo_del=true,photo_show=false">
-
-    <!--提示弹窗-->
-    <!--<transition name="warning">-->
-    <!--<div class="onLoad" v-if="isLoading"><span>{{ warning }}</span></div>-->
-    <!--</transition>-->
+    <!--<img v-bind:src="photo_base64" v-bind:class="{'showPhoto':photo_show,'delPhoto':photo_del}"-->
+    <!--@click="photo_del=true,photo_show=false">-->
 
     <transition name="picture">
       <div class="picture" v-show="showPic">
@@ -116,7 +124,9 @@
         <div class="pic-wrap">
           <i class="pic-del iconfont" title="关闭" @click="delAlert">&#xe620;</i>
           <span class="pic-title">学生头像</span>
-          <img :src="imgURL"/>
+          <div style="height: 83%; text-align: center;">
+            <img :src="stuImgURL"/>
+          </div>
         </div>
       </div>
     </transition>
@@ -124,20 +134,17 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex';
+  import {mapState, mapActions} from 'vuex';
   import authenticator from 'otplib/authenticator';
   import crypto from 'crypto';
-  import {getchick, getFace, toggle} from "../axios/api";
+  import {getCheck, getFace, toggle} from "../axios/api";
 
   export default {
     name: "Attendance",
     data() {
       return {
-        //学生照片base64
-        photo_base64: '',
-        //显示状态
-        photo_show: false,
-        photo_del: true,
+        // 是否结束考勤
+        ifEndSign: false,
 
         //剩余时长
         timeRemaining: '',
@@ -150,8 +157,8 @@
         // 图片弹窗
         showPic: false,
 
-        // 图片网址
-        imgURL: '',
+        // 学生照片base64
+        stuImgURL: '',
 
         url: '',
 
@@ -163,7 +170,6 @@
 
         //菜单栏的判断
         ifSign: true,
-        ifLate: true,
         ifTruancy: true,
 
         //是否显示菜单栏
@@ -181,7 +187,6 @@
         ani_status: 0,
       }
     },
-    watch: {},
     computed: {
       ...mapState([
         'isLoading',
@@ -196,9 +201,8 @@
       ])
     },
     created() {
-      this.onunload
       // 创建之前先看看仓库里有啥
-      console.log('创建之前先看看仓库里有啥', this.Class_lists);
+      // console.log('创建之前先看看仓库里有啥', this.Class_lists);
 
       //如果仓库为空则将本地的班级信息赋值给仓库—-------->if的表达式有疑问，为什么不能直接为空？明明他是一个数组，输出类型却为对象
       if (this.Class_lists.length === 0) {
@@ -210,6 +214,8 @@
       console.log('classMsg已经被赋值为：', this.classMsg);
       // 进度条
       this.processBar();
+
+      this.ifEndSign = this.ShowBlock;
     },
     mounted() {
 
@@ -221,7 +227,7 @@
       loader.style.height = this.loader_height + 'px'; // 设置盒子高度
       loaded.style.width = '';  // 设置内容宽度
       loaded.style.height = this.loaded_height + 'px'; // 设置内容高度
-      console.log("盒子当前设置宽度为:", loader.style.width);
+      // console.log("盒子当前设置宽度为:", loader.style.width);
 
       // 判断home组件是否传值
       this.judgeSeedAndId();
@@ -237,6 +243,10 @@
       clearTimeout(this.time);
     },
     methods: {
+      ...mapActions([
+        'setWarn',
+        'setAttended',
+      ]),
 
       totpTimeUsedAccureated() {
         const epoch = Date.now()
@@ -252,7 +262,7 @@
           const result = localStorage.getItem('seed');
           if (id == null || result == null) {
             // console.log('要老子等');
-            return ;
+            return false;
           } else {
             // console.log('不等了');
             //调用 二维码
@@ -270,8 +280,8 @@
       loopCode() {
         const id = localStorage.getItem('messionId');
         const result = localStorage.getItem('seed');
-        console.log('qrCode:id', id);
-        console.log('qrCode:seed', result);
+        // console.log('qrCode:id', id);
+        // console.log('qrCode:seed', result);
         authenticator.options = {
           crypto: crypto,
           step: 7,
@@ -288,8 +298,7 @@
         });
         const that = this;
         setInterval(function () {
-          const secret = result;
-          const token = authenticator.generate(secret);
+          const token = authenticator.generate(result);
           // console.log('token', token);
           let baseUrl = window.location.origin;
           if (window.location.origin.match(/cust.edu.cn/)) {
@@ -306,22 +315,29 @@
       //拉取登陆状态
       getChickState(id) {
         const that = this;
+        // 一秒钟拉取一次考勤状态
         const chick_state = setInterval(function () {
-          getchick(id).then(result => {
+          getCheck(id).then(result => {
             // console.log('已登录', result);
             // this.changeSign(result);
             for (let class_id in result.data.body) {
               let students = result.data.body[class_id];
               students.forEach((s) => {
-                that.setSign(class_id, s);
+                that.autoSetSign(class_id, s);
               })
             }
           }).catch(error => {
             console.log(error)
           });
-          console.log('状态内', that.$store.state.EndSign);
-          if (that.$store.state.EndSign == true) {
+          // console.log('状态内', that.$store.state.EndSign);
+          // 当结束考勤的时候取消拉取
+          if (that.EndSign === true) {
             clearInterval(chick_state);
+            getCheck(id).then(res=>{
+              that.setAttended(res.data.body);
+            }).catch(err=>{
+              console.log(err);
+            })
           }
         }, 1000);
       },
@@ -332,9 +348,8 @@
         console.log('id:', id, 'gid:', gid, 'code:', code);
         getFace(id, gid, code).then(result => {
           console.log(result);
-          this.photo_show = true;
-          this.photo_del = false;
-          this.photo_base64 = result.data.body.face;
+          this.showPic = true;
+          // this.stuImgURL = result.data.body.face;
         }).catch(error => {
           console.log(error)
         })
@@ -365,7 +380,7 @@
             });
 
         } else {
-          this.$store.commit('SET_LOADING', '考勤已结束');
+          this.setWarn("考勤已结束");
         }
       },
 
@@ -401,8 +416,8 @@
         this.showMenu(index1, index2);
         this.classIndex = index1;
         this.studentId = index2;
-        this.ifSign = !student.ifSign;
-        this.ifLate = student.Late;
+        this.ifSign = student.ifSign;
+        // this.ifLate = student.Late;
         this.ifTruancy = student.Truancy;
       },
       showMenu(index1, index2) {
@@ -436,55 +451,53 @@
           To_Data: obj.To_Data,
         });
       },
-      // 更改签到状态
-      setSign(index1, index2) {
-
+      // 手动按钮更改签到状态
+      btnSetSign(index1, index2) {
         const classroom = this.classMsg.find((c) => {
-          return c.class_id == index1
+          return c.class_id === index1;
         });
         const student = classroom.students.find((s) => {
-          return s.id == index2
+          return s.id === index2;
         });
-        student.ifSign = true;
+        // 设置学生考勤状态
+        student.ifSign = !student.ifSign;
         this.ifSign = !student.ifSign;
+        console.log(student.ifSign)
+        console.log(this.ifSign)
         //发送状态信息
         // this.getToggle(index1,index2);
-
-        this.setAnimation();
+      },
+      // 自动拉取更改签到状态
+      autoSetSign(index1, index2) {
+        const classroom = this.classMsg.find((c) => {
+          return c.class_id === index1;
+        });
+        const student = classroom.students.find((s) => {
+          return s.id === index2;
+        });
+        student.ifSign = true;
       },
       //发送状态信息
       getToggle(index1, index2) {
         const id = localStorage.getItem('messionId');
-        // console.log(id, index1, index2);
+        console.log(id, index1, index2);
         toggle(id, index1, index2).then(result => {
           console.log(result)
         }).catch(error => {
-          console.log(error)
+          console.log(error);
         })
       },
-      showLate(index1, index2) {
-        const student = this.Class_lists[index1].students[index2];
-        this.$store.commit('SET_LOADING', '更改为迟到');
-        if (student.Late === true) {
-          this.$store.commit('SET_LOADING', '您已经选择了迟到');
-        } else {
-          student.Late = true;
-          this.ifLate = true;
-          student.Truancy = false;
-          this.ifTruancy = false;
-        }
-      },
 
+      // 设置旷课
       showTruancy(index1, index2) {
-        console.log("旷课了");
         const student = this.Class_lists[index1].students[index2];
-        this.$store.commit('SET_LOADING', '更改为旷课');
+        this.setWarn("设为旷课")
         if (this.Class_lists[index1].students[index2].Late === false) {
           this.$store.commit('SET_LOADING', '您已经选择了旷课');
         } else {
           student.Late = false;
           student.Truancy = true;
-          this.ifLate = false;
+          // this.ifLate = false;
           this.ifTruancy = true;
         }
       },
@@ -573,6 +586,20 @@
     border-top: 2px solid #e7e9ef;
     border-right: 1px solid #e7e9ef;
     border-bottom: 2px solid #e7e9ef;
+  }
+  .lowBlock {
+    z-index: 10;
+  }
+
+  .highBlock {
+    z-index: 40;
+    position: absolute;
+    top: 50px;
+    left: -50px;
+    height: 100%;
+    width: 535px;
+    text-align: center;
+    background-color: #F6F8F9;
   }
 
   .block .block_header p {
@@ -808,15 +835,22 @@
   .pic-wrap {
     position: absolute;
     padding: 0.5em;
-    max-width: 50%;
-    height: 90%;
+    max-width: 40%;
+    height: 85%;
     left: 50%;
-    top: 5%;
-    margin-left: -25%;
+    top: 7%;
+    margin-left: -20%;
     background: #fff;
     border-radius: 2px;
     -webkit-animation: alert .3s;
     animation: alert .3s;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .pic-wrap img {
+    margin: 0 1em;
     width: 100%;
   }
 
@@ -833,26 +867,15 @@
     /*width: 60px;*/
     height: 40px;
     display: block;
-    margin: 50px auto;
+    margin: 30px auto;
     z-index: 101;
     font-size: 26px;
-    text-align: center;
   }
 
   #qrcode {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .photo_show {
-    position: absolute;
-    top: 200px;
-    width: 328px;
-  }
-
-  .photo_del {
-    display: none;
   }
 
 

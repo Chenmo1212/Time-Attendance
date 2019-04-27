@@ -162,7 +162,7 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+  import {mapState,mapActions} from 'vuex'
   // import {} from "../axios/api";
 
 
@@ -196,7 +196,9 @@
       ])
     },
     methods: {
-
+      ...mapActions([
+        'setWarn',
+      ]),
       fullScreen() {
         this.alertDel();
         this.$store.commit('SET_FULL', true);
@@ -256,7 +258,8 @@
       toAttendance() {
         console.log(this.Class_lists.length);
         if (this.Class_lists.length === 0) {
-          this.$store.commit('SET_LOADING', '请点击"新建签到"');
+          // this.$store.commit('SET_LOADING', '请点击"开始签到"');
+          this.setWarn('请点击"开始签到"');
           this.$router.push({name: 'home'})
         } else {
           this.$router.push({name: 'attendance'});
@@ -268,22 +271,25 @@
         console.log("当前登录状态为：", this.isLogin);
         if (this.isLogin === true) {
           console.log("已经登录");
-          console.log("仓库中是否有数据：");
+          // 仓库中是否有数据
           if (this.Class_lists.length === 0) {
-
-            console.log("仓库中没有数据");
-            console.log("弹出警告框");
-            this.$store.commit('SET_LOADING', '请填全信息开始签到');
-            console.log("返回主页");
+            // 仓库中没有数据
+            this.setWarn('请填全信息开始签到');
+            // 返回主页
             this.$router.push({name: 'home'})
           } else {
-            console.log("仓库中有数据");
-            console.log("前往数据管理");
-            this.$router.push({name: 'data'});
+            // 仓库中有数据
+            // 是否已经结束考勤
+            if(this.ShowBlock){
+              // 前往数据管理
+              this.$router.push({name: 'data'});
+            } else {
+              // 未结束考勤
+              this.setWarn("请结束考勤后重试");
+            }
           }
         } else {
-          console.log("尚未登录");
-          console.log("弹出提示框，提醒登录");
+          // 尚未登录
           this.$store.commit('SET_ATTENTION', {
             ifAlert: true,
             at_warning: '该功能需要登陆后才可使用，请先登录。',

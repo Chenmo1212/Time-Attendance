@@ -32,7 +32,7 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex';
+  import {mapState, mapActions} from 'vuex';
   import {login} from "../axios/api";
 
 
@@ -70,6 +70,10 @@
       this.login_pwd = this.password;
     },
     methods: {
+      ...mapActions([
+        'setWarn',
+      ]),
+
       // 关闭弹窗
       alertDel() {
         // 登录弹窗
@@ -78,46 +82,30 @@
         console.log('ifShow_login_alert:', this.ifShow_login_alert);
         // this.ifShow_login_alert = false;
       },
-      // 设置警告
-      setWarning(msg) {
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: msg});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 1000);
-      },
       // 登录界面
       Login() {
-
         // 判断账号密码是否为空
         if (this.login_acc === '' || this.login_pwd === '') {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '账号密码不得为空'});
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
+          this.setWarn("账号密码不得为空");
           this.login_acc = '';
           this.login_pwd = '';
         } else {
           //去登陆
-
           login(this.login_acc, this.login_pwd,).then(result => {
             console.log(result);
-
             if (result.data.ok) {
-              // console.log('登陆成功');
               localStorage.setItem('result.data.body.key', result.data.body.key);
               // console.log('key'+ result.data.body.key);
               // console.log(this.store.state.isLogin);
+              this.setWarn("登陆成功");
             } else {
-              this.$store.commit('SET_LOADING','账号或密码错误');
+              this.setWarn("账号或密码错误");
             }
             //向全局抛出key
           }).catch(error => {
             console.log(error);
             console.log(error.result)
           });
-          setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
-          }, 1000);
           this.$store.commit('SET_LOGIN', true);
           this.$store.commit('SET_ATTENTION', false);
           this.$store.commit('SHOW_LOGIN', false);
@@ -125,13 +113,9 @@
         }
       },
 
-
       // 找回密码
       lost_login_pwd() {
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '别找了，瞎填就好'});
-        setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
-        }, 1000);
+        this.setWarn("别找了，瞎填就好");
       },
 
       // 显示注册界面

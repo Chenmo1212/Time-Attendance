@@ -106,6 +106,7 @@
         }.bind(this)
       },
       move(offset, direction, speed, item) {
+        console.log('1:', this.currentIndex);
         if (item === 'begin') {
           this.showBegin = false;
           this.showMiddle = true;
@@ -115,15 +116,20 @@
             this.showEnd = true;
           }
         }
+        console.log('2:', this.currentIndex);
         direction === -1 ? this.currentIndex += offset / 1200 : this.currentIndex -= offset / 1200;
         if (this.currentIndex === 1) {
           this.showBegin = true;
           this.showMiddle = false;
         }
+        console.log('3:', this.currentIndex);
         if (this.currentIndex > 6) this.currentIndex = 1;
         if (this.currentIndex < 1) this.currentIndex = 6;
+        console.log('4:', this.currentIndex);
         const destination = this.distance + offset * direction;
         this.animate(destination, direction, speed)
+        console.log('5:', this.currentIndex);
+        console.log('========');
       },
       animate(des, direc, speed) {
         if (this.temp) {

@@ -51,10 +51,9 @@ export function postList(a, creatListKey) {
 }
 
 //疯狂刷新签到人员
-export function getchick(id) {
+export function getCheck(id) {
   //获取key
   const key = localStorage.getItem('creatListKey');
-
   return api.post('/api/v1/checkin/status', {id}, {
       headers: {
         'X-Auth-Key': key
@@ -70,7 +69,7 @@ export function anonymous() {
 }
 
 //获取用户所创建的考勤
-export function getchickin() {
+export function getCheckin() {
   //获取key
   const result = localStorage.getItem('result.data.body.key');
   console.log('key', result);
@@ -110,6 +109,7 @@ export function getFace(id, gid, code) {
 //获取统计信息
 export function getStatus() {
   const key = localStorage.getItem('creatListKey');
+  console.log(key)
   return api.post('/api/v1/analytics/overview', {}, {
     headers: {
       'X-Auth-Key': key
@@ -122,30 +122,10 @@ export function toggle(id, gid, code) {
   const key = localStorage.getItem('creatListKey');
   console.log('key', key)
   return api.post('/api/v1/checkin/toggle', {
-    id: id,   //
-    gid: gid, //班级号
+    id: id,
+    gid: gid,
     code: code,
   }, {
-    headers: {
-      'X-Auth-Key': key
-    }
-  })
-}
-
-// 获取当前考勤信息
-export function getCurrentInfo() {
-  return api.get('', {}, {
-    headers: {
-      'X-Auth-Key': key
-    }
-  })
-}
-
-// 获取历史考勤信息
-export function getHistoryInfo() {
-  const key = localStorage.getItem('creatListKey');
-  console.log('key', key);
-  return api.get('', {}, {
     headers: {
       'X-Auth-Key': key
     }

@@ -1,52 +1,56 @@
 export default {
   // 更改登录状态
   setLogin({commit}, bool) {
-    commit('SET_LOGIN',bool)
+    commit('SET_LOGIN', bool)
   },
 
   // 更改登录状态
   setAccount({commit}, obj) {
-    commit('SET_ACCOUNT',obj)
+    commit('SET_ACCOUNT', obj)
   },
 
   // 显示登录
   showLogin({commit}, obj) {
-    commit('SHOW_LOGIN',obj)
+    commit('SHOW_LOGIN', obj)
   },
 
   // 显示注册
   showRegister({commit}, obj) {
-    commit('SET_ACCOUNT',obj)
+    commit('SET_ACCOUNT', obj)
   },
 
   // 给仓库赋值
   setClassLists({commit}, lists) {
-    commit('change',lists)
+    commit('change', lists)
   },
 
   // 显示Loading
   setLoading({commit}, msg) {
-    commit('SET_LOADING',msg)
+    commit('SET_LOADING', msg)
   },
 
   // 关闭loading
   closeLoading({commit}, bool) {
-    commit('CLOSE_LOADING',bool)
+    commit('CLOSE_LOADING', bool)
   },
 
   // 设置提示
   setAttention({commit}, obj) {
-    commit('SET_ATTENTION',obj)
+    commit('SET_ATTENTION', obj)
   },
 
   // 遮挡二维码
   toShowBlock({commit}, bool) {
-    commit('SHOW_BLOCK',bool)
+    commit('SHOW_BLOCK', bool)
   },
 
-  // 遮挡二维码
+  // 设置警告
   setWarn({commit}, msg) {
-    commit('setWarning',msg)
+    commit('setWarning', msg)
   },
 
+  // 设置警告
+  setAttended({commit}, obj) {
+    commit('SET_ATTENDED', obj)
+  },
 }

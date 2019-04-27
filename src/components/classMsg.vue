@@ -62,7 +62,7 @@
 
 <script>
   import {mapState} from 'vuex'
-  import {getchick, anonymous, getnonchick} from "../axios/api";
+  import {getCheck, anonymous, getnonchick} from "../axios/api";
 
   export default {
     name: "classMsg",
@@ -244,7 +244,7 @@
       // 获取学生0.5秒请求一次(已登录)
       chickInStu() {
         setInterval(function () {
-          getchick().then(result => {
+          getCheck().then(result => {
             console.log('已登录', result)
             this.changeSign(result)
             for (let k in result) {

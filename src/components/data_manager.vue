@@ -8,18 +8,17 @@
       </ul>
     </div>
     <!-- title-tab end -->
-
     <!--current page begin-->
     <div class="w card" v-show="currentPage === 1">
-      <ul v-for="(value, index) in currentInfo">
+      <ul v-for="(value) in overViewClassMsg[0]">
         <li>
           <div class="classCard">
-            <div class="cc-hd">{{ value.classId }} 班</div>
+            <div class="cc-hd">{{ value.code }} 班</div>
             <div class="cc-bd" @click="showDetail()">
               <div class="block"><p>查看详情</p></div>
-              <p>总人数： {{ value.totalNum }}</p>
-              <p>实到人数： {{ value.actualNum }}</p>
-              <p>缺勤人数： {{ value.absenceNum }}</p>
+              <p>总人数： {{ 0-value.total }}</p>
+              <p>实到人数： {{ value.attend }}</p>
+              <p>缺勤人数： {{ (0-value.total)- value.attend }}</p>
             </div>
           </div>
         </li>
@@ -30,7 +29,7 @@
     <!--history page begin-->
     <div class="w historyBox" v-show="currentPage === 2">
       <div class="hty-date">
-        <div class="hty-hd">时间：2019年3月17日</div>
+        <div class="hty-hd">时间：{{year}}年{{month}}月{{day}}日</div>
         <div class="hty-bd" style="overflow: hidden;">
           <ul class="list-hd clearFix">
             <li><h4>序号</h4></li>
@@ -39,11 +38,11 @@
             <li><h4>未签到人数</h4></li>
             <li><h4>备注</h4></li>
           </ul>
-          <ul class="list-bd" v-for="(value, index) in classMsg">
+          <ul class="list-bd" v-for="(value, index) in overViewClassMsg[0]">
             <li>{{ index + 1 }}</li>
-            <li>{{ value.class_id }}</li>
-            <li>{{ value.total }}</li>
-            <li class="noSign-num">{{ value.noSign }}</li>
+            <li>{{ value.code }}</li>
+            <li>{{ 0-value.total }}</li>
+            <li class="noSign-num">{{ (0-value.total)- value.attend }}</li>
             <li>
               <a @click="showDetail(index)">详情</a>
             </li>
@@ -75,7 +74,7 @@
                 <span>缺勤次数&nbsp;/&nbsp;总次数</span>
               </div>
               <div class="detail-content-body">
-                <div class="content" v-for="(value, index) in students">
+                <div class="content" v-for="(value) in students">
                   <span style="font-weight: bold;">{{ value.id }}</span>
                   <span><img src="../png/check.png" alt="" v-show="true"></span>
                   <span>{{ text }}</span>
@@ -94,8 +93,8 @@
 
 <script>
   import {mapState} from 'vuex'
-  import {getStatus, getCurrentInfo} from "../axios/api";
-  import index from "../router";
+  import {getStatus,getCheckin} from "../axios/api";
+  // import index from "../router";
 
   export default {
     name: 'data_manage',
@@ -106,60 +105,48 @@
 
         currentPage: 1,
         // 详情弹框
-        ifShow: true,
+        ifShow: false,
         // 开关变量
         count: 0,
         text: '—',
 
         classMsg: [],
-        students: [{id: "12"},{id: "13"},{id: "14"},],
+        students: [{id: "12"}, {id: "13"}, {id: "14"},],
         overViewClassMsg: [],
         overViewStuMsg: [],
+        viewClassMsg: [],
 
-        // 当前考勤
-        currentInfo: [{
-          classId: '1701112',
-          totalNum: 35,
-          actualNum: 30,
-          absenceNum: 5,
-        }, {
-          classId: '1701111',
-          totalNum: 35,
-          actualNum: 30,
-          absenceNum: 5,
-        }, {
-          classId: '1701113',
-          totalNum: 35,
-          actualNum: 30,
-          absenceNum: 5,
-        }, ]
+        // 未考勤学生信息
+        noAttendedMsg: [],
+
+        year: '',
+        month: '',
+        day: '',
       }
     },
 
     computed: {
       ...mapState([
-        'Class_lists'
+        'Class_lists',
+        'attended'
       ])
     },
 
     created() {
       //打开拉去考勤状态
       this.getStatusTo();
+      // 获取用户创建的考勤
+      this.getUserCheckin();
       if (this.Class_lists.length === 0) {
         this.$store.commit('change', JSON.parse(localStorage.getItem('class_lists')));
       }
       this.classMsg = this.Class_lists;
+    },
+    mounted() {
+      // 设置历史考勤时间
+      this.setHistoryAttendDate();
 
     },
-    mounted(){
-      getCurrentInfo( res=>{
-        console.log(res);
-      })
-        .catch( err => {
-          console.log(err)
-        })
-    },
-
     methods: {
       // 根据id获取元素
       getById(id) {
@@ -181,7 +168,52 @@
         }
       },
 
-
+      // 设置未出席人名单
+      // setNoAttendedMsg() {
+      //   console.log("已考勤", this.overViewClassMsg[0][0]);
+      //   console.log("学生考勤状态",this.attended);
+      //   // 出席人员名单
+      //   var attendedObj = this.attended;
+      //   var that = this;
+      //   var count = 0;
+      //   // var noAttendedStu = [];
+      //   console.log(that.overViewClassMsg[0][0].total);
+      //   // 遍历出席人员
+      //   for (var index in attendedObj) {
+      //     // 创建班级递增变量
+      //     let j = 0;
+      //     // 循环班级人数
+      //     for (let i = 0; i < 0 - that.overViewClassMsg[0][j].total; i++) {
+      //       // 创建临时数组-存放未考勤学生
+      //       var noAttendedStu = [];
+      //       // 如果有未考勤的人，放入临时数组
+      //       if (attendedObj[index] !== i) {
+      //         noAttendedStu[count++] = i;
+      //       }
+      //     }
+      //     // 一个班级结束，递增换下一个班级
+      //     j++;
+      //   }
+      //   // console.log(noAttendedStu);
+      //   // for (var index in attendedObj){
+      //   //   // 值
+      //   //   // console.log(attendedObj[index]);
+      //   //   // 键
+      //   //   // console.log(index);
+      //   //   attendedArr.push({class_id: index , attendedStu:attendedObj[index]});
+      //   //   // this.noAttendedMsg[count++].push({class_id: index, noAttendedStu: });
+      //   // }
+      //   // console.log(attendedArr);
+      // },
+      // 设置历史考勤时间
+      setHistoryAttendDate() {
+        var myDate = new Date();
+        console.log(myDate.toLocaleDateString());
+        this.year = myDate.getFullYear();
+        this.month = myDate.getMonth() + 1;
+        this.day = myDate.getDate();
+        console.log(this.year, this.month, this.day)
+      },
       showDetail() {
         // this.class = index;
         // console.log('index', index)
@@ -205,44 +237,47 @@
         //   this.ifShow = !this.ifShow;
         // }
         this.ifShow = true;
-      },
 
+      },
 
       //获取统计信息
       getStatusTo() {
         getStatus().then(result => {
           console.log('获取统计信息', result);
           this.overViewClassMsg = result.data.body;
+          this.viewClassMsg = result.data.body;
           console.log("this.overViewClassMsg", this.overViewClassMsg);
-          console.log("student", this.students);
+          console.log("已考勤", this.overViewClassMsg);
+          // console.log("student", this.students);
           this.makeStudentList()
+          // 设置未出席人名单
+          this.setNoAttendedMsg();
         }).catch(error => {
           console.log(error)
         });
-
       },
 
-
+      getUserCheckin(){
+        getCheckin().then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log(err)
+        })
+      },
       //遍历学生
       makeStudentList() {
-
-
-        let a = new Array();
+        let a = [];
         for (let i = 0; i < this.overViewClassMsg.length; i++) {
-          a[i] = new Array();
-          console.log('ai', a[i]);
+          a[i] = [];
           this.overViewStuMsg = a[i];
-          // console.log(0-this.overViewClassMsg[i][1].total);
           for (let c = 0; c < this.overViewClassMsg[i].length; c++) {
-            a[i][c] = new Array();
+            a[i][c] = [];
             for (let b = 0; b < (0 - this.overViewClassMsg[i][c].total); b++) {
-              a[i][c].push({id: b, isSign: true, Late: false})
+              a[i][c].push({id: b, isSign: true, Late: false});
             }
           }
         }
-
         console.log('this.overViewStuMsg', this.overViewStuMsg);
-
       },
 
       close() {
@@ -304,6 +339,7 @@
     cursor: default;
     position: relative;
   }
+
   .block {
     display: none;
     background-color: rgba(0, 0, 0, 0.5);
@@ -312,6 +348,7 @@
     position: absolute;
     top: -15%;
   }
+
   .block p {
     position: absolute;
     height: 20px;
@@ -323,9 +360,11 @@
     color: #fff;
     cursor: default;
   }
-  .cc-bd:hover .block{
+
+  .cc-bd:hover .block {
     display: block;
   }
+
   .cc-bd p {
     height: 40px;
   }
@@ -483,28 +522,10 @@
 
   /*详情弹框-end*/
 
-  .detail-enter-active {
-    transition: all 0.3s ease;
-  }
-
-  .detail-enter {
-    /* .slide-fade-leave-active for below version 2.1.8 */
-    transform: translateY(7px);
-    opacity: 0;
-  }
-
-  .detail-leave-active {
-    transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-  }
-
-  .detail-leave-to {
-    opacity: 0;
-  }
-
   /*webkit内核*/
   .scroll_content::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
+    width: 0;
+    height: 0;
   }
 
   .scroll_content::-webkit-scrollbar-button {
