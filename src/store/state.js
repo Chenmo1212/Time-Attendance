@@ -4,8 +4,11 @@ export default {
   Class_lists:[],
 
   // 警告框
-  isLoading: false,
+  isWarning: false,
   warning: '',
+
+  // 加载
+  isLoading: false,
 
   // 登录状态
   isLogin: false,

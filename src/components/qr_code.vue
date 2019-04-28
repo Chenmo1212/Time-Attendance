@@ -44,7 +44,7 @@
     </div>
     <!--提示弹窗-->
     <transition name="warning">
-      <div class="onLoad" v-if="isLoading === true"><span>{{ warning }}</span></div>
+      <div class="onLoad" v-if="isWarning === true"><span>{{ warning }}</span></div>
      </transition>
   </div>
 
@@ -70,7 +70,7 @@
         },
         computed: {
           ...mapState([
-            'isLoading',
+            'isWarning',
             'warning',
           ])
         },
@@ -92,13 +92,13 @@
             if (this.showBlock === false) {
               this.showBlock = true;
             } else {
-              this.$store.commit('SET_LOADING', {isLoading: true, warning: '考勤已结束'});
+              this.$store.commit('SET_WARNING', {isWarning: true, warning: '考勤已结束'});
 
             }
           },
           computed: {
             ...mapState([
-              'isLoading',
+              'isWarning',
               'warning',
               'EndSign',
               'ShowBlock',
@@ -336,9 +336,9 @@
                   EndSign: true
                 });
               } else {
-                this.$store.commit('SET_LOADING', {isLoading: true, warning: '考勤已结束'});
+                this.$store.commit('SET_WARNING', {isWarning: true, warning: '考勤已结束'});
                 setTimeout(() => {
-                  this.$store.commit('SET_LOADING', false);
+                  this.$store.commit('SET_WARNING', false);
                 }, 1000);
               }
 

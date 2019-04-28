@@ -54,7 +54,7 @@
     computed: {
       ...mapState([
         'Class_lists',
-        'isLoading',
+        'isWarning',
         'isLogin',
         'isAlert',
         'warning',

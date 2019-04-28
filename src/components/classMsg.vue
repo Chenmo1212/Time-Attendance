@@ -35,7 +35,7 @@
 
     <!--提示弹窗-->
     <transition name="warning">
-      <div class="onLoad" v-if="isLoading"><span>{{ warning }}</span></div>
+      <div class="onLoad" v-if="isWarning"><span>{{ warning }}</span></div>
     </transition>
 
     <transition name="picture">
@@ -76,7 +76,7 @@
 
         // 提示警告语
         warning: '',
-        isLoading: false,
+        isWarning: false,
 
         // 班级信息
         classMsg: [],
@@ -291,9 +291,9 @@
       //     if(this.Class_lists.length === 0) {
       //
       //       this.warning = '请填全信息后考勤';
-      //       this.isLoading = true;
+      //       this.isWarning = true;
       //       setTimeout(() => {
-      //         this.isLoading = false;
+      //         this.isWarning = false;
       //       }, 1000);
       //
       //       this.$router.push({name: 'home'})

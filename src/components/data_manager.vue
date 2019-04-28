@@ -92,7 +92,7 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+  import {mapState,mapActions} from 'vuex'
   import {getStatus,getCheckin} from "../axios/api";
   // import index from "../router";
 
@@ -133,6 +133,7 @@
     },
 
     created() {
+      this.setLoading(true);
       //打开拉去考勤状态
       this.getStatusTo();
       // 获取用户创建的考勤
@@ -148,6 +149,10 @@
 
     },
     methods: {
+      ...mapActions([
+        'setWarn',
+        'setLoading',
+      ]),
       // 根据id获取元素
       getById(id) {
         return document.getElementById(id);

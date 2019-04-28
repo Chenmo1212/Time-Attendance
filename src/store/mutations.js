@@ -9,15 +9,19 @@ export default {
     console.log('--------------------------------------');
   },
 
-  // 更改loading
-  SET_LOADING(state, warning) {
-    state.isLoading = true;
+  // 更改Warning
+  SET_WARNING(state, warning) {
+    state.isWarning = true;
     state.warning = warning;
   },
-  CLOSE_LOADING(state, bool) {
-    state.isLoading = bool;
+  CLOSE_WARNING(state, bool) {
+    state.isWarning = bool;
   },
 
+  // 更改Loading
+  SET_LOADING(state, bool) {
+    state.isLoading = bool;
+  },
 
   // 更改登录状态
   SET_LOGIN(state, boolean) {
@@ -66,11 +70,7 @@ export default {
       To_Data: obj.To_Data,
     });
   },
-  // 设置警告
-  setWarning(state,msg){
-    state.isLoading = true;
-    state.warning = msg;
-  },
+
   // 前往数据管理
   // TO_DATA(state, boolean){
   //   state.To_Data = obj.To_Data;  // 是在想去data的路上触发登录框

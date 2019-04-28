@@ -86,9 +86,9 @@
 
         // 判断是否为空
         if ( this.reg_pwd === '' || this.phone === '' || this.code === '') {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '请将信息输入完整'});
+          this.$store.commit('SET_WARNING', {isWarning: true, warning: '请将信息输入完整'});
           setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
+            this.$store.commit('SET_WARNING', false);
           }, 1000);
         } else {
           // 服务条款
@@ -105,47 +105,47 @@
                     this.getRegTo(this.phone,this.login_pwd);
                     console.log('注册');
 
-                    this.$store.commit('SET_LOADING', {isLoading: true, warning: '注册成功,请登录'});
+                    this.$store.commit('SET_WARNING', {isWarning: true, warning: '注册成功,请登录'});
                     setTimeout(() => {
-                      this.$store.commit('SET_LOADING', false);
+                      this.$store.commit('SET_WARNING', false);
                     }, 1000);
                     this.ifShow_reg_alert = false;
                     this.$store.commit('SET_ACCOUNT', {account: this.phone, password: this.reg_pwd});
                     this.$router.push({name: 'login'});
                   } else {
                     // 验证码不合理
-                    this.$store.commit('SET_LOADING', {isLoading: true, warning: '验证码输入不合法！'});
+                    this.$store.commit('SET_WARNING', {isWarning: true, warning: '验证码输入不合法！'});
                     setTimeout(() => {
-                      this.$store.commit('SET_LOADING', false);
+                      this.$store.commit('SET_WARNING', false);
                     }, 1000);
                     this.code = '';
                   }
                 } else {
                   // 手机号码不合理
-                  this.$store.commit('SET_LOADING', {isLoading: true, warning: '手机输入不合法！'});
+                  this.$store.commit('SET_WARNING', {isWarning: true, warning: '手机输入不合法！'});
                   setTimeout(() => {
-                    this.$store.commit('SET_LOADING', false);
+                    this.$store.commit('SET_WARNING', false);
                   }, 1000);
                   this.phone = '';
                 }
               } else {
                 // 密码不合理
-                this.$store.commit('SET_LOADING', {isLoading: true, warning: '密码输入不合法！'});
+                this.$store.commit('SET_WARNING', {isWarning: true, warning: '密码输入不合法！'});
                 setTimeout(() => {
-                  this.$store.commit('SET_LOADING', false);
+                  this.$store.commit('SET_WARNING', false);
                 }, 1000);
                 this.reg_pwd = '';
               }
               setTimeout(() => {
-                this.$store.commit('SET_LOADING', false);
+                this.$store.commit('SET_WARNING', false);
               }, 1000);
               this.name = '';
             }
            else {
-            this.$store.commit('SET_LOADING', {isLoading: true, warning: '请同意服务条款！'});
+            this.$store.commit('SET_WARNING', {isWarning: true, warning: '请同意服务条款！'});
 
             setTimeout(() => {
-              this.$store.commit('SET_LOADING', false);
+              this.$store.commit('SET_WARNING', false);
             }, 1000);
           }
         }
@@ -168,9 +168,9 @@
 
       // 获取验证码
       getCode() {
-        this.$store.commit('SET_LOADING', {isLoading: true, warning: '请同意服务条款！'});
+        this.$store.commit('SET_WARNING', {isWarning: true, warning: '请同意服务条款！'});
         setTimeout(() => {
-          this.$store.commit('SET_LOADING', false);
+          this.$store.commit('SET_WARNING', false);
         }, 1000);
       },
 
@@ -179,15 +179,15 @@
         this.checkMsg = !this.checkMsg;
 
         if (this.checkMsg) {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已同意！'});
+          this.$store.commit('SET_WARNING', {isWarning: true, warning: '您已同意！'});
           this.isLoading = true;
           setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
+            this.$store.commit('SET_WARNING', false);
           }, 1000);
         } else {
-          this.$store.commit('SET_LOADING', {isLoading: true, warning: '您已取消同意！'});
+          this.$store.commit('SET_WARNING', {isWarning: true, warning: '您已取消同意！'});
           setTimeout(() => {
-            this.$store.commit('SET_LOADING', false);
+            this.$store.commit('SET_WARNING', false);
           }, 1000);
         }
 

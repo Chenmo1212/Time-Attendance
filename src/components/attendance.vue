@@ -189,7 +189,7 @@
     },
     computed: {
       ...mapState([
-        'isLoading',
+        'isWarning',
         'warning',
         'EndSign',
         'ShowBlock',
@@ -493,7 +493,7 @@
         const student = this.Class_lists[index1].students[index2];
         this.setWarn("设为旷课")
         if (this.Class_lists[index1].students[index2].Late === false) {
-          this.$store.commit('SET_LOADING', '您已经选择了旷课');
+          this.$store.commit('SET_WARNING', '您已经选择了旷课');
         } else {
           student.Late = false;
           student.Truancy = true;

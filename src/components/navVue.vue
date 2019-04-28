@@ -179,7 +179,7 @@
     computed: {
       ...mapState([
         'Class_lists',
-        'isLoading',
+        'isWarning',
         'isLogin',
         'warning',
         'at_warning',
@@ -198,6 +198,7 @@
     methods: {
       ...mapActions([
         'setWarn',
+        'setLoading',
       ]),
       fullScreen() {
         this.alertDel();
@@ -258,7 +259,6 @@
       toAttendance() {
         console.log(this.Class_lists.length);
         if (this.Class_lists.length === 0) {
-          // this.$store.commit('SET_LOADING', '请点击"开始签到"');
           this.setWarn('请点击"开始签到"');
           this.$router.push({name: 'home'})
         } else {
@@ -268,7 +268,7 @@
 
       // 去“数据管理”
       toData() {
-        console.log("当前登录状态为：", this.isLogin);
+        // console.log("当前登录状态为：", this.isLogin);
         if (this.isLogin === true) {
           console.log("已经登录");
           // 仓库中是否有数据
@@ -302,35 +302,24 @@
 
       // 使用说明
       toIntro() {
-        // this.$store.commit('SET_LOADING', {isLoading: true, warning: '程序猿很懒还没写'});
-        // setTimeout(() => {
-        //   this.$store.commit('SET_LOADING', false);
-        // }, 1000);
-        //   console.log("123");
-        // }, 1000);
         this.$router.push({name: 'introduction'});
-        // this.showIntro = true;
       },
-
-      // 账号详情
-      // toMang(){
-      //   this.$store.commit('SET_LOADING', {isLoading: true, warning: '哈哈哈，也没写'});
-      //   setTimeout(() => {
-      //     this.$store.commit('SET_LOADING', false);
-      //   }, 1000);
-      // },
 
       // 清除数据
       del() {
-        this.$store.commit('SET_LOADING',  '数据已删,请刷新');
-        this.$router.push({name: 'home'});
-        // 清除缓存
-        window.onbeforeunload = function (e) {
-          var storage = window.localStorage;
-          storage.clear();
-        };
-        // 自动刷新
-        window.location.reload();
+        var that = this;
+        this.setLoading(true);
+        clearTimeout(timeId);
+        var timeId = setTimeout(function () {
+          that.$router.push({name: 'home'});
+          // 清除缓存
+          window.onbeforeunload = function (e) {
+            var storage = window.localStorage;
+            storage.clear();
+          };
+          // 自动刷新
+          window.location.reload();
+        }, 2000)
       },
 
       // 关闭弹窗
@@ -367,7 +356,7 @@
 
       // 注销
       toLogout() {
-        this.$store.commit('SET_LOADING',  '注销成功');
+        this.$store.commit('SET_WARNING',  '注销成功');
         if (this.$route.name !== 'home') {
           this.$router.push({name: 'home'});
         }
@@ -443,9 +432,7 @@
   }
 
   .fl #logo img {
-    width: 50px;
-    height: 50px;
-    margin-top: 5px;
+    height: 100%;
   }
 
   .fl #logo a {

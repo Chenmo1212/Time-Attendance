@@ -24,14 +24,10 @@ export default {
     commit('change', lists)
   },
 
-  // 显示Loading
-  setLoading({commit}, msg) {
-    commit('SET_LOADING', msg)
-  },
 
   // 关闭loading
-  closeLoading({commit}, bool) {
-    commit('CLOSE_LOADING', bool)
+  closeWarning({commit}, bool) {
+    commit('CLOSE_WARNING', bool)
   },
 
   // 设置提示
@@ -46,7 +42,13 @@ export default {
 
   // 设置警告
   setWarn({commit}, msg) {
-    commit('setWarning', msg)
+    commit('SET_WARNING', msg)
+  },
+
+
+  // 显示Loading
+  setLoading({commit}, bool) {
+    commit('SET_LOADING', bool)
   },
 
   // 设置警告
